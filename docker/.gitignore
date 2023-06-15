@@ -1,0 +1,4 @@
+app/mysql
+microservices/email/mysql
+microservices/user/mysql
+

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "microservices/user"
+		},
+		{
+			"path": "app"
+		}
+	],
+	"settings": {}
+}

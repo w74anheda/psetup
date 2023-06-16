@@ -5,6 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Casts\PersonalInfoCast;
+use App\Presenters\PresentAble;
+use App\Presenters\User\Api as UserApiPresenter;
 use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
 use DateTime;
@@ -17,7 +19,14 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasPermission, HasRoles;
+    use HasApiTokens,
+        HasFactory,
+        Notifiable,
+        HasPermission,
+        HasRoles,
+        PresentAble;
+
+    protected $presenterHandler = UserApiPresenter::class;
 
     protected $fillable = [
         'first_name',
@@ -98,9 +107,13 @@ class User extends Authenticatable
 
     public function setLastOnlineAt(DateTime $dateTime = null)
     {
-        $dateTime            = $dateTime ?? now();
+        $dateTime             = $dateTime ?? now();
         $this->last_online_at = $dateTime;
         $this->save();
     }
 
+    public function ips()
+    {
+        return $this->hasMany(UserIp::class);
+    }
 }

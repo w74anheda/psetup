@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Auth\CompleteProfileController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::prefix('auth')->group(function ()
 {
     Route::prefix('login')->group(function ()
@@ -36,13 +37,13 @@ Route::prefix('auth')->group(function ()
 });
 
 
-// ips register middleware
 // addresses with ostan-shahr-pelak-vahed-codeposti-girande sefaresh(nam-mobile)-/locations
 // set email and activate
-// add presenter
 // log every where
+// add remove time to session middleware
 
 
+// ********** send user ip from user interface to user microservice
 // user microservice
 // create api for ACL
 // create first admin factory

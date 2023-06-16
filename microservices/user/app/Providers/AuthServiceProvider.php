@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Services\Passport\CustomAccessTokenRepository;
 use App\Services\Passport\CustomToken;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Bridge\AccessTokenRepository;
 use Laravel\Passport\Passport;
 
@@ -32,5 +33,6 @@ class AuthServiceProvider extends ServiceProvider
         Passport::useTokenModel(CustomToken::class);
 
         $this->app->bind(AccessTokenRepository::class, CustomAccessTokenRepository::class);
+
     }
 }

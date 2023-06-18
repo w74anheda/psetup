@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UserPhoneVerification extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUser;
 
     protected static function boot()
     {
@@ -28,8 +29,5 @@ class UserPhoneVerification extends Model
 
     public $timestamps = false;
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+
 }

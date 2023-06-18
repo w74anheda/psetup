@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UserIp extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUser;
 
     protected $fillable = [
         'user_id',
@@ -23,11 +24,7 @@ class UserIp extends Model
             self::where('user_id', $model->user_id)->delete();
         });
     }
-    
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+
 
 }

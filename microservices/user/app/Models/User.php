@@ -9,12 +9,13 @@ use App\Presenters\PresentAble;
 use App\Presenters\User\Api as UserApiPresenter;
 use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
+use App\Services\Auth\PhoneVerificationAble;
+use App\Services\Passport\CustomFindUserAndValidate as CustomFindUserAndValidateForPassport;
+use App\Services\Passport\RevokeAble;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
-use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -24,7 +25,10 @@ class User extends Authenticatable
         Notifiable,
         HasPermission,
         HasRoles,
-        PresentAble;
+        PresentAble,
+        CustomFindUserAndValidateForPassport,
+        PhoneVerificationAble,
+        RevokeAble;
 
     protected $presenterHandler = UserApiPresenter::class;
 
@@ -58,52 +62,6 @@ class User extends Authenticatable
     ];
 
     const GENDERS = [ 'male', 'female', 'both' ];
-
-    public function revoke()
-    {
-        $refreshTokenRepository = resolve(RefreshTokenRepository::class);
-        $this->tokens->each(
-            fn($token) => $token->revoke() &&
-            $token->delete() &&
-            $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id)
-        );
-    }
-
-    public function generateVerificationCode(string $code = null)
-    {
-        $code = $code ??
-            generate_random_digits_with_specefic_length(
-                app('PHONE_VERIFICATION_CODE_LENGTH')
-            );
-
-        return $this->phoneVerifications()->create([
-            'code'      => $code,
-            'expire_at' => now()->addSeconds(
-                app('PHONE_VERIFICATION_CODE_LIFETIME_SECONDS')
-            ),
-            'hash'      => Str::uuid()
-        ]);
-    }
-
-    public function clearVerificationCode(string $hash)
-    {
-        $this->phoneVerifications()->where('hash', $hash)->delete();
-    }
-
-    public function phoneVerifications()
-    {
-        return $this->hasOne(UserPhoneVerification::class);
-    }
-
-    public function findForPassport(string $phone): User
-    {
-        return $this->where('phone', $phone)->first();
-    }
-
-    public function validateForPassportPasswordGrant(string $code): bool
-    {
-        return !!$this->phoneVerifications()->where('code', $code)->first();
-    }
 
     public function setLastOnlineAt(DateTime $dateTime = null)
     {

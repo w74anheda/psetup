@@ -38,18 +38,22 @@ Route::prefix('auth')->group(function ()
 
 
 // addresses with ostan-shahr-pelak-vahed-codeposti-girande sefaresh(nam-mobile)-/locations
-// set email and activate
-// log every where
-// add remove time to session middleware
-
-
-// ********** send user ip from user interface to user microservice
-// user microservice
-// create api for ACL
+// create api for ACL + gate and middleware(is admin)
 // create first admin factory
-// create middleware and gate
-// activate/deactivate user
+// activate/deactivate user + middleware
+
+// create state and city (is admin)
+
+
+// ********** send (user ip + user agent) from user interface to user microservice
+    // user microservice
+    // block ips
+
 
 // app
-// add user role permission to user microserivce interface
-// add middleware and gate for ACL
+    // add user role permission to user microserivce interface
+    // add middleware and gate for ACL
+
+
+    // set email and activate
+    // log every where

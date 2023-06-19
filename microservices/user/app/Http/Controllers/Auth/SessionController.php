@@ -9,7 +9,12 @@ use Illuminate\Http\Response;
 
 class SessionController extends Controller
 {
-    public function all(Request $request)
+    public function __construct()
+    {
+        $this->middleware('can:its-own-token,token')->only('delete');
+    }
+
+    public function index(Request $request)
     {
         $fields                    = [ 'id', 'user_agent', 'created_at' ];
         $currentSession            = $request->token->only($fields);

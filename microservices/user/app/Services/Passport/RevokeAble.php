@@ -12,7 +12,7 @@ trait RevokeAble
         $this->tokens->each(
             fn($token) => $token->revoke() &&
             $token->delete() &&
-            $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id)
+            $refreshTokenRepository->revokeRefreshToken($token->id)
         );
     }
 }

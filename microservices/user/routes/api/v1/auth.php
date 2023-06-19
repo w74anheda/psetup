@@ -29,7 +29,7 @@ Route::prefix('auth')->group(function ()
 
     Route::middleware([ 'auth:api' ])->prefix('sessions')->group(function ()
     {
-        route::get('', [ SessionController::class, 'all' ]);
+        route::get('', [ SessionController::class, 'index' ]);
         route::delete('delete/all', [ SessionController::class, 'deleteAll' ]);
         route::delete('delete/{token}', [ SessionController::class, 'delete' ]);
     });
@@ -37,23 +37,5 @@ Route::prefix('auth')->group(function ()
 });
 
 
-// addresses with ostan-shahr-pelak-vahed-codeposti-girande sefaresh(nam-mobile)-/locations
-// create api for ACL + gate and middleware(is admin)
-// create first admin factory
-// activate/deactivate user + middleware
-
-// create state and city (is admin)
 
 
-// ********** send (user ip + user agent) from user interface to user microservice
-    // user microservice
-    // block ips
-
-
-// app
-    // add user role permission to user microserivce interface
-    // add middleware and gate for ACL
-
-
-    // set email and activate
-    // log every where

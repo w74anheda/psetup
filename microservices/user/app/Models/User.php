@@ -5,11 +5,13 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Casts\PersonalInfoCast;
+use App\Models\Traits\HasAddress;
+use App\Models\Traits\HasIp;
 use App\Presenters\PresentAble;
 use App\Presenters\User\Api as UserApiPresenter;
 use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
-use App\Services\Auth\PhoneVerificationAble;
+use App\Services\Auth\HasPhoneVerification;
 use App\Services\Passport\CustomFindUserAndValidate as CustomFindUserAndValidateForPassport;
 use App\Services\Passport\RevokeAble;
 use DateTime;
@@ -27,8 +29,10 @@ class User extends Authenticatable
         HasRoles,
         PresentAble,
         CustomFindUserAndValidateForPassport,
-        PhoneVerificationAble,
-        RevokeAble;
+        HasPhoneVerification,
+        RevokeAble,
+        HasAddress,
+        HasIp;
 
     protected $presenterHandler = UserApiPresenter::class;
 
@@ -70,8 +74,4 @@ class User extends Authenticatable
         $this->save();
     }
 
-    public function ips()
-    {
-        return $this->hasMany(UserIp::class);
-    }
 }

@@ -20,10 +20,12 @@ class UserMicroserviceInterface
         }
         $this->endpoint = env( "USER_MICROSERVICE_ENDPOINT" );
     }
+
     private function request() : PendingRequest
     {
         return Http::baseUrl( $this->endpoint )->withHeaders( [ 'Accept' => 'Application/Json' ] );
     }
+    
     private function authRequest() : PendingRequest
     {
         if ( is_null( $this->token ) ) {

@@ -2,9 +2,10 @@
 
 namespace App\Services\Auth;
 
+use App\Models\UserPhoneVerification;
 use Illuminate\Support\Str;
 
-trait PhoneVerificationAble
+trait HasPhoneVerification
 {
 
     public function generateVerificationCode(string $code = null)

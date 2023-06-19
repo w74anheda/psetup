@@ -18,9 +18,10 @@ return new class extends Migration
             $table->bigInteger('city_id')->unsigned()->index();
             $table->string('full_address');
             $table->integer('house_number');
-            $table->tinyInteger('unit_number');
-            $table->string('postalcode', 20);
-            $table->point('point');
+            $table->integer('unit_number');
+            $table->string('postalcode',10)->index();
+            $table->string('latitude');
+            $table->string('longitude');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');

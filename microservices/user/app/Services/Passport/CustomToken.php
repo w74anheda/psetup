@@ -22,7 +22,7 @@ class CustomToken extends Token
     public function revokeAndDelete()
     {
         $refreshTokenRepository = resolve(RefreshTokenRepository::class);
-        $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($this->id);
+        $refreshTokenRepository->revokeRefreshToken($this->id);
         $this->revoke();
         $this->delete();
     }

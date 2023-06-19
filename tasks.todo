@@ -1,0 +1,23 @@
+// create first admin factory + permission and role factory
+// create api for ACL + gate and middleware(is admin)
+    // add/update/delete role
+    // add/update/delete permission
+    // attach/delete/update permission to role
+    
+// activate/deactivate user + middleware
+
+// create state and city (is admin)
+
+
+// ********** send (user ip + user agent) from user interface to user microservice
+    // user microservice
+    // block ips
+
+
+// app
+    // add user role permission to user microserivce interface
+    // add middleware and gate for ACL
+
+
+    // set email and activate
+    // log every where

@@ -1,8 +1,7 @@
-// create first admin factory + permission and role factory
-// create api for ACL + gate and middleware(is admin)
+// create api for ACL
     // add/update/delete role
     // add/update/delete permission
-    // attach/delete/update permission to role
+    // attach/delete/update permission to role/user
     
 // activate/deactivate user + middleware
 
@@ -21,3 +20,13 @@
 
     // set email and activate
     // log every where
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+// mysql review
+// mongodb review
+// docker review
+// redis review
+// design pattern

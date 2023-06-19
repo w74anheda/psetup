@@ -10,6 +10,7 @@ class Role extends Model
 {
     use HasFactory, HasPermission;
 
+    public $timestamps = false;
     protected $fillable = [
         'name',
     ];

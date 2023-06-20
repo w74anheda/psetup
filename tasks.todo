@@ -1,6 +1,4 @@
 // create api for ACL
-    // add/update/delete role
-    // add/update/delete permission
     // attach/delete/update permission to role/user
     
 // activate/deactivate user + middleware

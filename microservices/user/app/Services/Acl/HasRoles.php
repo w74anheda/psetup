@@ -24,7 +24,7 @@ trait HasRoles
 
     protected function getAllRoles(string ...$roles_name)
     {
-        return Role::whereIn('name', Arr::flatten($roles_name))->get();
+        return Role::whereIntegerInRaw('name', Arr::flatten($roles_name))->get();
     }
 
     public function addRoles(string ...$roles_name)

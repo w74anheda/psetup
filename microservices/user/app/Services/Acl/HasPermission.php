@@ -13,7 +13,8 @@ trait HasPermission
 
     public function Permissions()
     {
-        switch ($this) {
+        switch($this)
+        {
 
             case $this instanceof User:
                 return $this->belongsToMany(Permission::class, 'users_permissions');
@@ -23,23 +24,22 @@ trait HasPermission
     }
 
 
-    private function getAllPermissions(string ...$permissions_name)
+    private function getAllPermissions(string...$permissions_name)
     {
-        return Permission::whereIn('name', Arr::flatten($permissions_name))->get();
+        return Permission::whereIntegerInRaw('name', Arr::flatten($permissions_name))->get();
     }
 
 
-    public function addPermissions(string ...$permissions_name)
+    public function addPermissions(string...$permissions_name)
     {
         $permissions = $this->getAllPermissions(...$permissions_name);
-
         $this->Permissions()->syncWithoutDetaching($permissions);
 
         return $this;
     }
 
 
-    public function removePermissions(string ...$permissions_name)
+    public function removePermissions(string...$permissions_name)
     {
 
         $permissions = $this->getAllPermissions(...$permissions_name);
@@ -50,7 +50,7 @@ trait HasPermission
     }
 
 
-    public function refreshPermissions(string ...$permissions_name)
+    public function refreshPermissions(string...$permissions_name)
     {
 
         $permissions = $this->getAllPermissions(...$permissions_name);
@@ -64,7 +64,7 @@ trait HasPermission
     public function hasPermission(string $permission_name): bool
     {
         $permission = Permission::where('name', $permission_name)->first();
-        if (!$permission) return false;
+        if(!$permission) return false;
         return $this->hasPermissionThroughRole($permission)
             || $this->permissions->contains('name', $permission_name);
     }
@@ -73,8 +73,10 @@ trait HasPermission
     public function hasPermissionThroughRole(Permission $permission)
     {
 
-        foreach ($permission->roles as $role) {
-            if ($this->roles->contains($role)) {
+        foreach( $permission->roles as $role )
+        {
+            if($this->roles->contains($role))
+            {
                 return true;
             }
         }

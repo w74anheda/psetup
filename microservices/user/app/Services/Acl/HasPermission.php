@@ -23,21 +23,17 @@ trait HasPermission
         }
     }
 
-
     private function getAllPermissions(string...$permissions_name)
     {
         return Permission::whereIn('name', $permissions_name)->get();
     }
 
-
     public function addPermissions(string...$permissions_name)
     {
         $permissions = $this->getAllPermissions(...$permissions_name);
         $this->Permissions()->syncWithoutDetaching($permissions);
-
         return $this;
     }
-
 
     public function removePermissions(string...$permissions_name)
     {
@@ -49,7 +45,6 @@ trait HasPermission
         return $this;
     }
 
-
     public function refreshPermissions(string...$permissions_name)
     {
 
@@ -60,7 +55,6 @@ trait HasPermission
         return $this;
     }
 
-
     public function hasPermission(string $permission_name): bool
     {
         $permission = Permission::where('name', $permission_name)->first();
@@ -68,7 +62,6 @@ trait HasPermission
         return $this->hasPermissionThroughRole($permission)
             || $this->permissions->contains('name', $permission_name);
     }
-
 
     public function hasPermissionThroughRole(Permission $permission)
     {

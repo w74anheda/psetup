@@ -21,12 +21,10 @@ class AclSeeder extends Seeder
         DB::table('roles_permissions')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
-        $user = User::firstOrcreate([
+        $user  = User::firstOrcreate([
             'phone' => env('SUPER_ADMIN_PHONE_NUMBER', '09035919877')
         ]);
-
-
-        $super = Role::firstOrCreate([ 'name' => 'super' ]);
+        $super = Role::create([ 'name' => 'super' ]);
 
         $permissionsTag = collect([
             'role.list',
@@ -36,15 +34,17 @@ class AclSeeder extends Seeder
             'role.attach.to.user',
             'permission.list',
             'permission.attach.to.role',
+            'permission.dettach.to.role',
+            'permission.drop.all.of.role',
             'permission.attach.to.user',
+            'permission.dettach.of.user',
+            'permission.drop.all.of.user',
         ])
             ->map(fn($permission) => [ 'name' => $permission ])
             ->toArray();
 
-        foreach( $permissionsTag as $tag )
-        {
-            $permissions[] = Permission::create($tag)->pluck('name')[0];
-        }
+        Permission::insert($permissionsTag);
+        $permissions = Permission::all()->pluck('name');
 
         $super->addPermissions(...$permissions);
         $user->addRoles($super->name);

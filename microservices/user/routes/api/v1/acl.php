@@ -16,10 +16,26 @@ Route::prefix('acl')->middleware('auth:api')->group(function ()
         ]
     );
 
-    Route::prefix('permission')->group(function ()
-    {
-        Route::patch('role/{role}', [ PermissionController::class, 'attachPermissionToRole' ]);
+    Route::prefix('permission')
+        ->controller(PermissionController::class)
+        ->group(function ()
+        {
+            Route::get('', 'index');
 
-    });
+            Route::prefix('role')->group(function ()
+            {
+                Route::patch('{role}', 'attachPermissionToRole');
+                Route::patch('{role}/dettach', 'dettachPermissionOfRole');
+                Route::delete('{role}', 'dropAllPermissionOfRole');
+            });
+
+            Route::prefix('user')->group(function ()
+            {
+                Route::patch('{user}', 'attachPermissionToUser');
+                Route::patch('{user}/dettach', 'dettachPermissionOfUser');
+                Route::delete('{user}', 'dropAllPermissionOfUser');
+            });
+
+        });
 
 });

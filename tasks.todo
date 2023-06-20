@@ -1,18 +1,10 @@
-// create api for ACL
-    // permission list
-    // delete/drop all permission to role
-    // attach/delete/drop all permission to user
-    // fix acl seeder
-    
 // activate/deactivate user + middleware
 
 // create state and city (is admin)
 
-
 // ********** send (user ip + user agent) from user interface to user microservice
     // user microservice
     
-
 
 // app
     // add user role permission to user microserivce interface

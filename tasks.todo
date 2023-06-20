@@ -1,5 +1,8 @@
 // create api for ACL
-    // attach/delete/update permission to role/user
+    // permission list
+    // delete/drop all permission to role
+    // attach/delete/drop all permission to user
+    // fix acl seeder
     
 // activate/deactivate user + middleware
 
@@ -8,7 +11,7 @@
 
 // ********** send (user ip + user agent) from user interface to user microservice
     // user microservice
-    // block ips
+    
 
 
 // app
@@ -18,6 +21,7 @@
 
     // set email and activate
     // log every where
+    // block ips
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
@@ -28,3 +32,4 @@
 // docker review
 // redis review
 // design pattern
+

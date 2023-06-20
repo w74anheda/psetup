@@ -26,7 +26,7 @@ trait HasPermission
 
     private function getAllPermissions(string...$permissions_name)
     {
-        return Permission::whereIntegerInRaw('name', Arr::flatten($permissions_name))->get();
+        return Permission::whereIn('name', $permissions_name)->get();
     }
 
 

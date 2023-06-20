@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\Acl\PermissionController;
 use App\Http\Controllers\Acl\RoleController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::prefix('acl')->group(function ()
+Route::prefix('acl')->middleware('auth:api')->group(function ()
 {
 
     Route::resource(
@@ -13,11 +14,12 @@ Route::prefix('acl')->group(function ()
         [
             'only' => [ 'index', 'store', 'update', 'destroy' ]
         ]
-    )->middleware('auth:api');
+    );
 
+    Route::prefix('permission')->group(function ()
+    {
+        Route::patch('role/{role}', [ PermissionController::class, 'attachPermissionToRole' ]);
+
+    });
 
 });
-
-
-
-

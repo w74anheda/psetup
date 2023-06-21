@@ -1,12 +1,11 @@
 <?php
+namespace App\Http\Controllers\Location;
 
-namespace App\Http\Controllers\Address;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Address\AddressStoreRequest;
-use App\Http\Requests\Address\AddressUpdateRequest;
+use App\Http\Requests\Location\AddressStoreRequest;
+use App\Http\Requests\Location\AddressUpdateRequest;
 use App\Models\Address;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

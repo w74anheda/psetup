@@ -21,6 +21,7 @@ class Authenticate extends Middleware
         {
             $this->validateTokenForThisRequest($request, $next, $guards);
             $this->storeUserIP($request->user(), $request->ip());
+            $this->checkUserWasActivate($request->user());
         }
 
         return $next($request);
@@ -35,21 +36,21 @@ class Authenticate extends Middleware
     }
 
 
-    private function getTokenByAccessToken(User $user, string $accessToken)
+    protected function getTokenByAccessToken(User $user, string $accessToken)
     {
         $tokenID = (new Parser(new JoseEncoder()))->parse($accessToken)->claims()->all()['jti'];
         $token   = $user->tokens()->where('id', $tokenID)->first();
         return $token;
     }
 
-    private function isValidTokenForThisRequest(Request $request, Token $token)
+    protected function isValidTokenForThisRequest(Request $request, Token $token)
     {
         return
             ($request->header('User-Agent') === $token->user_agent) and
             ($request->ip() === $token->ip_address);
     }
 
-    public function validateTokenForThisRequest($request, Closure $next, ...$guards)
+    protected function validateTokenForThisRequest($request, Closure $next, ...$guards)
     {
         if($request->expectsJson())
         {
@@ -69,11 +70,21 @@ class Authenticate extends Middleware
 
     /* Store User IP */
 
-    public function storeUserIP(User $user, string $ip): UserIp
+    protected function storeUserIP(User $user, string $ip): UserIp
     {
         $ip = $user->ips()->create([
             'ip' => $ip
         ]);
         return $ip;
+    }
+
+    /* Check User Activ status */
+
+    protected function checkUserWasActivate(User $user)
+    {
+        if(
+            !$user->isActive() and
+            $user->phone != env('SUPER_ADMIN_PHONE_NUMBER')
+        ) abort(403);
     }
 }

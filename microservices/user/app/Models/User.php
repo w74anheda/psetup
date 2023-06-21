@@ -74,4 +74,8 @@ class User extends Authenticatable
         $this->save();
     }
 
+    public function isActive(): bool
+    {
+        return !!$this->is_active;
+    }
 }

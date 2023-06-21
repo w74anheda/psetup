@@ -33,6 +33,8 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api/v1')
                 ->group(base_path('routes/api/v1/auth.php'))
                 ->group(base_path('routes/api/v1/address.php'))
+                ->group(base_path('routes/api/v1/activation.php'))
+                ->group(base_path('routes/api/v1/location.php'))
                 ->group(base_path('routes/api/v1/acl.php'));
 
 

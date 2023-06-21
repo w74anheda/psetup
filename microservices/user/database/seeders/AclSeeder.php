@@ -39,6 +39,17 @@ class AclSeeder extends Seeder
             'permission.attach.to.user',
             'permission.dettach.of.user',
             'permission.drop.all.of.user',
+            'user.activation',
+            'state.list',
+            'state.create',
+            'state.update',
+            'state.delete',
+            'state.delete.all',
+            'city.list',
+            'city.create',
+            'city.update',
+            'city.delete',
+            'city.delete.all',
         ])
             ->map(fn($permission) => [ 'name' => $permission ])
             ->toArray();

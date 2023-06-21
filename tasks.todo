@@ -1,6 +1,4 @@
-// activate/deactivate user + middleware
-
-// create state and city (is admin)
+// auth middleware chain of responsibility
 
 // ********** send (user ip + user agent) from user interface to user microservice
     // user microservice

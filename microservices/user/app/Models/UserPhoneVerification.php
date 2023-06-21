@@ -10,15 +10,6 @@ class UserPhoneVerification extends Model
 {
     use HasFactory, HasUser;
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model)
-        {
-            self::where('user_id', $model->user_id)->delete();
-        });
-    }
 
     protected $fillable = [
         'user_id',

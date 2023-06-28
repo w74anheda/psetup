@@ -1,0 +1,46 @@
+@tailwind components;
+
+@layer components {
+  .btn {
+    @apply rounded-md py-3 px-8 transition-all duration-300 ease-in-out;
+  }
+
+  .btn-disabled {
+    @apply bg-light-gray text-dark-gray pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white;
+  }
+
+  .btn-default {
+    @apply bg-white text-dark-gray;
+  }
+
+  .btn-default:hover {
+    @apply bg-light-blue text-darker-gray;
+  }
+
+  .btn-transparent {
+    @apply bg-transparent text-primary;
+  }
+
+  .btn-transparent:hover {
+    @apply bg-primary text-white;
+  }
+}
+
+@layer components {
+  .form-label {
+    @apply my-2 text-secondary text-sm;
+  }
+
+  .form-control {
+    @apply p-2 text-sm bg-light-gray rounded-md outline-none focus:border-primary focus:border;
+  }
+}
+@layer components {
+  .border-bottom-link {
+    @apply w-36 pt-5 pb-1 text-12 border-b border-primary text-primary border-dashed justify-center mx-auto cursor-pointer flex;
+  }
+}

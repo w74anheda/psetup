@@ -1,0 +1,10 @@
+FROM node:lts-alpine3.18
+
+WORKDIR /www/microservices/frontend
+
+COPY package*.json ./
+# RUN npm install 
+
+ENV PATH ./node_modules/.bin/:$PATH
+
+CMD sh -c "npm run build && npm run dev"

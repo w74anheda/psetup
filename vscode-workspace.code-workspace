@@ -7,6 +7,9 @@
 			"path": "microservices/user"
 		},
 		{
+			"path": "microservices/frontend"
+		},
+		{
 			"path": "app"
 		}
 	],

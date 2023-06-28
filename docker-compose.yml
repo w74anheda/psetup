@@ -7,6 +7,8 @@ networks:
   phpmyadmin:
   user_private:
   user_public:
+  frontend:
+  webserver:
 
 services:
 
@@ -26,6 +28,7 @@ services:
     networks:
       - app_public
       - user_public
+      - frontend
 
   app:
     build:
@@ -113,3 +116,17 @@ services:
     networks:
       - user_private
       - phpmyadmin
+
+  frontend:
+    build:
+      context: "./microservices/frontend"
+      dockerfile: dockerfile
+    container_name: ${PROJECT_NAME}_frontend
+    volumes:
+      - ${MIC_FRONTEND_PATH}:${MIC_FRONTEND_WORKING_DIR}
+    ports:
+      - "${MIC_FRONTEND_PORT}:3000"
+    networks:
+      - frontend
+      - user_public
+      - app_public

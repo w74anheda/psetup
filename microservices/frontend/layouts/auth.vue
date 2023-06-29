@@ -11,10 +11,10 @@
                 </NuxtLink>
             </Transition>
 
-            <div class="flex font-bold justify-center mt-6">
+            <div class="flex justify-center mt-6">
                 <img class="h-20 w-20 mb-3" src="/images/bmw-logo.png" />
             </div>
-            <h1 class="text-2xl text-center text-darker-gray mb-1 font-semibold">
+            <h1 class="text-2xl text-center text-darker-gray mb-1 font-IRANSans_Bold">
                 سلام دوست عزیز!
             </h1>
             <p class="text-center text-xs text-dark-gray">به سایت ما خوش آمدی، بوس

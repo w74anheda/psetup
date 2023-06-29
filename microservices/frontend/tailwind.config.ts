@@ -9,9 +9,14 @@ module.exports = {
     "./app.vue",
   ],
   theme: {
-    fontFamily: {
-      IRANSans: ['IRANSans']
-    },
+      fontFamily: {
+        IRANSans_Black: ['IRANSans_Black'],
+        IRANSans_Bold: ['IRANSans_Bold'],
+        IRANSans_Medium: ['IRANSans_Medium'],
+        IRANSans_Light: ['IRANSans_Light'],
+        IRANSans_ULight: ['IRANSans_ULight'],
+        IRANSans_Regular: ['IRANSans_Regular'],
+      },
     colors: {
       transparent: "transparent",
       primary: "#3b82f6",

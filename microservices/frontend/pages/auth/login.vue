@@ -6,7 +6,7 @@
                 textColor="text-primary" />
             <div class="w-full mb-2">
                 <div class="flex items-center">
-                    <BaseTheInput type="tel" placeholder="09xxxxxxxxx"
+                    <BaseTheInput type="number" placeholder="09xxxxxxxxx"
                         v-model="phone" name="phone" label="شماره موبایل" />
                 </div>
             </div>

@@ -36,11 +36,11 @@ export const twoDigitsFormat = (n: number) => {
 
 export const getNextMinutes = (minute: number): string => {
     const currentDate = new Date();
-    const nextThreeMinutes = new Date(currentDate.getTime() + minute * 60000); // Adding 3 minutes in milliseconds
+    const nextMinutes = new Date(currentDate.getTime() + minute * 60000); // Adding 3 minutes in milliseconds
 
-    const hours = nextThreeMinutes.getHours().toString().padStart(2, "0");
-    const minutes = nextThreeMinutes.getMinutes().toString().padStart(2, "0");
-    const seconds = nextThreeMinutes.getSeconds().toString().padStart(2, "0");
+    const hours = nextMinutes.getHours().toString().padStart(2, "0");
+    const minutes = nextMinutes.getMinutes().toString().padStart(2, "0");
+    const seconds = nextMinutes.getSeconds().toString().padStart(2, "0");
 
     return `${hours}:${minutes}:${seconds}`;
 };

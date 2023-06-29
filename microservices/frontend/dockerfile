@@ -3,7 +3,8 @@ FROM node:lts-alpine3.18
 WORKDIR /www/microservices/frontend
 
 COPY package*.json ./
-# RUN npm install 
+RUN npm install 
+COPY . .
 
 ENV PATH ./node_modules/.bin/:$PATH
 

@@ -1,15 +1,10 @@
 @import url("./fonts");
 @import url("./components");
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    @apply font-IRANSans bg-background overflow-hidden text-right text-14;
-    direction: rtl;
-  }
+body {
+  @apply font-IRANSans_Regular bg-background overflow-hidden text-right text-14;
+  direction: rtl;
+}
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -21,7 +16,6 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
-}
 
 .layout-enter-active,
 .layout-leave-active {

@@ -39,8 +39,9 @@
     @apply p-2 text-sm bg-light-gray rounded-md outline-none focus:border-primary focus:border;
   }
 }
+
 @layer components {
   .border-bottom-link {
-    @apply w-36 pt-5 pb-1 text-12 border-b border-primary text-primary border-dashed justify-center mx-auto cursor-pointer flex;
+    @apply w-36 text-12 border-b border-primary text-primary border-dashed justify-center mx-auto cursor-pointer flex;
   }
 }

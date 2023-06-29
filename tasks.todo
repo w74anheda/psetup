@@ -1,5 +1,8 @@
 // auth middleware chain of responsibility
 
+// add is active to  auth request api
+// refresh token renew api add user agent and ip
+
 // ********** send (user ip + user agent) from user interface to user microservice
     // user microservice
     

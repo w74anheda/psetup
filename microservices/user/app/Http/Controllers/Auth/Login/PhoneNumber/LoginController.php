@@ -32,13 +32,13 @@ class LoginController extends Controller
                 'ip-address' => request()->ip(),
             ]
         )->post("$this->app_url/oauth/token", [
-                'grant_type'    => 'password',
-                'client_id'     => $passportClient->id,
-                'client_secret' => $passportClient->secret,
-                'username'      => $phone,
-                'password'      => $code,
-                'scope'         => '*'
-            ]);
+                    'grant_type'    => 'password',
+                    'client_id'     => $passportClient->id,
+                    'client_secret' => $passportClient->secret,
+                    'username'      => $phone,
+                    'password'      => $code,
+                    'scope'         => '*'
+                ]);
         return $response->json();
     }
 
@@ -59,6 +59,7 @@ class LoginController extends Controller
                 'verification' => [
                     'hash'      => $verification->hash,
                     'code'      => $verification->code,
+                    'is_active' => $user->isActive(),
                     'expire_at' => $verification->expire_at,
                 ],
             ],

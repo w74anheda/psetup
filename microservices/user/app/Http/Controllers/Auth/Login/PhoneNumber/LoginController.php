@@ -59,7 +59,7 @@ class LoginController extends Controller
                 'verification' => [
                     'hash'      => $verification->hash,
                     'code'      => $verification->code,
-                    'is_active' => $user->isActive(),
+                    'is_new'    => $user->isNew(),
                     'expire_at' => $verification->expire_at,
                 ],
             ],
@@ -96,7 +96,7 @@ class LoginController extends Controller
         $user->last_name    = $request->last_name;
         $user->gender       = $request->gender;
         $user->is_active    = true;
-        $user->is_active    = true;
+        $user->is_new       = true;
         $user->activated_at = now();
         $user->save();
     }

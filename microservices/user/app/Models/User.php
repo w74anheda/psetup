@@ -47,6 +47,7 @@ class User extends Authenticatable
         'email_verified_at',
         'registered_ip',
         'is_active',
+        'is_new',
         'personal_info',
         'password',
     ];
@@ -77,5 +78,9 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return !!$this->is_active;
+    }
+    public function isNew(): bool
+    {
+        return !!$this->is_new;
     }
 }

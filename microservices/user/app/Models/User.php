@@ -58,6 +58,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'is_new'            => 'bool',
         'is_active'         => 'bool',
         'phone_verified_at' => 'datetime',
         'email_verified_at' => 'datetime',

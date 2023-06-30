@@ -1,24 +1,24 @@
 <template>
-  <Form class="md:px-10 px-4 py-5">
+  <Form v-slot="{ validate }" :validation-schema="verifySchema"
+    class="md:px-10 px-4 py-5">
     <BaseTheSeparator title="احراز هویت" separatorColor="bg-primary"
       textColor="text-primary" />
     <div class="w-full mb-2">
       <div class="flex items-center">
-        <BaseTheInput placeholder="رجب" v-model="firstName" name="firstName"
-          label="نام" />
+        <BaseTheInput placeholder="رجب" v-model="verifyData.firstName"
+          name="firstName" label="نام" />
       </div>
       <div class="flex items-center mt-2">
-        <BaseTheInput placeholder="طیب اردوغان" v-model="lastName" name="lastName"
-          label="نام خانوادگی" />
+        <BaseTheInput placeholder="طیب اردوغان" v-model="verifyData.lastName"
+          name="lastName" label="نام خانوادگی" />
       </div>
-      <BaseTheCheckbox v-model="gender" type="radio" label="جنسیت"
+      <BaseTheCheckbox v-model="verifyData.gender" type="radio" label="جنسیت"
         :items="genderItems" class="mt-2" />
       <Transition name="fade" mode="out-in">
-        <div class="flex flex-col items-center" v-if="countdownHandler">
-          <label class="form-label pt-2">کد 5 رقمی یکبار مصرف</label>
-          <BaseTheOTP :key="key"
-            @otpInputValue="(value, index) => otpDigitSubmit(value, index)" />
-        </div>
+        <BaseTheOTP :count="6" :key="key" v-if="countdownHandler" @otpInputValue="(value, index) => {
+          otpDigitSubmit(value, index), validate();
+        }
+          " />
       </Transition>
       <Transition name="fade" mode="out-in">
         <BaseTheCountdown v-if="countdownHandler"
@@ -32,25 +32,39 @@
 </template>
 
 <script setup lang="ts">
-// import * as yup from "yup";
+import * as yup from "yup";
 import { useNotify } from "~~/store/notify";
-import { getNextMinutes } from "~~/utils/countdown.client";
+import { getNextMinutes } from "~~/utils/countdown";
 import { Gender } from "~~/models/auth/verify";
+import { userVerify } from "~~/services/auth/userVerify";
+import { useAuth } from "~~/store/userAuth";
 
 definePageMeta({
   layout: "auth",
 });
+
+const verifyData = reactive({
+  gender: Gender.مرد,
+  firstName: "",
+  lastName: "",
+  opt: <any>[],
+});
+const verifySchema = yup.object().shape({
+  firstName: yup.string().required().label("نام"),
+  lastName: yup.string().required().label("نام خانوادگی"),
+});
+
+const auth = useAuth();
+console.log(
+      auth.loginResult?.verification.hash,
+      auth.loginResult?.verification.code
+    );
 const notify = useNotify();
 const key = ref(0);
 const genderItems = ref([
-  { id: Gender.مرد, title: "آقا", value: Gender.مرد },
-  { id: Gender.زن, title: "خانم", value: Gender.زن }
+  { id: 0, title: "آقا", value: Gender.مرد },
+  { id: 1, title: "خانم", value: Gender.زن },
 ]);
-const gender = ref(null);
-const firstName = ref("");
-1;
-const lastName = ref("");
-const opt: Ref = ref([]);
 const date = ref(
   new Date().toLocaleDateString().slice(0, 10).toString() +
   " " +
@@ -58,19 +72,33 @@ const date = ref(
 );
 const countdownHandler = ref(true);
 
-const otpDigitSubmit = (value: number, index: number) => {
+const otpDigitSubmit = async (value: number, index: number) => {
   let currentIndex = index - 1;
-  value ? (opt.value[currentIndex] = value) : opt.value.splice(currentIndex, 1);
-  if (opt.value.filter(() => { return true }).length === 5) {
-    notify.notify(`کد ${opt.value.join("")} وارد شده صحیح نمی باشد.`, "error");
-    opt.value = [];
+  value
+    ? (verifyData.opt[currentIndex] = value)
+    : verifyData.opt.splice(currentIndex, 1);
+  if (
+    verifyData.opt.filter(() => {
+      return true;
+    }).length === 6
+  ) {
+    // notify.notify(`کد ${verifyData.opt.join("")} وارد شده صحیح نمی باشد.`, "error");
+    const res = await userVerify({
+      first_name: verifyData.firstName,
+      last_name: verifyData.lastName,
+      gender: verifyData.gender,
+      code: verifyData.opt.join(""),
+      hash: auth.loginResult?.verification.hash ?? "",
+    });
+    console.log(res);
+    verifyData.opt = [];
     key.value++;
   }
 };
 const resendCode = () => {
   countdownHandler.value = true;
   notify.notify("کد 5 رقمی، به شماره موبایل 093123123 ارسال شد.", "info");
-  opt.value = [];
+  verifyData.opt = [];
   date.value =
     new Date().toLocaleDateString().slice(0, 10).toString() +
     " " +

@@ -11,7 +11,6 @@
 </template>
   
 <script setup>
-import { useField } from "vee-validate";
 const props = defineProps({
   label: {
     default: "نام",

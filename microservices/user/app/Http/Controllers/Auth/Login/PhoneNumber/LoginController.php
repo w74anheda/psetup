@@ -11,6 +11,7 @@ use Laravel\Passport\Client as PassportClient;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
@@ -32,13 +33,13 @@ class LoginController extends Controller
                 'ip-address' => request()->ip(),
             ]
         )->post("$this->app_url/oauth/token", [
-                'grant_type'    => 'password',
-                'client_id'     => $passportClient->id,
-                'client_secret' => $passportClient->secret,
-                'username'      => $phone,
-                'password'      => $code,
-                'scope'         => '*'
-            ]);
+                    'grant_type'    => 'password',
+                    'client_id'     => $passportClient->id,
+                    'client_secret' => $passportClient->secret,
+                    'username'      => $phone,
+                    'password'      => $code,
+                    'scope'         => '*'
+                ]);
         return $response->json();
     }
 
@@ -59,6 +60,7 @@ class LoginController extends Controller
                 'verification' => [
                     'hash'      => $verification->hash,
                     'code'      => $verification->code,
+                    'is_new'    => $user->isNew(),
                     'expire_at' => $verification->expire_at,
                 ],
             ],
@@ -70,13 +72,16 @@ class LoginController extends Controller
     {
         try
         {
+            DB::transaction();
             $user   = $request->user;
             $tokens = $this->getAccessAndRefreshToken($user->phone, $request->code);
             $this->activateHandler($request, $user);
             $user->clearVerificationCode($request->hash);
+            DB::commit();
         }
         catch (Exception $err)
         {
+            DB::rollBack();
             return response(
                 [ 'message' => 'Bad Request!' ],
                 Response::HTTP_BAD_REQUEST
@@ -95,7 +100,7 @@ class LoginController extends Controller
         $user->last_name    = $request->last_name;
         $user->gender       = $request->gender;
         $user->is_active    = true;
-        $user->is_active    = true;
+        $user->is_new       = true;
         $user->activated_at = now();
         $user->save();
     }

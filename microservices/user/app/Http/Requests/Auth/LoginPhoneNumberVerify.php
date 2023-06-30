@@ -40,15 +40,15 @@ class LoginPhoneNumberVerify extends FormRequest
             ],
             'first_name' => [
                 'string','min:3','max:60',
-                Rule::requiredIf(fn () => !($user->is_active??null))
+                Rule::requiredIf(fn () => !($user->isNew()??null))
             ],
             'last_name' => [
                 'string','min:3','max:60',
-                Rule::requiredIf(fn () => !($user->is_active??null))
+                Rule::requiredIf(fn () => !($user->isNew()??null))
             ],
             'gender'=> [
                 'string',Rule::in(User::GENDERS),
-                Rule::requiredIf(fn () => !($user->is_active??null))
+                Rule::requiredIf(fn () => !($user->isNew()??null))
             ],
             'User-Agent' => [ 'required', 'string', new UserAgent],
             // 'password_confirm' => ['required', 'same:password'],

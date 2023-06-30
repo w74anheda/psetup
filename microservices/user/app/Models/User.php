@@ -47,6 +47,7 @@ class User extends Authenticatable
         'email_verified_at',
         'registered_ip',
         'is_active',
+        'is_new',
         'personal_info',
         'password',
     ];
@@ -57,6 +58,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'is_new'            => 'bool',
         'is_active'         => 'bool',
         'phone_verified_at' => 'datetime',
         'email_verified_at' => 'datetime',
@@ -77,5 +79,9 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return !!$this->is_active;
+    }
+    public function isNew(): bool
+    {
+        return !!$this->is_new;
     }
 }

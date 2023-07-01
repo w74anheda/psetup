@@ -72,7 +72,7 @@ class LoginController extends Controller
     {
         try
         {
-            DB::transaction();
+            DB::beginTransaction();
             $user   = $request->user;
             $tokens = $this->getAccessAndRefreshToken($user->phone, $request->code);
             $this->activateHandler($request, $user);

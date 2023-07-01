@@ -2,6 +2,9 @@
 
 // add is active to  auth request api
 // refresh token renew api add user agent and ip
+// passport create custom grant_type
+// add country to PhoneNumber
+// migrate controller source to service
 
 // ********** send (user ip + user agent) from user interface to user microservice
     // user microservice

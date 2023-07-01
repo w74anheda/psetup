@@ -1,5 +1,5 @@
 <template>
-    <Form @submit="userLogin" :validation-schema="loginFormSchema"
+    <Form @submit="submitLogin" :validation-schema="loginFormSchema"
         v-slot="{ meta }">
         <div class="md:px-10 px-4 py-5">
             <BaseTheSeparator title="ورود با موبایل" separatorColor="bg-primary"
@@ -19,20 +19,32 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
+import { useNotify } from "~~/store/notify";
+import { useAuth } from "~~/store/userAuth";
+import { userLogin } from "~~/services/auth/userLogin";
 
 definePageMeta({
     layout: "auth",
 });
 
-const router = useRouter();
+const auth = useAuth();
+const notify = useNotify();
 const phone = ref("");
+const router = useRouter();
 
 const loginFormSchema = yup.object().shape({
-    phone: yup.string().required().min(11).max(11),
+    //@ts-ignore
+    phone: yup.string().phone(),
 });
 
-const userLogin = () => {
-    console.log(phone.value);
-    router.push("/auth/verify");
+const submitLogin = async () => {
+    const res = await userLogin(phone.value);
+    if (res.status === 200) {
+        auth.loginResult = res.verification;
+        notify.notify("دوست عزیز، خوش آمدید.", "success");
+        router.push({ path: '/auth/verify', query: { phone: phone.value } })
+    } else {
+        notify.notify(res.message, "error");
+    }
 };
 </script>

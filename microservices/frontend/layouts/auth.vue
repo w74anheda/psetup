@@ -1,7 +1,8 @@
 <template>
     <div class="w-full h-screen flex items-center justify-center">
         <IconsAuthBg />
-        <div class="w-[300px] lg:w-[450px] sm:w-1/2 rounded-xl shadow-lg bg-white z-10">
+        <div
+            class="w-[300px] lg:w-[450px] sm:w-1/2 rounded-xl shadow-lg bg-white z-10 relative">
             <Transition name="fade" mode="out-in">
                 <NuxtLink to="/auth/login"
                     class="flex justify-end items-center my-2 text-primary"
@@ -14,12 +15,21 @@
             <div class="flex justify-center mt-6">
                 <img class="h-20 w-20 mb-3" src="/images/bmw-logo.png" />
             </div>
-            <h1 class="text-2xl text-center text-darker-gray mb-1 font-IRANSans_Bold">
+            <h1
+                class="text-2xl text-center text-darker-gray mb-1 font-IRANSans_Bold">
                 سلام دوست عزیز!
             </h1>
             <p class="text-center text-xs text-dark-gray">به سایت ما خوش آمدی، بوس
             </p>
             <slot />
+            <Transition name="fade" mode="out-in">
+                <BaseTheLoading v-if="loading.isLoading" />
+            </Transition>
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { useLoading } from '~~/store/base/loading'
+const loading = useLoading();
+</script>

@@ -22,7 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import "vue3-lottie/dist/style.css";
 
 defineProps<{
     type?: "error" | "warning" | "success" | "info";

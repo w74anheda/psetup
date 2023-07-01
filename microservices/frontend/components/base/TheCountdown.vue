@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { calculateCountdown, Countdown, twoDigitsFormat } from "~/utils/countdown.client";
+import { calculateCountdown, Countdown, twoDigitsFormat } from "~/utils/countdown";
 
 const date = ref<Countdown | null>();
 const props = withDefaults(

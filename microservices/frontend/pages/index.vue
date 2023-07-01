@@ -1,7 +1,5 @@
 <template>
-    <NuxtLink to="/auth/login">
-        <BaseTheButton title="ورود" class="btn-primary" />
-    </NuxtLink>
+<div>index</div>
 </template>
   
 <script setup lang="ts">

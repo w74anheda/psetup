@@ -6,7 +6,12 @@ export interface IVerify {
     last_name: string;
 }
 
+export interface IVerifyDTO {
+    access_token: string;
+    refresh_token: string;
+}
+
 export enum Gender {
-    مرد,
-    زن
+    مرد = "male",
+    زن = "female",
 }

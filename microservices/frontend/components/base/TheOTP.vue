@@ -1,9 +1,12 @@
 <template>
-    <div dir="ltr" class="relative flex justify-between w-full mt-2">
-        <input @input="maxLengthNumber" @keyup="(e) => inputHandler(e, n)"
-            v-for="n in count" type="number" maxlength="1"
-            class="form-control text-center lg:w-16 sm:w-12 w-10"
-            :placeholder="placeholder" />
+    <div class="flex flex-col items-center">
+        <label class="form-label pt-2">کد {{ count }} رقمی یکبار مصرف</label>
+        <div dir="ltr" class="relative flex justify-between w-full mt-2">
+            <input @input="maxLengthNumber" @keyup="(e) => inputHandler(e, n)"
+                v-for="n in count" type="number" maxlength="1"
+                class="form-control text-center lg:w-14 sm:w-12 w-10"
+                :placeholder="placeholder" />
+        </div>
     </div>
 </template>
 

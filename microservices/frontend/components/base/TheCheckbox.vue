@@ -25,7 +25,7 @@ withDefaults(
         type: 'checkbox' | 'radio';
         items: Array<any>;
         label?: string;
-        modelValue: number | null;
+        modelValue: number | string | null;
     }>(), {
     label: 'لیبل',
 })

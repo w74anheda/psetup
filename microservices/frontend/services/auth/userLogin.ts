@@ -6,6 +6,6 @@ export const userLogin = (phone: string): Promise<ILoginDTO> => {
     method: "POST",
     body: {
       phone,
-    }
+    },
   });
 };

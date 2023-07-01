@@ -1,19 +1,22 @@
 <template>
   <Form v-slot="{ validate }" :validation-schema="verifySchema"
-    class="md:px-10 px-4 py-5">
+    class="md:px-10 px-4 py-5 relative">
+    کد 6 رقمی | {{ auth.loginResult?.code }}
     <BaseTheSeparator title="احراز هویت" separatorColor="bg-primary"
       textColor="text-primary" />
     <div class="w-full mb-2">
-      <div class="flex items-center">
-        <BaseTheInput placeholder="رجب" v-model="verifyData.firstName"
-          name="firstName" label="نام" />
+      <div v-if="auth.loginResult?.is_new">
+        <div class="flex items-center">
+          <BaseTheInput placeholder="رجب" v-model="verifyData.firstName"
+            name="firstName" label="نام" />
+        </div>
+        <div class="flex items-center mt-2">
+          <BaseTheInput placeholder="طیب اردوغان" v-model="verifyData.lastName"
+            name="lastName" label="نام خانوادگی" />
+        </div>
+        <BaseTheCheckbox v-model="verifyData.gender" type="radio" label="جنسیت"
+          :items="genderItems" class="mt-2" />
       </div>
-      <div class="flex items-center mt-2">
-        <BaseTheInput placeholder="طیب اردوغان" v-model="verifyData.lastName"
-          name="lastName" label="نام خانوادگی" />
-      </div>
-      <BaseTheCheckbox v-model="verifyData.gender" type="radio" label="جنسیت"
-        :items="genderItems" class="mt-2" />
       <Transition name="fade" mode="out-in">
         <BaseTheOTP :count="6" :key="key" v-if="countdownHandler" @otpInputValue="(value, index) => {
           otpDigitSubmit(value, index), validate();
@@ -38,6 +41,7 @@ import { getNextMinutes } from "~~/utils/countdown";
 import { Gender } from "~~/models/auth/verify";
 import { userVerify } from "~~/services/auth/userVerify";
 import { useAuth } from "~~/store/userAuth";
+import { userLogin } from "~~/services/auth/userLogin";
 
 definePageMeta({
   layout: "auth",
@@ -54,11 +58,8 @@ const verifySchema = yup.object().shape({
   lastName: yup.string().required().label("نام خانوادگی"),
 });
 
+const router = useRouter();
 const auth = useAuth();
-console.log(
-      auth.loginResult?.verification.hash,
-      auth.loginResult?.verification.code
-    );
 const notify = useNotify();
 const key = ref(0);
 const genderItems = ref([
@@ -72,6 +73,18 @@ const date = ref(
 );
 const countdownHandler = ref(true);
 
+onMounted(async () => {
+  if (!auth.loginResult) {
+    const currentPhone = (router.currentRoute.value.query.phone)
+    const res = await userLogin(currentPhone!.toString());
+    if (res.status === 200) {
+      auth.loginResult = res.verification;
+    } else {
+      router.back();
+    }
+  }
+})
+
 const otpDigitSubmit = async (value: number, index: number) => {
   let currentIndex = index - 1;
   value
@@ -82,15 +95,18 @@ const otpDigitSubmit = async (value: number, index: number) => {
       return true;
     }).length === 6
   ) {
-    // notify.notify(`کد ${verifyData.opt.join("")} وارد شده صحیح نمی باشد.`, "error");
-    const res = await userVerify({
-      first_name: verifyData.firstName,
-      last_name: verifyData.lastName,
-      gender: verifyData.gender,
-      code: verifyData.opt.join(""),
-      hash: auth.loginResult?.verification.hash ?? "",
-    });
-    console.log(res);
+    if (verifyData.opt.join("") === auth.loginResult?.code) {
+      const res = await userVerify({
+        first_name: verifyData.firstName,
+        last_name: verifyData.lastName,
+        gender: verifyData.gender,
+        code: verifyData.opt.join(""),
+        hash: auth.loginResult?.hash ?? "",
+      });
+      console.log(res);
+    } else {
+      notify.notify(`کد ${verifyData.opt.join("")} وارد شده صحیح نمی باشد.`, "error");
+    }
     verifyData.opt = [];
     key.value++;
   }

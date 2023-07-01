@@ -1,11 +1,13 @@
 export interface ILoginDTO {
-    message: string;
-    verification: Verification;
-    errors: [];
-  }
-  
-  export interface Verification {
-    hash: string;
-    code: string;
-    expire_at: string;
+  message: string;
+  verification: Verification;
+  errors: [];
+  status: number;
+}
+
+export interface Verification {
+  hash: string;
+  code: string;
+  is_new: boolean;
+  expire_at: string;
 }

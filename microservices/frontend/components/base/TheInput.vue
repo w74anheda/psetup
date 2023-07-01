@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex flex-col w-full">
-    <label class="form-label">{{ label }}</label>
+    <label class="form-label" v-if="label">{{ label }}</label>
     <input :type="type" :name="name" :value="modelValue"
       :class="['form-control', { 'border-danger': errorMessage }]"
       :placeholder="placeholder" @input="handleInputChange" />

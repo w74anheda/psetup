@@ -9,7 +9,7 @@
                 <img src="/images/bmw-logo.png" />
             </div>
             <div class="basis-1/2 lg:block hidden">
-                <BaseTheInput label="" placeholder="دنبال چی میگردی؟" />
+                <BaseTheInput label="" name="search" placeholder="دنبال چی میگردی؟" />
             </div>
             <div class="flex">
                 <BaseTheButton title="سبد خرید"

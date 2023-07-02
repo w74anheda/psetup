@@ -23,4 +23,11 @@ export default defineNuxtConfig({
       "defineStore", // import { defineStore } from 'pinia'
     ],
   },
+  vite: {
+    server: {
+      hmr: {
+        protocol: "ws",
+      }
+    }
+  }
 })

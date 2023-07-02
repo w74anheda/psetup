@@ -38,13 +38,13 @@ const loginFormSchema = yup.object().shape({
 });
 
 const submitLogin = async () => {
-    const res = await userLogin(phone.value);
-    if (res.status === 200) {
+    const res = await auth.userLoginData(phone.value);
+    if (res?.status === 200) {
         auth.loginResult = res.verification;
         notify.notify("دوست عزیز، خوش آمدید.", "success");
         router.push({ path: '/auth/verify', query: { phone: phone.value } })
-    } else {
-        notify.notify(res.message, "error");
+        return;
     }
+    notify.notify(res?.message, "error");
 };
 </script>

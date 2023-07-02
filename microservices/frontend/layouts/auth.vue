@@ -22,9 +22,11 @@
             <p class="text-center text-xs text-dark-gray">به سایت ما خوش آمدی، بوس
             </p>
             <slot />
-            <Transition name="fade" mode="out-in">
-                <BaseTheLoading v-if="loading.isLoading" />
-            </Transition>
+            <ClientOnly>
+                <Transition name="fade" mode="out-in">
+                    <BaseTheLoading v-if="loading.isLoading" />
+                </Transition>
+            </ClientOnly>
         </div>
     </div>
 </template>

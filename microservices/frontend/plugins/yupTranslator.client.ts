@@ -24,7 +24,7 @@ export default defineNuxtPlugin((nuxtApp) => {
                 return phoneNumberValidator(value.toString());
             },
         ).matches(
-            /09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/,
+            /^(?:0|98|\+98|\+980|0098|098|00980)?(9\d{9})$/,
             "شماره موبایل را به شکل صحیح وارد نمایید."
           )
     });

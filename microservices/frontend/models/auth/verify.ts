@@ -9,6 +9,7 @@ export interface IVerify {
 export interface IVerifyDTO {
     access_token: string;
     refresh_token: string;
+    status: number;
 }
 
 export enum Gender {

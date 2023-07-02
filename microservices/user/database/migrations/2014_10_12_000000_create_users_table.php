@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->enum('gender', [ 'male', 'female', 'both' ])->nullable();
             $table->string('phone', 20)->unique();
-            $table->string('is_active')->default(false);
+            $table->string('is_active')->default(true);
             $table->string('registered_ip', 30)->nullable();
             $table->timestamp('last_online_at')->nullable();
 

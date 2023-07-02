@@ -99,8 +99,7 @@ class LoginController extends Controller
         $user->first_name   = $request->first_name;
         $user->last_name    = $request->last_name;
         $user->gender       = $request->gender;
-        $user->is_active    = true;
-        $user->is_new       = true;
+        $user->is_new       = false;
         $user->activated_at = now();
         $user->save();
     }

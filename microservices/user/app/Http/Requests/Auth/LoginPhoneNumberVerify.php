@@ -13,21 +13,39 @@ class LoginPhoneNumberVerify extends FormRequest
 
     protected $stopOnFirstFailure = true;
 
+    public $user;
+
     public function authorize(): bool
     {
-        $this->request->add([
-            'user' => (UserPhoneVerification::where([ 'code' => $this->code, 'hash' => $this->hash ])->first())->user
+        $user = UserPhoneVerification::where(
+            [ 'hash' => $this->hash, 'code' => $this->code ]
+            )->first()->user ;
+
+        $this->validate([
+            'first_name'    => [
+                'string','min:3','max:60',
+                Rule::requiredIf(fn () =>$user->isNew())
+            ],
+            'last_name' => [
+                'string','min:3','max:60',
+                Rule::requiredIf(fn () => $user->isNew())
+            ],
+            'gender'=> [
+                'string',Rule::in(User::GENDERS),
+                Rule::requiredIf(fn () => $user->isNew())
+            ],
         ]);
+
+        $this->user = $user;
         return true;
     }
 
     public function rules(): array
     {
         $code = $this->code;
-        $user = UserPhoneVerification::where(['hash'=>$this->hash,'code'=>$code])->first()->user??null;
         return [
-            'code' => [ 'required', 'digits_between:1,128' ],
-            'hash' => [
+            'code'       => [ 'required', 'digits_between:1,128' ],
+            'hash'       => [
                 'required',
                 'uuid',
                 Rule::exists('user_phone_verifications', 'hash')
@@ -38,20 +56,8 @@ class LoginPhoneNumberVerify extends FormRequest
                         }
                     )
             ],
-            'first_name' => [
-                'string','min:3','max:60',
-                Rule::requiredIf(fn () => !($user->isNew()??null))
-            ],
-            'last_name' => [
-                'string','min:3','max:60',
-                Rule::requiredIf(fn () => !($user->isNew()??null))
-            ],
-            'gender'=> [
-                'string',Rule::in(User::GENDERS),
-                Rule::requiredIf(fn () => !($user->isNew()??null))
-            ],
-            'User-Agent' => [ 'required', 'string', new UserAgent],
-            // 'password_confirm' => ['required', 'same:password'],
+
+            'User-Agent' => [ 'required', 'string', new UserAgent ],
         ];
     }
 
@@ -69,6 +75,8 @@ class LoginPhoneNumberVerify extends FormRequest
         {
             $this->failedAuthorization();
         }
+
+        $this->request->add(['user'=>$this->user]);
     }
 
     public function validationData()

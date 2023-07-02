@@ -24,7 +24,6 @@ class LoginController extends Controller
 
     private function getAccessAndRefreshToken(string $phone, string $code)
     {
-
         $passportClient = PassportClient::where('password_client', 1)->first();
 
         $response = Http::withHeaders(
@@ -32,14 +31,15 @@ class LoginController extends Controller
                 'User-Agent' => request()->header('User-Agent'),
                 'ip-address' => request()->ip(),
             ]
-        )->post("$this->app_url/oauth/token", [
-                    'grant_type'    => 'password',
-                    'client_id'     => $passportClient->id,
-                    'client_secret' => $passportClient->secret,
-                    'username'      => $phone,
-                    'password'      => $code,
-                    'scope'         => '*'
-                ]);
+        )
+            ->post("$this->app_url/oauth/token", [
+                'grant_type'    => 'password',
+                'client_id'     => $passportClient->id,
+                'client_secret' => $passportClient->secret,
+                'username'      => $phone,
+                'password'      => $code,
+                'scope'         => '*'
+            ]);
         return $response->json();
     }
 
@@ -73,7 +73,7 @@ class LoginController extends Controller
         try
         {
             DB::beginTransaction();
-            $user   = $request->user;
+            $user = $request->user;
             $tokens = $this->getAccessAndRefreshToken($user->phone, $request->code);
             $this->activateHandler($request, $user);
             $user->clearVerificationCode($request->hash);

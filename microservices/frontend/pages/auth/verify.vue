@@ -44,17 +44,13 @@
         meta.valid && otpCheck === 5 ? 'btn-primary' : 'btn-disabled',
       ]" />
     <BaseTheButton v-else @click.prevent="submitVerify" title="تایید" block
-      :class="[
-        'mt-3',
-        otpCheck === 5 ? 'btn-primary' : 'btn-disabled',
-      ]" />
+      :class="['mt-3', otpCheck === 5 ? 'btn-primary' : 'btn-disabled']" />
   </Form>
 </template>
 
 <script setup lang="ts">
 import * as yup from "yup";
 import { useNotify } from "~~/store/notify";
-import { getNextMinutes } from "~~/utils/countdown";
 import { Gender } from "~~/models/auth/verify";
 import { userVerify } from "~~/services/auth/userVerify";
 import { useAuth } from "~~/store/userAuth";
@@ -62,7 +58,7 @@ import { useAuth } from "~~/store/userAuth";
 definePageMeta({
   layout: "auth",
 });
-
+const router = useRouter();
 const verifyData = reactive({
   gender: Gender.مرد,
   firstName: "",
@@ -80,16 +76,21 @@ const genderItems = ref([
   { id: 0, title: "آقا", value: Gender.مرد },
   { id: 1, title: "خانم", value: Gender.زن },
 ]);
-const date = ref(
-  new Date().toLocaleDateString().slice(0, 10).toString() +
-  " " +
-  getNextMinutes(2)
-);
+const date = ref(auth.loginResult?.expire_at);
 const countDownHandler = ref(true);
+const currentRoute = router.currentRoute.value.query.phone;
 
 onMounted(async () => {
+  if (currentRoute !== auth.phoneNumber || !auth.phoneNumber) {
+    notify.notify("لطفا شماره موبایل خود را وارد نمایید.", "info");
+    router.push("/auth/login");
+    return;
+  }
   if (!auth.loginResult) {
-    await auth.refreshUserLoginData();
+    const res = await auth.getUserLoginData(currentRoute!.toString());
+    if (res?.status === 200) {
+      auth.loginResult = res.verification;
+    }
   }
 });
 
@@ -99,7 +100,6 @@ const checkOtp = (value: number, index: number) => {
     return true;
   }).length;
 };
-
 const submitVerify = async () => {
   if (otpCheck.value === 5) {
     const res = await userVerify({
@@ -114,23 +114,26 @@ const submitVerify = async () => {
       verifyData.opt.join("") === auth.loginResult?.code
     ) {
       notify.notify("خوش آمدید.", "success");
-      auth.verifyResult = res;
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          token: res.access_token,
+          refresh_token: res.refresh_token,
+        })
+      );
+      router.push("/");
       return;
     }
     notify.notify("کد وارد شده، صحیح نمی باشد.", "error");
   }
 };
 const resendCode = async () => {
-  const res = await auth.refreshUserLoginData();
+  const res = await auth.getUserLoginData(currentRoute!.toString());
   if (res?.status === 200) {
-    notify.notify("کد 5 رقمی، به شماره موبایل 093123123 ارسال شد.", "info");
     countDownHandler.value = true;
-    date.value =
-      new Date().toLocaleDateString().slice(0, 10).toString() +
-      " " +
-      getNextMinutes(2);
+    date.value = res.verification.expire_at;
     return;
   }
-  notify.notify(res?.message, "error");
+  notify.notify("کد ارسال نشد.", "error");
 };
 </script>

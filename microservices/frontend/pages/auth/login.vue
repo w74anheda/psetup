@@ -26,6 +26,10 @@ definePageMeta({
     layout: "auth",
 });
 
+onMounted(() => {
+    auth.phoneNumber = null;
+})
+
 const auth = useAuth();
 const notify = useNotify();
 const phone = ref("");
@@ -37,11 +41,12 @@ const loginFormSchema = yup.object().shape({
 });
 
 const submitLogin = async () => {
-    const res = await auth.userLoginData(phone.value);
+    const res = await auth.getUserLoginData(phone.value);
     if (res?.status === 200) {
+        auth.phoneNumber = phone.value;
         auth.loginResult = res.verification;
         notify.notify("دوست عزیز، خوش آمدید.", "success");
-        router.push({ path: '/auth/verify', query: { phone: phone.value } })
+        router.push({ path: '/auth/verify', query: { phone: auth.phoneNumber } })
         return;
     }
     notify.notify(res?.message, "error");

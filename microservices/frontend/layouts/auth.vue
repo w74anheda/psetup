@@ -34,4 +34,11 @@
 <script setup lang="ts">
 import { useLoading } from '~~/store/base/loading'
 const loading = useLoading();
+const router = useRouter();
+
+onMounted(() => {
+    window.onpopstate = function () {
+        router.push("/");
+    }
+})
 </script>

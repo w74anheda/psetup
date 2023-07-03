@@ -45,14 +45,29 @@ class LoginController extends Controller
 
     public function request(LoginPhoneNumberRequest $request)
     {
-        $user = User::firstOrCreate(
-            [ 'phone' => $request->phone ],
-            [ 'registered_ip' => $request->ip(), 'is_new' => true ]
-        );
+        try
+        {
+            DB::beginTransaction();
+            $user = User::firstOrCreate(
+                [ 'phone' => $request->phone ],
+                [
+                    'registered_ip' => $request->ip(),
+                    'is_new'        => true
+                ]
+            );
 
-        $verification = $user->generateVerificationCode();
-
-        PhoneNumberRequestEvent::dispatch($user);
+            $verification = $user->generateVerificationCode();
+            PhoneNumberRequestEvent::dispatch($user);
+            DB::commit();
+        }
+        catch (Exception $err)
+        {
+            DB::rollBack();
+            return response(
+                [ 'message' => 'Bad Request!' ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
         return response(
             [

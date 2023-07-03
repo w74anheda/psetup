@@ -60,9 +60,10 @@ class User extends Authenticatable
     protected $casts = [
         'is_new'            => 'bool',
         'is_active'         => 'bool',
+        'activated_at'      => 'datetime',
         'phone_verified_at' => 'datetime',
         'email_verified_at' => 'datetime',
-        'last_login_at'     => 'datetime',
+        'last_online_at'    => 'datetime',
         'password'          => 'hashed',
         'personal_info'     => PersonalInfoCast::class,
     ];

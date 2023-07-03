@@ -47,7 +47,7 @@ class LoginController extends Controller
     {
         $user = User::firstOrCreate(
             [ 'phone' => $request->phone ],
-            [ 'registered_ip' => $request->ip() ]
+            [ 'registered_ip' => $request->ip(), 'is_new' => true ]
         );
 
         $verification = $user->generateVerificationCode();
@@ -73,7 +73,7 @@ class LoginController extends Controller
         try
         {
             DB::beginTransaction();
-            $user = $request->user;
+            $user   = $request->user;
             $tokens = $this->getAccessAndRefreshToken($user->phone, $request->code);
             $this->activateHandler($request, $user);
             $user->clearVerificationCode($request->hash);

@@ -5,7 +5,13 @@ body {
   @apply font-IRANSans_Regular bg-background overflow-hidden text-right text-14;
   direction: rtl;
 }
+.input-error-message {
+  @apply text-error text-xs my-2;
+}
 
+.border-danger {
+  @apply border border-error;
+}
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;

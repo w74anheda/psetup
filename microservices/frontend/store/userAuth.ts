@@ -25,5 +25,5 @@ export const useAuth = defineStore("auth", () => {
         }
         router.back();
     }
-    return { loginResult, userLoginData, refreshUserLoginData };
+    return { loginResult, verifyResult, userLoginData, refreshUserLoginData };
 });

@@ -51,13 +51,3 @@ const handleInputChange = (e) => {
   handleChange(e);
 };
 </script>
-  
-<style scoped>
-.input-error-message {
-  @apply text-error text-xs my-2;
-}
-
-.border-danger {
-  @apply border border-error;
-}
-</style>

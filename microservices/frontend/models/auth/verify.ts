@@ -1,9 +1,9 @@
 export interface IVerify {
     hash: string;
     code: string;
-    gender: Gender;
-    first_name: string;
-    last_name: string;
+    gender?: Gender;
+    first_name?: string;
+    last_name?: string;
 }
 
 export interface IVerifyDTO {

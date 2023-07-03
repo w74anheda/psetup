@@ -21,7 +21,6 @@
 import * as yup from "yup";
 import { useNotify } from "~~/store/notify";
 import { useAuth } from "~~/store/userAuth";
-import { userLogin } from "~~/services/auth/userLogin";
 
 definePageMeta({
     layout: "auth",

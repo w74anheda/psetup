@@ -1,3 +1,4 @@
+import { phoneNumberValidator } from '~~/utils/phoneValidator';
 import { setLocale, addMethod, string } from "yup";
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -7,8 +8,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         },
         string: {
             email: "ایمیل نامعتبر است.",
-            min: "${label} باید حداقل ${min} باشد",
-            max: "${label} باید حداکثر ${max} باشد",
+            min: "${label} باید حداقل ${min} کاراکتر باشد",
+            max: "${label} باید حداکثر ${max} کاراکتر باشد",
         },
         number: {
             min: "${label} باید حداقل ${min} باشد",

@@ -1,9 +1,9 @@
 <template>
-  <Form ref="form" v-slot="{ validate, meta }" :validation-schema="verifySchema"
+  <Form v-slot="{ meta }" :validation-schema="verifySchema"
     class="md:px-10 px-4 py-5 relative">
-    کد 6 رقمی | {{ auth.loginResult?.code }}
+    کد 5 رقمی | {{ auth.loginResult?.code }}
     <div class="w-full mb-2">
-      <BaseTheSeparator title="احراز هویت" separatorColor="bg-primary"
+      <BaseTheSeparator title="تایید موبایل" separatorColor="bg-primary"
         textColor="text-primary" />
       <div v-if="auth.loginResult?.is_new">
         <div class="flex items-center">
@@ -17,27 +17,37 @@
         <BaseTheCheckbox v-model="verifyData.gender" type="radio" label="جنسیت"
           :items="genderItems" class="mt-2" />
       </div>
-
-      <Transition name="fade" mode="out-in">
-        <div v-if="meta.valid">
-          <Transition name="fade" mode="out-in">
-            <BaseTheOTP :count="6" :key="key" v-if="countdownHandler"
-              @otpInputValue="(value, index) => {
-                otpDigitSubmit(value, index), validate();
-              }
-                " />
-          </Transition>
-          <Transition name="fade" mode="out-in">
-            <BaseTheCountdown v-if="countdownHandler"
-              @countdownFinished="(value) => (countdownHandler = value)"
-              :date="date" />
-            <span v-else @click="resendCode" class="border-bottom-link">کد رو
-              دوباره
-              برام بفرست</span>
-          </Transition>
-        </div>
-      </Transition>
+      <div class="flex flex-col items-center text-center">
+        <label class="form-label pt-2" v-if="countDownHandler">کد تایید به شماره
+          {{ $route.query.phone }} ارسال شد.</label>
+        <label class="form-label pt-2" v-else>کد تایید 5 رقمی</label>
+        <BaseTheOTP :count="5" @otpInputValue="(value, index) => {
+          checkOtp(value, index);
+        }
+          " />
+      </div>
+      <span v-if="!otpCheck" class="input-error-message">لطفا کد را وارد
+        نمایید.</span>
+      <span class="flex gap-1.5 items-center justify-center my-5">
+        <BaseTheCountdown :date="date"
+          @countdownFinished="(value) => (countDownHandler = value)"
+          v-if="countDownHandler" />
+        <span class="text-darker-gray" v-if="countDownHandler">تا دریافت مجدد
+          کد...</span>
+        <span @click="resendCode" class="border-bottom-link" v-else>کد رو دوباره
+          برام بفرست.</span>
+      </span>
     </div>
+    <BaseTheButton v-if="auth.loginResult?.is_new" @click.prevent="submitVerify"
+      type="submit" title="تایید" block :class="[
+        'mt-3',
+        meta.valid && otpCheck === 5 ? 'btn-primary' : 'btn-disabled',
+      ]" />
+    <BaseTheButton v-else @click.prevent="submitVerify" title="تایید" block
+      :class="[
+        'mt-3',
+        otpCheck === 5 ? 'btn-primary' : 'btn-disabled',
+      ]" />
   </Form>
 </template>
 
@@ -60,14 +70,12 @@ const verifyData = reactive({
   opt: <any>[],
 });
 const verifySchema = yup.object().shape({
-  firstName: yup.string().required().label("نام"),
-  lastName: yup.string().required().label("نام خانوادگی"),
+  firstName: yup.string().required().min(3).label("نام"),
+  lastName: yup.string().required().min(3).label("نام خانوادگی"),
 });
-
-const form = ref<any>(null);
+const otpCheck = ref(-1);
 const auth = useAuth();
 const notify = useNotify();
-const key = ref(0);
 const genderItems = ref([
   { id: 0, title: "آقا", value: Gender.مرد },
   { id: 1, title: "خانم", value: Gender.زن },
@@ -77,7 +85,7 @@ const date = ref(
   " " +
   getNextMinutes(2)
 );
-const countdownHandler = ref(true);
+const countDownHandler = ref(true);
 
 onMounted(async () => {
   if (!auth.loginResult) {
@@ -85,46 +93,42 @@ onMounted(async () => {
   }
 });
 
-const otpDigitSubmit = async (value: number, index: number) => {
-  let currentIndex = index - 1;
-  value
-    ? (verifyData.opt[currentIndex] = value)
-    : verifyData.opt.splice(currentIndex, 1);
-  let optLength = verifyData.opt.filter(() => {
+const checkOtp = (value: number, index: number) => {
+  value ? (verifyData.opt[index] = value) : verifyData.opt.splice(index, 1);
+  otpCheck.value = verifyData.opt.filter(() => {
     return true;
   }).length;
+};
 
-  if (optLength === 6 && form.value.getMeta().valid) {
-    if (verifyData.opt.join("") === auth.loginResult?.code) {
-      const res = await userVerify({
-        first_name: verifyData.firstName,
-        last_name: verifyData.lastName,
-        gender: verifyData.gender,
-        code: verifyData.opt.join(""),
-        hash: auth.loginResult!.hash,
-      });
-      console.log(res);
-    } else {
-      notify.notify(
-        `کد ${verifyData.opt.join("")} وارد شده صحیح نمی باشد.`,
-        "error"
-      );
-      verifyData.opt = [];
-      key.value++;
+const submitVerify = async () => {
+  if (otpCheck.value === 5) {
+    const res = await userVerify({
+      first_name: auth.loginResult?.is_new ? verifyData.firstName : undefined,
+      last_name: auth.loginResult?.is_new ? verifyData.lastName : undefined,
+      gender: auth.loginResult?.is_new ? verifyData.gender : undefined,
+      code: verifyData.opt.join(""),
+      hash: auth.loginResult!.hash,
+    });
+    if (
+      res.status === 200 &&
+      verifyData.opt.join("") === auth.loginResult?.code
+    ) {
+      notify.notify("خوش آمدید.", "success");
+      auth.verifyResult = res;
+      return;
     }
+    notify.notify("کد وارد شده، صحیح نمی باشد.", "error");
   }
 };
 const resendCode = async () => {
   const res = await auth.refreshUserLoginData();
   if (res?.status === 200) {
-    countdownHandler.value = true;
     notify.notify("کد 5 رقمی، به شماره موبایل 093123123 ارسال شد.", "info");
-    verifyData.opt = [];
+    countDownHandler.value = true;
     date.value =
       new Date().toLocaleDateString().slice(0, 10).toString() +
       " " +
       getNextMinutes(2);
-    key.value++;
     return;
   }
   notify.notify(res?.message, "error");

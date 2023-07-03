@@ -47,8 +47,6 @@ services:
   app_db:
     image: mysql:8.0
     container_name: ${PROJECT_NAME}_app_db
-    restart: unless-stopped
-    tty: true
     volumes:
       - ${APP_DB_PERSIST_PATH}:/var/lib/mysql
     environment:
@@ -76,8 +74,6 @@ services:
   rabbitmQ:
     image: rabbitmq:management-alpine
     container_name: ${PROJECT_NAME}_rabbitmQ
-    restart: unless-stopped
-    tty: true
     ports:
       - "${RABBITMQ_PORT}:15672" # 5672
     environment:
@@ -104,8 +100,6 @@ services:
   user_microservice_db:
     image: mysql:8.0
     container_name: ${PROJECT_NAME}_user_microservice_db
-    restart: unless-stopped
-    tty: true
     volumes:
       - ${MIC_USER_DB_PERSIST_PATH}:/var/lib/mysql
     environment:

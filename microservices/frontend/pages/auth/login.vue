@@ -28,7 +28,7 @@ definePageMeta({
 
 onMounted(() => {
     auth.phoneNumber = null;
-})
+});
 
 const auth = useAuth();
 const notify = useNotify();
@@ -45,10 +45,9 @@ const submitLogin = async () => {
     if (res?.status === 200) {
         auth.phoneNumber = phone.value;
         auth.loginResult = res.verification;
-        notify.notify("دوست عزیز، خوش آمدید.", "success");
-        router.push({ path: '/auth/verify', query: { phone: auth.phoneNumber } })
+        router.push({ path: "/auth/verify", query: { phone: auth.phoneNumber } });
         return;
     }
-    notify.notify(res?.message, "error");
+    notify.notify("لطفا دوباره تلاش کنید.", "error");
 };
 </script>

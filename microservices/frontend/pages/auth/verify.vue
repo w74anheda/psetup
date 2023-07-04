@@ -58,6 +58,7 @@ import { useAuth } from "~~/store/userAuth";
 definePageMeta({
   layout: "auth",
 });
+
 const router = useRouter();
 const verifyData = reactive({
   gender: Gender.مرد,
@@ -113,15 +114,20 @@ const submitVerify = async () => {
       res.status === 200 &&
       verifyData.opt.join("") === auth.loginResult?.code
     ) {
-      notify.notify("خوش آمدید.", "success");
       localStorage.setItem(
         "auth",
         JSON.stringify({
-          token: res.access_token,
+          access_token: res.access_token,
           refresh_token: res.refresh_token,
+          expires_in: res.expires_in
         })
       );
-      router.push("/");
+      await auth.setCurrentUser();
+      notify.notify(
+        `خوش آمدید ${auth.currentUser?.first_name} عزیز دل.`,
+        "success"
+      );
+      await router.push("/");
       return;
     }
     notify.notify("کد وارد شده، صحیح نمی باشد.", "error");

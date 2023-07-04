@@ -10,6 +10,7 @@ export interface IVerifyDTO {
     access_token: string;
     refresh_token: string;
     status: number;
+    expires_in: number;
 }
 
 export enum Gender {

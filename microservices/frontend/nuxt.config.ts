@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@vee-validate/nuxt",
     "nuxt-icon",
+    "@hypernym/nuxt-anime"
   ],
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },

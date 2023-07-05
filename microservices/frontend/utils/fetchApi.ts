@@ -25,8 +25,7 @@ export const FetchApi = async (url: string, config: FetchOptions = {}) => {
                     loginData!.refresh_token.toString()
                 );
                 if (newAccessToken.status === 200) {
-                    //@ts-ignore
-                    config.headers["Authorization"] = `Bearer ${newAccessToken.access_token}`;
+                    loginData = newAccessToken;
                     localStorage.setItem(
                         "auth",
                         JSON.stringify({

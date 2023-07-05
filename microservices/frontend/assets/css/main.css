@@ -2,9 +2,10 @@
 @import url("./components");
 
 body {
-  @apply font-IRANSans_Regular bg-background overflow-hidden text-right text-14;
+  @apply font-IRANSans_Regular bg-background text-right text-14;
   direction: rtl;
 }
+
 .input-error-message {
   @apply text-error text-xs my-2;
 }
@@ -12,21 +13,23 @@ body {
 .border-danger {
   @apply border border-error;
 }
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
 
-  /* Firefox */
-  input[type="number"] {
-    -moz-appearance: textfield;
-  }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 
 .layout-enter-active,
 .layout-leave-active {
   transition: all 0.4s;
 }
+
 .layout-enter-from,
 .layout-leave-to {
   filter: grayscale(1);
@@ -37,17 +40,20 @@ body {
 .fade-leave-active .page-leave-active {
   transition: all 0.4s;
 }
+
 .page-enter-from,
 .fade-enter-from,
 .fade-leave-to .page-leave-to {
   opacity: 0;
   filter: blur(1rem);
 }
+
 .alert-move,
 .alert-enter-active,
 .alert-leave-active {
   transition: all 0.5s ease;
 }
+
 .alert-enter-from,
 .alert-leave-to {
   opacity: 0;

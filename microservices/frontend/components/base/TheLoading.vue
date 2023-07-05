@@ -1,8 +1,7 @@
 <template>
-        <div class="loading">
-            <Vue3Lottie :width="'50%'"
-                animation-link="/animations/loading-dots.json" />
-        </div>
+    <div class="loading">
+        <Vue3Lottie :width="'50%'" animation-link="/animations/loading-dots.json" />
+    </div>
 </template>
 
 <style scoped>

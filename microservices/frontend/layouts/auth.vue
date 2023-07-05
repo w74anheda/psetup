@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-screen flex items-center justify-center">
+    <div class="w-full h-screen flex items-center justify-center overflow-hidden">
         <IconsAuthBg />
         <div
             class="w-[300px] lg:w-[450px] sm:w-1/2 rounded-xl shadow-lg bg-white z-10 relative">

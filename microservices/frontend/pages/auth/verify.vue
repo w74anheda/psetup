@@ -90,7 +90,7 @@ onMounted(async () => {
   if (!auth.loginResult) {
     const res = await auth.getUserLoginData(currentRoute!.toString());
     if (res?.status === 200) {
-      auth.loginResult = res.verification;
+      auth.loginResult = res.data.verification;
     }
   }
 });
@@ -117,9 +117,9 @@ const submitVerify = async () => {
       localStorage.setItem(
         "auth",
         JSON.stringify({
-          access_token: res.access_token,
-          refresh_token: res.refresh_token,
-          expires_in: res.expires_in
+          access_token: res.data.access_token,
+          refresh_token: res.data.refresh_token,
+          expires_in: res.data.expires_in
         })
       );
       await auth.setCurrentUser();
@@ -137,7 +137,7 @@ const resendCode = async () => {
   const res = await auth.getUserLoginData(currentRoute!.toString());
   if (res?.status === 200) {
     countDownHandler.value = true;
-    date.value = res.verification.expire_at;
+    date.value = res.data.verification.expire_at;
     return;
   }
   notify.notify("کد ارسال نشد.", "error");

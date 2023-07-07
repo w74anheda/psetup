@@ -26,12 +26,12 @@ export const useAuth = defineStore("auth", () => {
         verifyResult.value = loginData;
         const res = await getCurrentUserData();
         if (res.status === 200) {
-            currentUser.value = res;
-            return;
+            currentUser.value = res.data;
+        } else {
+            verifyResult.value = null;
+            localStorage.removeItem("auth");
         }
-        verifyResult.value = null;
-        localStorage.removeItem("auth");
-
     };
     return { loginResult, verifyResult, currentUser, isLogin, phoneNumber, getUserLoginData, setCurrentUser };
 });
+

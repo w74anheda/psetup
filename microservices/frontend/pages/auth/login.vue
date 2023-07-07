@@ -42,9 +42,9 @@ const loginFormSchema = yup.object().shape({
 
 const submitLogin = async () => {
     const res = await auth.getUserLoginData(phone.value);
-    if (res?.status === 200) {
+    if (res?.status) {
         auth.phoneNumber = phone.value;
-        auth.loginResult = res.verification;
+        auth.loginResult = res.data.verification;
         router.push({ path: "/auth/verify", query: { phone: auth.phoneNumber } });
         return;
     }

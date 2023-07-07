@@ -49,7 +49,6 @@ class User extends Authenticatable
         'is_active',
         'is_new',
         'personal_info',
-        'password',
     ];
 
     protected $hidden = [
@@ -60,9 +59,8 @@ class User extends Authenticatable
     protected $casts = [
         'is_new'            => 'bool',
         'is_active'         => 'bool',
-        'activated_at'      => 'datetime',
-        'phone_verified_at' => 'datetime',
         'email_verified_at' => 'datetime',
+        'activated_at'      => 'datetime',
         'last_online_at'    => 'datetime',
         'password'          => 'hashed',
         'personal_info'     => PersonalInfoCast::class,
@@ -85,4 +83,6 @@ class User extends Authenticatable
     {
         return !!$this->is_new;
     }
+
+
 }

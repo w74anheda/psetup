@@ -22,25 +22,16 @@ class UserFactory extends Factory
             'last_name'         => fake()->lastName(),
             'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
             'phone'             => fake()->phoneNumber(),
-            'activated_at'      => today(),
-            'last_online_at'    => today(),
+            'activated_at'      => null,
+            'last_online_at'    => null,
             'email'             => fake()->unique()->safeEmail(),
-            'email_verified_at' => Null,
+            'email_verified_at' => null,
             'is_active'         => false,
             'is_new'            => true,
             'registered_ip'     => fake()->ipv4(),
             'personal_info'     => null,
-            // 'password' => bcrypt('@123'), // password
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'email_verified_at' => null,
-        ]);
-    }
+
 }

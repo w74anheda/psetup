@@ -11,11 +11,10 @@ use Illuminate\Support\Arr;
 trait HasPermission
 {
 
-    public function Permissions()
+    public function permissions()
     {
         switch($this)
         {
-
             case $this instanceof User:
                 return $this->belongsToMany(Permission::class, 'users_permissions');
             case $this instanceof Role:
@@ -31,7 +30,7 @@ trait HasPermission
     public function addPermissions(string...$permissions_name)
     {
         $permissions = $this->getAllPermissions(...$permissions_name);
-        $this->Permissions()->syncWithoutDetaching($permissions);
+        $this->permissions()->syncWithoutDetaching($permissions);
         return $this;
     }
 
@@ -40,7 +39,7 @@ trait HasPermission
 
         $permissions = $this->getAllPermissions(...$permissions_name);
 
-        $this->Permissions()->detach($permissions);
+        $this->permissions()->detach($permissions);
 
         return $this;
     }
@@ -50,7 +49,7 @@ trait HasPermission
 
         $permissions = $this->getAllPermissions(...$permissions_name);
 
-        $this->Permissions()->sync($permissions);
+        $this->permissions()->sync($permissions);
 
         return $this;
     }

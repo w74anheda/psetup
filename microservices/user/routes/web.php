@@ -17,6 +17,6 @@ use Laravel\Passport\Http\Controllers\AccessTokenController;
 
 
 Route::get('/', function () {
-    dd('users microservices');
+    // dd('users microservices');
     return view('welcome');
 });

@@ -111,13 +111,16 @@ class LoginController extends Controller
 
     private function activateHandler(LoginPhoneNumberVerify $request, User $user)
     {
-        if(!$user->isNew()) return;
+        if($user->isNew())
+        {
+            $user->first_name   = $request->first_name;
+            $user->last_name    = $request->last_name;
+            $user->gender       = $request->gender;
+            $user->is_new       = false;
+            $user->activated_at = now();
+            $user->save();
+        }
 
-        $user->first_name   = $request->first_name;
-        $user->last_name    = $request->last_name;
-        $user->gender       = $request->gender;
-        $user->is_new       = false;
-        $user->activated_at = now();
-        $user->save();
+
     }
 }

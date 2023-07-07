@@ -2,7 +2,6 @@ export interface ILoginDTO {
   message: string;
   verification: Verification;
   errors: [];
-  status: number;
 }
 
 export interface Verification {

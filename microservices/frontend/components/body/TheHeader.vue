@@ -3,9 +3,9 @@
         <div class="md:hidden block" @click="useDrawer().handleDrawer(true)">
             <Icon name="ri:menu-fill" size="25" />
         </div>
-        <div class="basis-12">
+        <NuxtLink to="/" class="basis-12">
             <img src="/images/bmw-logo.png" />
-        </div>
+        </NuxtLink>
         <div class="basis-1/2 md:block hidden">
             <BaseTheInput label="" name="search" placeholder="دنبال چی میگردی؟" />
         </div>
@@ -44,6 +44,11 @@
         <div class="">01</div>
         <div class="">01</div>
     </div>
+    <ClientOnly>
+        <Teleport to="body">
+            <BaseTheDrawer />
+        </Teleport>
+    </ClientOnly>
 </template>
 
 <script setup lang="ts">

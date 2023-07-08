@@ -37,8 +37,7 @@ FetchApi.interceptors.response.use(
             );
             if (access_token.status === 200) {
                 useAuth().verifyResult = access_token.data;
-                // axios.defaults.headers.common["Authorization"] = "Bearer " + access_token.data.access_token;
-                console.log(useAuth().verifyResult);
+                axios.defaults.headers.common["Authorization"] = "Bearer " + access_token.data.access_token;
                 return FetchApi(originalRequest);
             }
         }

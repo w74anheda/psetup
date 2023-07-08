@@ -7,11 +7,11 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@vee-validate/nuxt",
     "nuxt-icon",
-    "@hypernym/nuxt-anime"
+    "@hypernym/nuxt-anime",
   ],
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'layout', mode: 'out-in' },
+    pageTransition: { name: "page", mode: "out-in" },
+    layoutTransition: { name: "layout", mode: "out-in" },
   },
   postcss: {
     plugins: {
@@ -28,7 +28,7 @@ export default defineNuxtConfig({
     server: {
       hmr: {
         protocol: "ws",
-      }
-    }
+      },
+    },
   },
-})
+});

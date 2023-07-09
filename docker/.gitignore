@@ -1,4 +1,5 @@
 app/mysql
 microservices/email/mysql
 microservices/user/mysql
+microservices/user/mysql_test
 

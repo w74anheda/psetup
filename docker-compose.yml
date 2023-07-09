@@ -92,6 +92,7 @@ services:
       - ${MIC_USER_PATH}:${MIC_USER_WORKING_DIR}
     depends_on:
       - user_microservice_db
+      - user_microservice_db_test
     networks:
       - user_private
       - user_public
@@ -100,6 +101,7 @@ services:
   user_microservice_db:
     image: mysql:8.0
     container_name: ${PROJECT_NAME}_user_microservice_db
+    restart: always
     volumes:
       - ${MIC_USER_DB_PERSIST_PATH}:/var/lib/mysql
     environment:
@@ -107,6 +109,23 @@ services:
       MYSQL_USER: ${MIC_USER_DB_USER}
       MYSQL_PASSWORD: ${MIC_USER_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: "${MIC_USER_DB_ROOT_PASSWORD}"
+    networks:
+      - user_private
+      - phpmyadmin
+
+  user_microservice_db_test:
+    image: mysql:8.0
+    container_name: ${PROJECT_NAME}_user_microservice_db_test
+    restart: always
+    volumes:
+      - ${MIC_USER_DB_TEST_PERSIST_PATH}:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MIC_USER_DB_TEST_DATABASENAME}
+      MYSQL_USER: ${MIC_USER_DB_USER}
+      MYSQL_PASSWORD: ${MIC_USER_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: "${MIC_USER_DB_ROOT_PASSWORD}"
+    ports:
+      - "9254:3306"
     networks:
       - user_private
       - phpmyadmin

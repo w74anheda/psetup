@@ -93,5 +93,15 @@ class UserService
         $this->user->save();
     }
 
+    public function firstOrCreateUser(string $phone, string $ip)
+    {
+        return User::firstOrCreate(
+            [ 'phone' => $phone ],
+            [
+                'registered_ip' => $ip,
+                'is_new'        => true
+            ]
+        );
+    }
 
 }

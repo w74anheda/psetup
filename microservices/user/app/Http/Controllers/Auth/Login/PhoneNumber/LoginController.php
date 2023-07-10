@@ -17,20 +17,15 @@ class LoginController extends Controller
     private string $app_url;
 
     public function __construct(public UserService $userService)
-    {}
+    {
+    }
 
     public function request(LoginPhoneNumberRequest $request)
     {
         try
         {
             DB::beginTransaction();
-            $user = User::firstOrCreate(
-                [ 'phone' => $request->phone ],
-                [
-                    'registered_ip' => $request->ip(),
-                    'is_new'        => true
-                ]
-            );
+            $user = $this->userService->firstOrCreateUser($request->phone, $request->ip());
             $this->userService->setUser($user);
             $verification = $this->userService->generateVerificationCode();
             PhoneNumberRequestEvent::dispatch($user);

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Casts\PersonalInfoCast;
 use App\Console\Kernel;
 use App\Models\Address;
 use App\Models\Permission;
@@ -20,7 +21,6 @@ use App\Presenters\User\Api as UserApiPresenter;
 
 class UserModelTest extends TestCase
 {
-
     public function createApplication(): Application
     {
         $app = require __DIR__ . '/../../bootstrap/app.php';
@@ -55,6 +55,49 @@ class UserModelTest extends TestCase
         ];
 
         foreach( $attributes as $key ) $this->assertArrayHasKey($key, $user->getAttributes());
+
+        $this->assertSame($user::GENDERS, [ 'male', 'female', 'both' ]);
+        $this->assertSame(
+            $user->getCasts(),
+            [
+                'id' => 'int',
+                'is_new'            => 'bool',
+                'is_active'         => 'bool',
+                'email_verified_at' => 'datetime',
+                'activated_at'      => 'datetime',
+                'last_online_at'    => 'datetime',
+                'password'          => 'hashed',
+                'personal_info'     => PersonalInfoCast::class,
+            ]
+        );
+
+        $this->assertSame(
+            $user->getHidden(),
+            [
+                'registered_ip',
+                'password',
+            ]
+        );
+
+
+        $this->assertSame(
+            $user->getFillable(),
+            [
+                'first_name',
+                'last_name',
+                'gender',
+                'phone',
+                'activated_at',
+                'last_online_at',
+                'email',
+                'email_verified_at',
+                'registered_ip',
+                'is_active',
+                'is_new',
+                'personal_info',
+            ]
+        );
+
         return $user;
     }
 
@@ -86,17 +129,6 @@ class UserModelTest extends TestCase
     /**
      * @depends test_check_user_attributes
      */
-    // public function test_user_check_setLastOnlineAt($user)
-    // {
-    //     $datetime = today()->subHours(10);
-    //     $this->assertTrue(is_null($user->last_online_at));
-    //     $user->setLastOnlineAt($datetime);
-    //     $this->assertTrue($datetime->eq($user->last_online_at));
-    // }
-
-    /**
-     * @depends test_check_user_attributes
-     */
     public function test_user_relations($user)
     {
         $this->assertTrue($user->ips() instanceof HasMany);
@@ -118,17 +150,14 @@ class UserModelTest extends TestCase
     /**
      * @depends test_check_user_attributes
      */
-    public function test_user_revokable($user)
-    {
-        $this->assertTrue(true);
-    }
-
-    /**
-     * @depends test_check_user_attributes
-     */
     public function test_user_has_presenter($user)
     {
         $this->assertTrue($user->present() instanceof UserApiPresenter);
+    }
+
+    public function test_user_service()
+    {
+
     }
 
 

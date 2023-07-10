@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth\Login\PhoneNumber;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginPhoneNumberRequest;
-use App\Models\User;
 use Illuminate\Http\Response;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
@@ -14,31 +13,16 @@ use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
-    private string $app_url;
-
     public function __construct(public UserService $userService)
     {
     }
 
     public function request(LoginPhoneNumberRequest $request)
     {
-        try
-        {
-            DB::beginTransaction();
-            $user = $this->userService->firstOrCreateUser($request->phone, $request->ip());
-            $this->userService->setUser($user);
-            $verification = $this->userService->generateVerificationCode();
-            PhoneNumberRequestEvent::dispatch($user);
-            DB::commit();
-        }
-        catch (Exception $err)
-        {
-            DB::rollBack();
-            return response(
-                [ 'message' => 'Bad Request!' ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
+        $user = $this->userService->firstOrCreateUser($request->phone, $request->ip());
+        $this->userService->setUser($user);
+        $verification = $this->userService->generateVerificationCode();
+        PhoneNumberRequestEvent::dispatch($user);
 
         return response(
             [
@@ -61,7 +45,7 @@ class LoginController extends Controller
         {
             DB::beginTransaction();
             $this->userService->setUser($user);
-            $tokens = $this->userService->getAccessAndRefreshToken($request->code, $request);
+            $tokens = $this->userService->getAccessAndRefreshTokenByPhone($request->hash, $request->code, $request);
             $this->userService->activateHandler($request);
             $this->userService->clearVerificationCode($request->hash);
             DB::commit();
@@ -80,6 +64,5 @@ class LoginController extends Controller
             Response::HTTP_OK
         );
     }
-
 
 }

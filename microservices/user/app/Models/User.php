@@ -12,7 +12,6 @@ use App\Presenters\PresentAble;
 use App\Presenters\User\Api as UserApiPresenter;
 use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
-use App\Services\Passport\CustomFindUserAndValidate as CustomFindUserAndValidateForPassport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -26,7 +25,6 @@ class User extends Authenticatable
         HasPermission,
         HasRoles,
         PresentAble,
-        CustomFindUserAndValidateForPassport,
         HasPhoneVerification,
         HasAddress,
         HasIp;

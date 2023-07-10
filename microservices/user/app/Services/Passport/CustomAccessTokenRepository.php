@@ -3,15 +3,23 @@ namespace App\Services\Passport;
 
 
 use DateTime;
+use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Passport\Bridge\AccessTokenRepository;
 use Laravel\Passport\Events\AccessTokenCreated;
+use Laravel\Passport\TokenRepository;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 
 class CustomAccessTokenRepository extends AccessTokenRepository
 {
+    public function __construct(TokenRepository $tokenRepository, Dispatcher $events)
+    {
+        parent::__construct($tokenRepository, $events);
+
+    }
 
     public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity)
     {
+
         $this->tokenRepository->create([
             'id'         => $accessTokenEntity->getIdentifier(),
             'user_id'    => $accessTokenEntity->getUserIdentifier(),

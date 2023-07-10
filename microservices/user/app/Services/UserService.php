@@ -36,7 +36,27 @@ class UserService
         ]);
     }
 
-    public function getAccessAndRefreshToken(string $code, Request $request = null)
+    public function getAccessAndRefreshTokenByPhone(string $hash, string $code, Request $request = null)
+    {
+        $request        = $request ?? request();
+        $passportClient = PassportClient::first();
+        $response       = Http::withHeaders(
+            [
+                'User-Agent' => $request->header('User-Agent'),
+                'ip-address' => $request->ip(),
+            ]
+        )
+            ->post(env('APP_URL') . "/oauth/token", [
+                'grant_type'    => 'phone',
+                'client_id'     => $passportClient->id,
+                'client_secret' => $passportClient->secret,
+                'phone'         => $this->user->phone,
+                'hash'          => $hash,
+                'code'          => $code,
+            ]);
+        return $response->json();
+    }
+    public function old_getAccessAndRefreshToken(string $code, Request $request = null)
     {
         $request        = $request ?? request();
         $passportClient = PassportClient::where('password_client', 1)->first();

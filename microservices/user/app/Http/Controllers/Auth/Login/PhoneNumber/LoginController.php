@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginPhoneNumberRequest;
 use App\Models\User;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Http;
-use Laravel\Passport\Client as PassportClient;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -17,31 +16,8 @@ class LoginController extends Controller
 {
     private string $app_url;
 
-    public function __construct()
-    {
-        $this->app_url = env('APP_URL');
-    }
-
-    private function getAccessAndRefreshToken(string $phone, string $code)
-    {
-        $passportClient = PassportClient::where('password_client', 1)->first();
-
-        $response = Http::withHeaders(
-            [
-                'User-Agent' => request()->header('User-Agent'),
-                'ip-address' => request()->ip(),
-            ]
-        )
-            ->post("$this->app_url/oauth/token", [
-                'grant_type'    => 'password',
-                'client_id'     => $passportClient->id,
-                'client_secret' => $passportClient->secret,
-                'username'      => $phone,
-                'password'      => $code,
-                'scope'         => '*'
-            ]);
-        return $response->json();
-    }
+    public function __construct(public UserService $userService)
+    {}
 
     public function request(LoginPhoneNumberRequest $request)
     {
@@ -55,8 +31,8 @@ class LoginController extends Controller
                     'is_new'        => true
                 ]
             );
-
-            $verification = $user->generateVerificationCode();
+            $this->userService->setUser($user);
+            $verification = $this->userService->generateVerificationCode();
             PhoneNumberRequestEvent::dispatch($user);
             DB::commit();
         }
@@ -85,13 +61,14 @@ class LoginController extends Controller
 
     public function verify(LoginPhoneNumberVerify $request)
     {
+        $user = $request->user;
         try
         {
             DB::beginTransaction();
-            $user   = $request->user;
-            $tokens = $this->getAccessAndRefreshToken($user->phone, $request->code);
-            $this->activateHandler($request, $user);
-            $user->clearVerificationCode($request->hash);
+            $this->userService->setUser($user);
+            $tokens = $this->userService->getAccessAndRefreshToken($request->code, $request);
+            $this->userService->activateHandler($request);
+            $this->userService->clearVerificationCode($request->hash);
             DB::commit();
         }
         catch (Exception $err)
@@ -109,18 +86,5 @@ class LoginController extends Controller
         );
     }
 
-    private function activateHandler(LoginPhoneNumberVerify $request, User $user)
-    {
-        if($user->isNew())
-        {
-            $user->first_name   = $request->first_name;
-            $user->last_name    = $request->last_name;
-            $user->gender       = $request->gender;
-            $user->is_new       = false;
-            $user->activated_at = now();
-            $user->save();
-        }
 
-
-    }
 }

@@ -46,8 +46,8 @@ class Authenticate extends Middleware
     protected function isValidTokenForThisRequest(Request $request, Token $token)
     {
         return
-            ($request->header('User-Agent') === $token->user_agent) and
-            ($request->ip() === $token->ip_address);
+            ($request->header('User-Agent') === $token->user_agent);
+            //  and ($request->ip() === $token->ip_address)
     }
 
     protected function validateTokenForThisRequest($request, Closure $next, ...$guards)

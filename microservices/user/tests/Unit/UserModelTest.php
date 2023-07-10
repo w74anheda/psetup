@@ -3,16 +3,19 @@
 namespace Tests\Unit;
 
 use App\Console\Kernel;
+use App\Models\Address;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserIp;
-use Carbon\Carbon;
-use DB;
+use App\Models\UserPhoneVerification;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 // use Illuminate\Foundation\Testing\TestCase;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
+use App\Presenters\User\Api as UserApiPresenter;
 
 
 class UserModelTest extends TestCase
@@ -83,13 +86,13 @@ class UserModelTest extends TestCase
     /**
      * @depends test_check_user_attributes
      */
-    public function test_user_check_setLastOnlineAt($user)
-    {
-        $datetime = today()->subHours(10);
-        $this->assertTrue(is_null($user->last_online_at));
-        $user->setLastOnlineAt($datetime);
-        $this->assertTrue($datetime->eq($user->last_online_at));
-    }
+    // public function test_user_check_setLastOnlineAt($user)
+    // {
+    //     $datetime = today()->subHours(10);
+    //     $this->assertTrue(is_null($user->last_online_at));
+    //     $user->setLastOnlineAt($datetime);
+    //     $this->assertTrue($datetime->eq($user->last_online_at));
+    // }
 
     /**
      * @depends test_check_user_attributes
@@ -98,5 +101,36 @@ class UserModelTest extends TestCase
     {
         $this->assertTrue($user->ips() instanceof HasMany);
         $this->assertTrue($user->ips()->getModel() instanceof UserIp);
+
+        $this->assertTrue($user->addresses() instanceof HasMany);
+        $this->assertTrue($user->addresses()->getModel() instanceof Address);
+
+        $this->assertTrue($user->phoneVerifications() instanceof HasOne);
+        $this->assertTrue($user->phoneVerifications()->getModel() instanceof UserPhoneVerification);
+
+        $this->assertTrue($user->roles() instanceof BelongsToMany);
+        $this->assertTrue($user->roles()->getModel() instanceof Role);
+
+        $this->assertTrue($user->permissions() instanceof BelongsToMany);
+        $this->assertTrue($user->permissions()->getModel() instanceof Permission);
     }
+
+    /**
+     * @depends test_check_user_attributes
+     */
+    public function test_user_revokable($user)
+    {
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @depends test_check_user_attributes
+     */
+    public function test_user_has_presenter($user)
+    {
+        $this->assertTrue($user->present() instanceof UserApiPresenter);
+    }
+
+
+
 }

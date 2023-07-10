@@ -13,8 +13,6 @@ use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
 use App\Services\Auth\HasPhoneVerification;
 use App\Services\Passport\CustomFindUserAndValidate as CustomFindUserAndValidateForPassport;
-use App\Services\Passport\RevokeAble;
-use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,7 +28,6 @@ class User extends Authenticatable
         PresentAble,
         CustomFindUserAndValidateForPassport,
         HasPhoneVerification,
-        RevokeAble,
         HasAddress,
         HasIp;
 
@@ -68,13 +65,6 @@ class User extends Authenticatable
 
     const GENDERS = [ 'male', 'female', 'both' ];
 
-    public function setLastOnlineAt(DateTime $dateTime = null)
-    {
-        $dateTime             = $dateTime ?? now();
-        $this->last_online_at = $dateTime;
-        $this->save();
-    }
-
     public function isActive(): bool
     {
         return !!$this->is_active;
@@ -83,6 +73,5 @@ class User extends Authenticatable
     {
         return !!$this->is_new;
     }
-
 
 }

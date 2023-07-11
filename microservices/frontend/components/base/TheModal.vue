@@ -1,6 +1,7 @@
 <template>
     <div @click.self="useModal().modalHandler(false)" class="main-modal">
-        <div class="modal md:w-[420px] w-[300px]">
+        <div class="modal w-[300px]"
+            :class="[large ? 'md:w-[800px]' : 'md:w-[420px]']">
             <div class="flex items-center justify-between pb-5">
                 <h1 class="font-IRANSans_Medium text-16">{{ title }}</h1>
                 <Icon name="ri:close-line" size="30"
@@ -17,8 +18,10 @@ import { useModal } from "~~/store/base/modal"
 
 withDefaults(defineProps<{
     title?: string,
+    large?: boolean
 }>(), {
-    title: 'عنوان'
+    title: 'عنوان',
+    large: false
 })
 </script>
 

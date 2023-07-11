@@ -1,5 +1,5 @@
 <template>
-    <div>صفحه اصلی پروفایل</div>
+    <div>تکمیل حساب کاربری</div>
 </template>
 
 <script setup lang="ts">

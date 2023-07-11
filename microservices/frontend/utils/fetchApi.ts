@@ -13,8 +13,6 @@ FetchApi.interceptors.request.use(
         config.headers = {
             Authorization: `Bearer ${useAuth().verifyResult?.access_token}`,
             Accept: "application/json",
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 RuxitSynthetic/1.0 v4954752706012875637 t7725840419877098505 ath93eb305d altpriv cvcv=2 cexpw=1 smf=0",
         };
         return config;
     },
@@ -32,6 +30,7 @@ FetchApi.interceptors.response.use(
         const originalRequest = error.config;
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
+            localStorage.removeItem("auth");
             const access_token = await refreshToken(
                 useAuth().verifyResult!.refresh_token
             );

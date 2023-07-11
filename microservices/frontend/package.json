@@ -22,6 +22,7 @@
     "@vee-validate/nuxt": "^4.10.0",
     "@vee-validate/yup": "^4.10.0",
     "axios": "^1.4.0",
+    "click-outside-vue3": "^4.0.1",
     "pinia": "^2.1.4",
     "vue3-lottie": "^2.7.3",
     "yup": "^1.2.0"

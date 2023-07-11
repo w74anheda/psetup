@@ -11,50 +11,47 @@
             <Icon @click="useModal().modalHandler(true), selectedModal = item.id"
                 v-else="item.value" name="ri:add-line" size="25" />
         </div>
-        <Teleport to="body">
-            <Transition name="fade">
-                <!-- name modal -->
-                <BaseTheModal
-                    :title="user?.first_name ? 'ویرایش نام' : 'افزودن نام'"
-                    v-if="selectedModal === 0 && modal">
-                    <ModalsProfilePersonalInfoFirstName />
-                </BaseTheModal>
+        <Transition name="fade">
+            <!-- name modal -->
+            <BaseTheModal :title="user?.first_name ? 'ویرایش نام' : 'افزودن نام'"
+                v-if="selectedModal === 0 && modal">
+                <ModalsProfilePersonalInfoFirstName />
+            </BaseTheModal>
 
-                <!-- family modal -->
-                <BaseTheModal
-                    :title="user?.last_name ? 'ویرایش نام خانوادگی' : 'افزودن نام خانوادگی'"
-                    v-else-if="selectedModal === 1 && modal">
-                    <ModalsProfilePersonalInfoLastName />
-                </BaseTheModal>
+            <!-- family modal -->
+            <BaseTheModal
+                :title="user?.last_name ? 'ویرایش نام خانوادگی' : 'افزودن نام خانوادگی'"
+                v-else-if="selectedModal === 1 && modal">
+                <ModalsProfilePersonalInfoLastName />
+            </BaseTheModal>
 
-                <!-- phone modal -->
-                <BaseTheModal
-                    :title="user?.phone ? 'ویرایش شماره موبایل' : 'افزودن شماره موبایل'"
-                    v-else-if="selectedModal === 2 && modal">
-                    <ModalsProfilePersonalInfoPhone />
-                </BaseTheModal>
+            <!-- phone modal -->
+            <BaseTheModal
+                :title="user?.phone ? 'ویرایش شماره موبایل' : 'افزودن شماره موبایل'"
+                v-else-if="selectedModal === 2 && modal">
+                <ModalsProfilePersonalInfoPhone />
+            </BaseTheModal>
 
-                <!-- email modal -->
-                <BaseTheModal :title="user?.email ? 'ویرایش ایمیل' : 'افزودن ایمیل'"
-                    v-else-if="selectedModal === 3 && modal">
-                    <ModalsProfilePersonalInfoEmail/>
-                </BaseTheModal>
+            <!-- email modal -->
+            <BaseTheModal :title="user?.email ? 'ویرایش ایمیل' : 'افزودن ایمیل'"
+                v-else-if="selectedModal === 3 && modal">
+                <ModalsProfilePersonalInfoEmail />
+            </BaseTheModal>
 
-                <!-- nationalID modal -->
-                <BaseTheModal
-                    :title="user?.personal_info.is_completed ? 'ویرایش کد ملی' : 'افزودن کد ملی'"
-                    v-else-if="selectedModal === 4 && modal">
-                    <ModalsProfilePersonalInfoNationalId />
-                </BaseTheModal>
+            <!-- nationalID modal -->
+            <BaseTheModal
+                :title="user?.personal_info.is_completed ? 'ویرایش کد ملی' : 'افزودن کد ملی'"
+                v-else-if="selectedModal === 4 && modal">
+                <ModalsProfilePersonalInfoNationalId />
+            </BaseTheModal>
 
-                <!-- date modal -->
-                <BaseTheModal
-                    :title="user?.personal_info.birth_day ? 'ویرایش تاریخ تولد' : 'افزودن تاریخ تولد'"
-                    v-else-if="selectedModal === 5 && modal">
-                    <ModalsProfilePersonalInfoBirthDay />
-                </BaseTheModal>
-            </Transition>
-        </Teleport>
+            <!-- date modal -->
+            <BaseTheModal
+                :title="user?.personal_info.birth_day ? 'ویرایش تاریخ تولد' : 'افزودن تاریخ تولد'"
+                v-else-if="selectedModal === 5 && modal">
+                <ModalsProfilePersonalInfoBirthDay />
+            </BaseTheModal>
+        </Transition>
     </div>
 </template>
 

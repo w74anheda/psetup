@@ -14,7 +14,8 @@
                         </div>
                     </div>
                     <nuxt-link to="/profile/personal-info">
-                        <Icon name="ri:edit-2-line" size="20" class="text-primary" />
+                        <Icon name="ri:edit-2-line" size="20"
+                            class="text-primary" />
                     </nuxt-link>
                     <ClientOnly>
                         <Transition name="fade" mode="out-in">

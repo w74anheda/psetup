@@ -39,7 +39,7 @@ class UserService
     public function getAccessAndRefreshTokenByPhone(string $hash, string $code, Request $request = null)
     {
         $request        = $request ?? request();
-        $passportClient = PassportClient::first();
+        $passportClient = PassportClient::where('password_client', 1)->first();
         $response       = Http::withHeaders(
             [
                 'User-Agent' => $request->header('User-Agent'),

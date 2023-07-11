@@ -2,17 +2,10 @@
 namespace App\Services\Passport\Grants;
 
 
-use InvalidArgumentException;
-use RuntimeException;
-use Illuminate\Http\Request;
-use App\Exceptions\OtpException;
 use Laravel\Passport\Bridge\User;
-use League\OAuth2\Server\RequestEvent;
-use App\Auth\Grants\OtpVerifierFactory;
 use App\Models\UserPhoneVerification;
 use Psr\Http\Message\ServerRequestInterface;
 use League\OAuth2\Server\Grant\AbstractGrant;
-use League\OAuth2\Server\Entities\UserEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResponseTypes\ResponseTypeInterface;
@@ -20,9 +13,7 @@ use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 
 class PhoneGrant extends AbstractGrant
 {
-    /**
-     * @param RefreshTokenRepositoryInterface $refreshTokenRepository
-     */
+
     public function __construct(
         RefreshTokenRepositoryInterface $refreshTokenRepository
     )

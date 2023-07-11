@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
 use App\Services\UserService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -46,6 +47,7 @@ class LoginController extends Controller
             DB::beginTransaction();
             $this->userService->setUser($user);
             $tokens = $this->userService->getAccessAndRefreshTokenByPhone($request->hash, $request->code, $request);
+            dd($tokens);
             $this->userService->activateHandler($request);
             $this->userService->clearVerificationCode($request->hash);
             DB::commit();

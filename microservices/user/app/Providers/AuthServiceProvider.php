@@ -29,11 +29,15 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Passport::tokensExpireIn(now()->addDays(15));
-        Passport::refreshTokensExpireIn(now()->addDays(30));
-        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+        Passport::tokensExpireIn(now()->addMinutes(1));
+        Passport::refreshTokensExpireIn(now()->addMinutes(25));
         // Passport::useTokenModel(CustomToken::class);
-        $this->app->bind(AccessTokenRepository::class, CustomAccessTokenRepository::class);
+
+
+        $this->app->bind(
+            AccessTokenRepository::class,
+            CustomAccessTokenRepository::class
+        );
 
         app(AuthorizationServer::class)->enableGrantType(
             $this->makePhoneGrant(), Passport::tokensExpireIn()

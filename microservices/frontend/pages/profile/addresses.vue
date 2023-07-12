@@ -12,7 +12,7 @@
         <ProfileAddresses />
         <Transition name="fade">
             <BaseTheModal large title="افزودن آدرس جدید" v-if="modal">
-
+                <BaseTheMap />
             </BaseTheModal>
         </Transition>
     </div>

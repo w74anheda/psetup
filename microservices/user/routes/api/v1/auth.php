@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\Auth\InfoController;
-use App\Http\Controllers\Auth\Login\PhoneNumber\LoginController as PhoneNumberLoginController;
 use App\Http\Controllers\Auth\RenewAccessTokenController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Auth\CompleteProfileController;
+use App\Http\Controllers\Auth\Login\PhoneNumber\RequestLogin;
+use App\Http\Controllers\Auth\Login\PhoneNumber\VerifyLogin;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,8 +15,8 @@ Route::prefix('auth')->group(function ()
     {
         Route::prefix('phonenumber')->group(function ()
         {
-            route::post('request', [ PhoneNumberLoginController::class, 'request' ]);
-            route::post('verify', [ PhoneNumberLoginController::class, 'verify' ]);
+            route::post('request', RequestLogin::class);
+            route::post('verify', VerifyLogin::class);
         });
     });
 
@@ -35,7 +36,3 @@ Route::prefix('auth')->group(function ()
     });
 
 });
-
-
-
-

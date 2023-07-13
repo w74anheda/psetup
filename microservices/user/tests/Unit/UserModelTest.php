@@ -17,7 +17,7 @@ use Illuminate\Foundation\Application;
 // use Illuminate\Foundation\Testing\TestCase;
 use Tests\TestCase;
 use App\Presenters\User\Api as UserApiPresenter;
-
+use Ramsey\Uuid\Lazy\LazyUuidFromString;
 
 class UserModelTest extends TestCase
 {
@@ -60,7 +60,6 @@ class UserModelTest extends TestCase
         $this->assertSame(
             $user->getCasts(),
             [
-                'id' => 'int',
                 'is_new'            => 'bool',
                 'is_active'         => 'bool',
                 'email_verified_at' => 'datetime',
@@ -78,7 +77,6 @@ class UserModelTest extends TestCase
                 'password',
             ]
         );
-
 
         $this->assertSame(
             $user->getFillable(),
@@ -106,6 +104,7 @@ class UserModelTest extends TestCase
      */
     public function test_check_user_factory($user)
     {
+        $this->assertTrue($user->id instanceof LazyUuidFromString);
         $this->assertIsString($user->first_name);
         $this->assertIsString($user->last_name);
         $this->assertContains($user->gender, [ 'male', 'female', 'both' ]);

@@ -1,5 +1,5 @@
-// check access token expiration date
-// renew acccess token not set useragent
+// refactor controllers and user service + test unit + feature
+
 
 
 // auth middleware chain of responsibility
@@ -8,6 +8,8 @@
 // refresh token renew api add user agent and ip
 // passport create custom grant_type
 // add country to PhoneNumber
+
+
 // migrate controller source to service
 
 // ********** send (user ip + user agent) from user interface to user microservice

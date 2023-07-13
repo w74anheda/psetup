@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_ips', function (Blueprint $table)
         {
-            $table->bigInteger('user_id')->unsigned();
+            $table->string('user_id');
             $table->string('ip');
             $table->timestamps();
 

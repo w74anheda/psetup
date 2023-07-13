@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 
 use App\Services\Passport\CustomAccessTokenRepository;
+use App\Services\Passport\CustomToken;
 use App\Services\Passport\Grants\PhoneGrant;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Bridge\AccessTokenRepository;
@@ -29,9 +30,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Passport::tokensExpireIn(now()->addMinutes(1));
-        Passport::refreshTokensExpireIn(now()->addMinutes(25));
-        // Passport::useTokenModel(CustomToken::class);
+        Passport::tokensExpireIn(now()->addDays(15));
+        Passport::refreshTokensExpireIn(now()->addDays(30));
+        Passport::useTokenModel(CustomToken::class);
 
 
         $this->app->bind(

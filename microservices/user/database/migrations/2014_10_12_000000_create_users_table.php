@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table)
         {
-            $table->id();
+            $table->string('id')->primary();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->enum('gender', [ 'male', 'female', 'both' ])->nullable();
-            $table->string('phone', 20)->unique();
-            $table->string('is_active')->default(true);
+            $table->string('phone', 20)->unique()->index();
+            $table->string('is_active')->default(true)->index();
             $table->string('registered_ip', 30)->nullable();
             $table->timestamp('last_online_at')->nullable();
 

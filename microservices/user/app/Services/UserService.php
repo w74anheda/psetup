@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Http\Requests\Auth\LoginPhoneNumberRequest;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
+use App\Http\Requests\Auth\RefreshAccessTokenRequest;
 use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
@@ -10,6 +12,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Laravel\Passport\Client as PassportClient;
+use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
+use DB;
+use Exception;
 
 class UserService
 {
@@ -20,14 +25,14 @@ class UserService
         $this->user = $user;
     }
 
-    public function generateVerificationCode(string $code = null)
+    public static function generateVerificationCode(User $user, string $code = null)
     {
         $code = $code ??
             generate_random_digits_with_specefic_length(
                 app('PHONE_VERIFICATION_CODE_LENGTH')
             );
 
-        return $this->user->phoneVerifications()->create([
+        return $user->phoneVerifications()->create([
             'code'      => $code,
             'expire_at' => now()->addSeconds(
                 app('PHONE_VERIFICATION_CODE_LIFETIME_SECONDS')
@@ -36,7 +41,7 @@ class UserService
         ]);
     }
 
-    public function getAccessAndRefreshTokenByPhone(string $hash, string $code, Request $request = null)
+    public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, Request $request = null)
     {
         $request        = $request ?? request();
         $passportClient = PassportClient::where('password_client', 1)->first();
@@ -50,48 +55,28 @@ class UserService
                 'grant_type'    => 'phone',
                 'client_id'     => $passportClient->id,
                 'client_secret' => $passportClient->secret,
-                'phone'         => $this->user->phone,
+                'phone'         => $user->phone,
                 'hash'          => $hash,
                 'code'          => $code,
             ]);
         return $response->json();
     }
-    public function old_getAccessAndRefreshToken(string $code, Request $request = null)
+
+    public static function clearVerificationCode(User $user, string $hash)
     {
-        $request        = $request ?? request();
-        $passportClient = PassportClient::where('password_client', 1)->first();
-        $response       = Http::withHeaders(
-            [
-                'User-Agent' => $request->header('User-Agent'),
-                'ip-address' => $request->ip(),
-            ]
-        )
-            ->post(env('APP_URL') . "/oauth/token", [
-                'grant_type'    => 'password',
-                'client_id'     => $passportClient->id,
-                'client_secret' => $passportClient->secret,
-                'username'      => $this->user->phone,
-                'password'      => $code,
-                'scope'         => '*'
-            ]);
-        return $response->json();
+        return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
 
-    public function clearVerificationCode(string $hash)
+    public static function activateHandler(User $user, string $firstname, string $lastname, string $gender)
     {
-        return $this->user->phoneVerifications()->where('hash', $hash)->delete();
-    }
-
-    public function activateHandler(LoginPhoneNumberVerify $request)
-    {
-        if($this->user->isNew())
+        if($user->isNew())
         {
-            $this->user->first_name   = $request->first_name;
-            $this->user->last_name    = $request->last_name;
-            $this->user->gender       = $request->gender;
-            $this->user->is_new       = false;
-            $this->user->activated_at = now();
-            $this->user->save();
+            $user->first_name   = $firstname;
+            $user->last_name    = $lastname;
+            $user->gender       = $gender;
+            $user->is_new       = false;
+            $user->activated_at = now();
+            $user->save();
         }
 
     }
@@ -113,7 +98,7 @@ class UserService
         $this->user->save();
     }
 
-    public function firstOrCreateUser(string $phone, string $ip)
+    public static function firstOrCreateUser(string $phone, string $ip)
     {
         return User::firstOrCreate(
             [ 'phone' => $phone ],
@@ -122,6 +107,60 @@ class UserService
                 'is_new'        => true
             ]
         );
+    }
+
+    public static function refreshAccessToken(RefreshAccessTokenRequest $request)
+    {
+        $passportClient = PassportClient::where('password_client', 1)->first();
+
+        $response = Http::withHeaders(
+            [
+                'User-Agent' => $request->header('User-Agent'),
+                'ip-address' => $request->ip(),
+            ]
+        )->post(env('APP_URL') . "/oauth/token", [
+                    'grant_type'    => 'refresh_token',
+                    'refresh_token' => $request->refresh_token,
+                    'client_id'     => $passportClient->id,
+                    'client_secret' => $passportClient->secret,
+                    'scope'         => '',
+                ]);
+        return $response;
+    }
+
+    public static function loginRequest(LoginPhoneNumberRequest $request)
+    {
+        $user         = self::firstOrCreateUser($request->phone, $request->ip());
+        $verification = self::generateVerificationCode($user);
+        PhoneNumberRequestEvent::dispatch($user);
+        return [ $user, $verification ];
+    }
+
+    public static function loginVerify(LoginPhoneNumberVerify $request)
+    {
+        $user = $request->user;
+        $isOK = true;
+        try
+        {
+            DB::beginTransaction();
+            $tokens = self::getAccessAndRefreshTokenByPhone($user, $request->hash, $request->code, $request);
+            self::activateHandler(
+                $user,
+                $request->first_name,
+                $request->last_name,
+                $request->gender,
+            );
+            self::clearVerificationCode($user, $request->hash);
+
+            DB::commit();
+        }
+        catch (Exception $err)
+        {
+            DB::rollBack();
+            $isOK = false;
+        }
+
+        return [ $isOK, $tokens ?? null ];
     }
 
 }

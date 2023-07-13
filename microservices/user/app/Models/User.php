@@ -42,7 +42,6 @@ class User extends Authenticatable
         });
     }
 
-
     protected $presenterHandler = UserApiPresenter::class;
 
     protected $fillable = [

@@ -20,9 +20,10 @@ trait PresentAble
         ) throw new InvalidArgumentException('Presenter Handler Not Found');
 
 
-        if(!$this->presenterHandler instanceof Presenter)
-            $this->presenterHandler = new $this->presenterHandler($this);
+        if(!is_subclass_of($this->presenterHandler, Presenter::class))
+            throw new InvalidArgumentException('Invalid Presenter Handler');
 
+        $this->presenterHandler = new $this->presenterHandler($this);
         return $this->presenterHandler;
     }
 

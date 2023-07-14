@@ -22,16 +22,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Application;
 // use Illuminate\Foundation\Testing\TestCase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Tests\TestCase;
 use App\Presenters\User\Api as UserApiPresenter;
+use App\Services\UserService;
+use Carbon\Carbon;
 use Ramsey\Uuid\Lazy\LazyUuidFromString;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use ReflectionClass;
 
-class UserModelTest extends TestCase
+class UserTest extends TestCase
 {
+    // use RefreshDatabase;
+
     public function createApplication(): Application
     {
         $app = require __DIR__ . '/../../bootstrap/app.php';
@@ -45,6 +49,11 @@ class UserModelTest extends TestCase
     {
         parent::setUp();
         // $this->artisan('migrate:fresh --seed');
+    }
+
+    protected function tearDown(): void
+    {
+
     }
 
     public function test_check_user_attributes()
@@ -191,6 +200,39 @@ class UserModelTest extends TestCase
         $this->assertFalse($user->incrementing);
         $this->assertEquals($user->getKeyType(), 'string');
     }
+
+    public function test_user_service_first_or_create_user_and_activation_handler()
+    {
+        $phone = fake()->phoneNumber();
+        $ip    = fake()->ipv4();
+        $user  = UserService::firstOrCreateUser($phone, $ip);
+
+        $this->assertTrue($user instanceof User);
+        $this->assertTrue($user->phone == $phone);
+        $this->assertTrue($user->registered_ip == $ip);
+        $this->assertTrue($user->isNew());
+
+        $date = Carbon::parse('2023-07-14 10:00:00');
+
+        Carbon::setTestNow($date);
+        UserService::activateHandler(
+            $user,
+            'masoud_test',
+            'nazarporr_test',
+            'male'
+        );
+
+        $this->assertFalse($user->isNew());
+        $this->assertTrue($user->first_name == 'masoud_test');
+        $this->assertTrue($user->last_name == 'nazarporr_test');
+        $this->assertTrue($user->gender == 'male');
+        $this->assertTrue($user->activated_at == $date);
+        Carbon::setTestNow();
+
+    }
+
+
+
 
 
 

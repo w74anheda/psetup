@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuthService;
 use App\Services\Passport\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,16 +17,11 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
-        $fields                    = [ 'id', 'user_agent', 'created_at' ];
-        $currentSession            = $request->token->only($fields);
-        $currentSession['current'] = true;
-        $sessions                  = $request->user()
-            ->tokens()
-            ->AllExcept($currentSession['id'])
-            ->select($fields)
-            ->get()
-            ->map(fn($session) => [ ...$session->toArray(), 'current' => false ])
-            ->prepend($currentSession);
+        $sessions = AuthService::getAllSessionsWithCurrent(
+            $request->token->user,
+            $request->token,
+            [ 'id', 'user_agent', 'created_at' ]
+        );
 
         return Response(
             $sessions,
@@ -35,7 +31,7 @@ class SessionController extends Controller
 
     public function delete(CustomToken $token)
     {
-        $token->revokeAndDelete();
+        AuthService::tokenDestroy($token);
         return Response(
             [ 'message' => 'successfully deleted' ],
             Response::HTTP_ACCEPTED
@@ -44,12 +40,7 @@ class SessionController extends Controller
 
     public function deleteAll(Request $request)
     {
-        $request
-            ->user()
-            ->tokens()
-            ->get()
-            ->each(fn($token) => $token->revokeAndDelete());
-
+        AuthService::tokensDestroy($request->user());
         return Response(
             [ 'message' => 'successfully deleted' ],
             Response::HTTP_ACCEPTED

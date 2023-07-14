@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 class LastOnlineAt
 {
     public function __construct(public UserService $userService)
-    {}
+    {
+    }
 
     /**
      * Handle an incoming request.
@@ -22,8 +23,7 @@ class LastOnlineAt
 
         if($user = $request->user())
         {
-            $this->userService->setUser($user);
-            $this->userService->setLastOnlineAt();
+            UserService::setLastOnlineAt($user);
         }
         return $next($request);
     }

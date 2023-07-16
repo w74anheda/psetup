@@ -8,7 +8,7 @@
                     class="radio-button__input"
                     :id="type === 'radio' ? `radio-${item.id}` : undefined"
                     :name="type === 'radio' ? `radio-group` : undefined"
-                    :checked="item.value === modelValue">
+                    :checked="type === 'radio' ? item.value === modelValue : item.value">
                 <label class="radio-button__label"
                     :for="type === 'radio' ? `radio-${item.id}` : undefined">
                     <span class="radio-button__custom"></span>
@@ -25,7 +25,7 @@ withDefaults(
         type: 'checkbox' | 'radio';
         items: Array<any>;
         label?: string;
-        modelValue: number | string | null;
+        modelValue: number | boolean | string | null;
     }>(), {
     label: 'لیبل',
 })

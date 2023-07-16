@@ -12,18 +12,28 @@
         <ProfileAddresses />
         <Transition name="fade">
             <BaseTheModal large title="افزودن آدرس جدید" v-if="modal">
-                <BaseTheMap />
+                <ModalsAddressesAddAddress />
+                <!-- <div class="flex justify-between items-center mt-3">
+                    <span class="text-12">لطفا محل خود را بر روی نقشه انتخاب
+                        کنید.</span>
+                    <BaseTheButton title="تایید و ادامه" class="btn-primary" />
+                </div> -->
             </BaseTheModal>
         </Transition>
     </div>
 </template>
 
 <script setup lang="ts">
+import { IAddress } from "~~/models/address";
 import { useModal } from "~~/store/base/modal";
-import { useAuth } from "~~/store/userAuth";
+import { useAddress } from "~~/store/addresses";
 
-const user = computed(() => useAuth().currentUser);
 const modal = computed(() => useModal().modal);
+const addresses = ref<IAddress>();
+
+onMounted(async () => {
+    // const res = await useAddress().getUserAddresses();
+})
 
 definePageMeta({
     layout: "profile",

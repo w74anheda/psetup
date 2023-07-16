@@ -1,7 +1,12 @@
 <template>
   <div class="relative flex flex-col w-full">
     <label class="form-label" v-if="label">{{ label }}</label>
-    <input :type="type" :name="name" :value="modelValue"
+
+    <textarea v-if="type === 'textarea'" rows="3" :name="name" :value="modelValue"
+      :class="['form-control', { 'border-danger': errorMessage }]"
+      :placeholder="placeholder" @input="handleInputChange" />
+
+    <input v-else :type="type" :name="name" :value="modelValue"
       :class="['form-control', { 'border-danger': errorMessage }]"
       :placeholder="placeholder" @input="handleInputChange" />
     <slot />

@@ -6,10 +6,13 @@ namespace App\Providers;
 
 use App\Services\Passport\CustomAccessTokenRepository;
 use App\Services\Passport\CustomToken;
+use App\Services\Passport\Grants\PhoneGrant;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Bridge\AccessTokenRepository;
+use Laravel\Passport\Bridge\RefreshTokenRepository;
+
 use Laravel\Passport\Passport;
+use League\OAuth2\Server\AuthorizationServer;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -29,10 +32,25 @@ class AuthServiceProvider extends ServiceProvider
     {
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
-        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
         Passport::useTokenModel(CustomToken::class);
 
-        $this->app->bind(AccessTokenRepository::class, CustomAccessTokenRepository::class);
 
+        $this->app->bind(
+            AccessTokenRepository::class,
+            CustomAccessTokenRepository::class
+        );
+
+        app(AuthorizationServer::class)->enableGrantType(
+            $this->makePhoneGrant(), Passport::tokensExpireIn()
+        );
+    }
+
+    protected function makePhoneGrant()
+    {
+        $grant = new PhoneGrant(
+            $this->app->make(RefreshTokenRepository::class)
+        );
+        $grant->setRefreshTokenTTL(Passport::refreshTokensExpireIn());
+        return $grant;
     }
 }

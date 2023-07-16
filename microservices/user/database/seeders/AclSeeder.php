@@ -25,7 +25,6 @@ class AclSeeder extends Seeder
             'phone' => env('SUPER_ADMIN_PHONE_NUMBER', '09035919877')
         ]);
         $super = Role::create([ 'name' => 'super' ]);
-
         $permissionsTag = collect([
             'role.list',
             'role.create',

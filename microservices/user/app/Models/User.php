@@ -7,17 +7,15 @@ namespace App\Models;
 use App\Casts\PersonalInfoCast;
 use App\Models\Traits\HasAddress;
 use App\Models\Traits\HasIp;
+use App\Models\Traits\HasPhoneVerification;
 use App\Presenters\PresentAble;
 use App\Presenters\User\Api as UserApiPresenter;
 use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
-use App\Services\Auth\HasPhoneVerification;
-use App\Services\Passport\CustomFindUserAndValidate as CustomFindUserAndValidateForPassport;
-use App\Services\Passport\RevokeAble;
-use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -28,11 +26,21 @@ class User extends Authenticatable
         HasPermission,
         HasRoles,
         PresentAble,
-        CustomFindUserAndValidateForPassport,
         HasPhoneVerification,
-        RevokeAble,
         HasAddress,
         HasIp;
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected static function booted()
+    {
+        static::creating(function ($user)
+        {
+            $user->id = Str::uuid();
+        });
+    }
 
     protected $presenterHandler = UserApiPresenter::class;
 
@@ -68,13 +76,6 @@ class User extends Authenticatable
 
     const GENDERS = [ 'male', 'female', 'both' ];
 
-    public function setLastOnlineAt(DateTime $dateTime = null)
-    {
-        $dateTime             = $dateTime ?? now();
-        $this->last_online_at = $dateTime;
-        $this->save();
-    }
-
     public function isActive(): bool
     {
         return !!$this->is_active;
@@ -83,6 +84,5 @@ class User extends Authenticatable
     {
         return !!$this->is_new;
     }
-
 
 }

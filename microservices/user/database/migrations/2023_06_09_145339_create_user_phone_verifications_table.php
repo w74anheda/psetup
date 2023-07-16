@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_phone_verifications', function (Blueprint $table)
         {
-            $table->bigInteger('user_id')->unsigned()->index();
+            $table->string('user_id')->index();
             $table->string('code')->index();
             $table->string('hash')->unique()->index();
             $table->timestamp('expire_at');

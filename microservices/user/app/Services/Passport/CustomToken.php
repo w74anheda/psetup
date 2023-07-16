@@ -19,12 +19,4 @@ class CustomToken extends Token
             ->where('id', '!=', $tokenID);
     }
 
-    public function revokeAndDelete()
-    {
-        $refreshTokenRepository = resolve(RefreshTokenRepository::class);
-        $refreshTokenRepository->revokeRefreshToken($this->id);
-        $this->revoke();
-        $this->delete();
-    }
-
 }

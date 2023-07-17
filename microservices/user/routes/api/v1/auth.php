@@ -15,9 +15,10 @@ Route::prefix('auth')->group(function ()
     {
         Route::prefix('phonenumber')->group(function ()
         {
-            route::post('request', RequestLogin::class);
+            route::post('request', RequestLogin::class)->name('auth.login.phonenumber.request');
             route::post('verify', VerifyLogin::class);
         });
+
     });
 
     route::post('refreshAccessToken', [ RenewAccessTokenController::class, 'refreshAccessToken' ]);

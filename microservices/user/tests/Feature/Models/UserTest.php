@@ -144,18 +144,25 @@ class UserTest extends TestCase
         $this->assertCount($count, $user->ips);
         $this->assertTrue($user->ips()->first() instanceof UserIp);
 
+        $user = $userfactory->has(Address::factory()->count($count), 'addresses')->create();
+        $this->assertCount($count, $user->addresses);
+        $this->assertTrue($user->addresses()->first() instanceof Address);
 
-        // $this->assertTrue($user->addresses() instanceof HasMany);
-        // $this->assertTrue($user->addresses()->getModel() instanceof Address);
+        $user = $userfactory
+            ->has(UserPhoneVerification::factory(), 'phoneVerifications')
+            ->create();
+        $this->assertTrue($user->phoneVerifications instanceof UserPhoneVerification);
 
-        // $this->assertTrue($user->phoneVerifications() instanceof HasOne);
-        // $this->assertTrue($user->phoneVerifications()->getModel() instanceof UserPhoneVerification);
+        $user = $userfactory
+            ->has(Role::factory()->count($count), 'roles')
+            ->create();
+        $this->assertTrue($user->roles()->first() instanceof Role);
 
-        // $this->assertTrue($user->roles() instanceof BelongsToMany);
-        // $this->assertTrue($user->roles()->getModel() instanceof Role);
+        $user = $userfactory
+            ->has(Permission::factory()->count($count), 'permissions')
+            ->create();
+        $this->assertTrue($user->permissions()->first() instanceof Permission);
 
-        // $this->assertTrue($user->permissions() instanceof BelongsToMany);
-        // $this->assertTrue($user->permissions()->getModel() instanceof Permission);
 
     }
 

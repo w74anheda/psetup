@@ -6,26 +6,16 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
 class AclSeeder extends Seeder
 {
+    use RefreshDatabase;
 
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        DB::table('roles')->truncate();
-        DB::table('permissions')->truncate();
-        DB::table('users_roles')->truncate();
-        DB::table('users_permissions')->truncate();
-        DB::table('roles_permissions')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
-
-        $user  = User::firstOrcreate([
-            'phone' => env('SUPER_ADMIN_PHONE_NUMBER', '09035919877')
-        ]);
-        $super = Role::create([ 'name' => 'super' ]);
-        $permissionsTag = collect([
+        $permissions_name = [
             'role.list',
             'role.create',
             'role.delete',
@@ -49,15 +39,17 @@ class AclSeeder extends Seeder
             'city.update',
             'city.delete',
             'city.delete.all',
-        ])
+        ];
+
+        $permissions_mapped = collect($permissions_name)
             ->map(fn($permission) => [ 'name' => $permission ])
             ->toArray();
 
-        Permission::insert($permissionsTag);
-        $permissions = Permission::all()->pluck('name');
+        Permission::factory()->createMany($permissions_mapped);
 
-        $super->addPermissions(...$permissions);
-        $user->addRoles($super->name);
-
+        User::factory()
+            ->has(Role::factory([ 'name' => 'super' ]))
+            ->create([ 'phone' => env('SUPER_ADMIN_PHONE_NUMBER') ]);
+        Role::first()->addPermissions(...$permissions_name);
     }
 }

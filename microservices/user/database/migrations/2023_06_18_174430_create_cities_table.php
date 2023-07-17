@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cities', function (Blueprint $table)
         {
             $table->id();
-            $table->bigInteger('state_id')->unsigned()->index();
+            $table->foreignId('state_id');
             $table->string('name', 60)->unique();
             $table->foreign('state_id')->references('id')->on('states')->onDelete('cascade');
         });

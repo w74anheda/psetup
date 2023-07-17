@@ -3,11 +3,22 @@
 namespace Tests\Feature\Models;
 
 use App\Casts\PersonalInfoCast;
+use App\Models\Address;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
+use App\Models\UserIp;
+use App\Models\UserPhoneVerification;
+use App\Presenters\Presenter;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Ramsey\Uuid\Lazy\LazyUuidFromString;
 use Tests\TestCase;
+use App\Presenters\User\Api as UserApiPresenter;
+use App\Presenters\User\Api2;
 
 class UserTest extends TestCase
 {
@@ -26,8 +37,8 @@ class UserTest extends TestCase
     }
 
     /**
-    * @depends test_insert_data
-    */
+     * @depends test_insert_data
+     */
     public function test_check_user_factory($user)
     {
         $this->assertTrue($user->id instanceof LazyUuidFromString);
@@ -52,8 +63,8 @@ class UserTest extends TestCase
     }
 
     /**
-    * @depends test_insert_data
-    */
+     * @depends test_insert_data
+     */
     public function test_check_attributes($user): void
     {
         $attributes = [
@@ -74,8 +85,8 @@ class UserTest extends TestCase
     }
 
     /**
-    * @depends test_insert_data
-    */
+     * @depends test_insert_data
+     */
     public function test_cast_hidden_fillable($user): void
     {
         $this->assertSame($user::GENDERS, [ 'male', 'female', 'both' ]);
@@ -118,5 +129,51 @@ class UserTest extends TestCase
             ]
         );
 
+    }
+
+    /**
+     * @depends test_insert_data
+     */
+    public function test_relations($user): void
+    {
+        $count       = rand(1, 10);
+        $userfactory = User::factory();
+
+        $user = $userfactory->has(UserIp::factory()->count($count), 'ips')->create();
+
+        $this->assertCount($count, $user->ips);
+        $this->assertTrue($user->ips()->first() instanceof UserIp);
+
+
+        // $this->assertTrue($user->addresses() instanceof HasMany);
+        // $this->assertTrue($user->addresses()->getModel() instanceof Address);
+
+        // $this->assertTrue($user->phoneVerifications() instanceof HasOne);
+        // $this->assertTrue($user->phoneVerifications()->getModel() instanceof UserPhoneVerification);
+
+        // $this->assertTrue($user->roles() instanceof BelongsToMany);
+        // $this->assertTrue($user->roles()->getModel() instanceof Role);
+
+        // $this->assertTrue($user->permissions() instanceof BelongsToMany);
+        // $this->assertTrue($user->permissions()->getModel() instanceof Permission);
+
+    }
+
+    /**
+     * @depends test_insert_data
+     */
+    public function test_has_presenter($user)
+    {
+        $this->assertTrue($user->present() instanceof Presenter);
+        $this->assertTrue($user->present() instanceof UserApiPresenter);
+    }
+
+    /**
+     * @depends test_insert_data
+     */
+    public function test_id_hash_type($user)
+    {
+        $this->assertFalse($user->incrementing);
+        $this->assertEquals($user->getKeyType(), 'string');
     }
 }

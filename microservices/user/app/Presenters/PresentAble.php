@@ -5,26 +5,22 @@ use InvalidArgumentException;
 
 trait PresentAble
 {
+    protected Presenter $presenterHandlerInstance;
+    abstract protected function presenterHandler(): Presenter;
 
     public function setPresenter(string $presenterHandler)
     {
-        $this->presenterHandler = $presenterHandler;
+        $this->presenterHandlerInstance = new $presenterHandler($this);
     }
 
     public function present()
     {
+        if(!isset($this->presenterHandlerInstance))
+        {
+            $this->presenterHandlerInstance = $this->presenterHandler();
+        }
 
-        if(
-            !$this->presenterHandler ||
-            !class_exists($this->presenterHandler)
-        ) throw new InvalidArgumentException('Presenter Handler Not Found');
-
-
-        if(!is_subclass_of($this->presenterHandler, Presenter::class))
-            throw new InvalidArgumentException('Invalid Presenter Handler');
-
-        $this->presenterHandler = new $this->presenterHandler($this);
-        return $this->presenterHandler;
+        return $this->presenterHandlerInstance;
     }
 
 }

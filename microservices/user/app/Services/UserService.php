@@ -35,13 +35,25 @@ class UserService
 
     public static function firstOrCreateUser(string $phone, string $ip): User
     {
-        return User::firstOrCreate(
-            [ 'phone' => $phone ],
-            [
-                'registered_ip' => $ip,
-                'is_new'        => true
-            ]
-        );
+        DB::beginTransaction();
+        try
+        {
+            $user = User::firstOrCreate(
+                [ 'phone' => $phone ],
+                [
+                    'registered_ip' => $ip,
+                    'is_new'        => true
+                ]
+            );
+            DB::commit();
+        }
+        catch (Exception $err)
+        {
+            DB::rollBack();
+            return self::firstOrCreateUser($phone, $ip);
+        }
+
+        return $user;
     }
 
     public static function loginRequest(LoginPhoneNumberRequest $request)

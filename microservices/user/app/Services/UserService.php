@@ -12,18 +12,18 @@ use Exception;
 
 class UserService
 {
-    public static function activation(
+    public static function completePhoneVerification(
         User $user,
         string $firstname,
         string $lastname,
         string $gender
     )
     {
-
         $user->first_name   = $firstname;
         $user->last_name    = $lastname;
         $user->gender       = $gender;
         $user->is_new       = false;
+        $user->is_active    = true;
         $user->activated_at = now();
         $user->save();
     }
@@ -80,10 +80,9 @@ class UserService
                 $request->code,
                 $request
             );
-            dd($tokens);
             if($user->isNew())
             {
-                self::activation(
+                self::completePhoneVerification(
                     $user,
                     $request->first_name,
                     $request->last_name,

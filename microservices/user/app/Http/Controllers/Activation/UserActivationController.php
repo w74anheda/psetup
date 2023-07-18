@@ -14,9 +14,9 @@ class UserActivationController extends Controller
         $this->middleware('can:user.activation')->only('activation');
     }
 
-    public function activation(User $user, UserActivationRequest $request)
+    public function __invoke(User $user, UserActivationRequest $request)
     {
-        $user->update([ 'is_active' => $request->status ]);
+        $user->update([ 'is_active' => $request->status, 'activated_at' => now() ]);
         return response(
             [ 'successfully applied' ],
             Response::HTTP_ACCEPTED

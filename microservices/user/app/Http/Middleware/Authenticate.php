@@ -47,7 +47,7 @@ class Authenticate extends Middleware
     {
         return
             ($request->header('User-Agent') === $token->user_agent);
-            //  and ($request->ip() === $token->ip_address)
+        //  and ($request->ip() === $token->ip_address)
     }
 
     protected function validateTokenForThisRequest($request, Closure $next, ...$guards)
@@ -72,8 +72,9 @@ class Authenticate extends Middleware
 
     protected function storeUserIP(User $user, string $ip): UserIp
     {
-        $ip = $user->ips()->create([
-            'ip' => $ip
+        $ip = UserIp::updateOrCreate([
+            'user_id' => $user->id,
+            'ip'      => $ip,
         ]);
         return $ip;
     }
@@ -83,7 +84,7 @@ class Authenticate extends Middleware
     protected function checkUserWasActivate(User $user)
     {
         if(
-            !$user->isActive() and
+            $user->isNew() and
             $user->phone != env('SUPER_ADMIN_PHONE_NUMBER')
         ) abort(403);
     }

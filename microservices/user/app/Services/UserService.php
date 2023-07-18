@@ -70,6 +70,7 @@ class UserService
     {
         $user = $request->user;
         $isOK = true;
+
         try
         {
             DB::beginTransaction();
@@ -79,7 +80,7 @@ class UserService
                 $request->code,
                 $request
             );
-            // dd($tokens);
+            dd($tokens);
             if($user->isNew())
             {
                 self::activation(
@@ -89,7 +90,6 @@ class UserService
                     $request->gender,
                 );
             }
-
             AuthService::clearVerificationCode($user, $request->hash);
 
             DB::commit();

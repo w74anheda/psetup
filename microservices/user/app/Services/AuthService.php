@@ -67,6 +67,7 @@ class AuthService
                     'hash'          => $hash,
                     'code'          => $code,
                 ]);
+        dd($response->body());
         return $response->json();
     }
 
@@ -91,7 +92,7 @@ class AuthService
                     'client_secret' => $passportClient->secret,
                     'scope'         => '',
                 ]);
-        return $response;
+        return $response->json();
     }
 
     public static function getAllSessionsWithCurrent(User $user, CustomToken $token, array $fields)

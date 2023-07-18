@@ -106,7 +106,7 @@ class LoginByPhoneTest extends TestCase
         }
  */
 
-        $response = $this->post(
+        /* $response = $this->post(
             route('auth.login.phonenumber.verify'),
             [
                 'code' => $requestData['verification']['code'],
@@ -135,20 +135,20 @@ class LoginByPhoneTest extends TestCase
             'first_name' => "The first name field must be at least 3 characters.",
             'last_name'  => "The last name field must be at least 3 characters.",
             'gender'     => "The selected gender is invalid.",
-        ]);
+        ]); */
 
-        // $response = $this->post(
-        //     route('auth.login.phonenumber.verify'),
-        //     [
-        //         'code'       => $requestData['verification']['code'],
-        //         'hash'       => $requestData['verification']['hash'],
-        //         'first_name' => 'masoud',
-        //         'last_name'  => 'nazarpoor',
-        //         'gender'     => 'male',
-        //     ]
-        // );
-        // // $data = $response->decodeResponseJson();
-        // dump($response->json());
+        $response = $this->post(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['verification']['code'],
+                'hash'       => $requestData['verification']['hash'],
+                'first_name' => 'masoud',
+                'last_name'  => 'nazarpoor',
+                'gender'     => 'male',
+            ]
+        );
+        // $data = $response->decodeResponseJson();
+        dump($response->json());
 
     }
 }

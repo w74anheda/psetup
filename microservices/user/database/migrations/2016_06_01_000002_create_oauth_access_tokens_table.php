@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('scopes')->nullable();
             $table->boolean('revoked');
+
+            $table->string('user_agent')->nullable();
+            $table->string('ip_address',20)->nullable();
+
             $table->timestamps();
             $table->dateTime('expires_at')->nullable();
         });

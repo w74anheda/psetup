@@ -67,7 +67,6 @@ class AuthService
                     'hash'          => $hash,
                     'code'          => $code,
                 ]);
-        dd($response->body());
         return $response->json();
     }
 

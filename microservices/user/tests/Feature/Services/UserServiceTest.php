@@ -27,7 +27,7 @@ class UserServiceTest extends TestCase
         $date = Carbon::parse('2023-07-14 10:00:00');
 
         Carbon::setTestNow($date);
-        UserService::activateHandler(
+        UserService::completePhoneVerification(
             $user,
             'masoud_test',
             'nazarporr_test',
@@ -35,6 +35,7 @@ class UserServiceTest extends TestCase
         );
 
         $this->assertFalse($user->isNew());
+        $this->assertTrue($user->is_active);
         $this->assertTrue($user->first_name == 'masoud_test');
         $this->assertTrue($user->last_name == 'nazarporr_test');
         $this->assertTrue($user->gender == 'male');

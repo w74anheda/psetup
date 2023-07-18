@@ -74,7 +74,7 @@ class LoginByPhoneTest extends TestCase
         $requestData = $response->decodeResponseJson()->json();
 
 
-        /* $possibilities = [
+        $possibilities = [
             [
                 'data'       => [],
                 'validation' => [ 'code' => "The code field is required." ],
@@ -104,9 +104,7 @@ class LoginByPhoneTest extends TestCase
             );
             $response->assertSessionHasErrors($possibile['validation']);
         }
- */
-
-        /* $response = $this->post(
+        $response = $this->post(
             route('auth.login.phonenumber.verify'),
             [
                 'code' => $requestData['verification']['code'],
@@ -135,7 +133,7 @@ class LoginByPhoneTest extends TestCase
             'first_name' => "The first name field must be at least 3 characters.",
             'last_name'  => "The last name field must be at least 3 characters.",
             'gender'     => "The selected gender is invalid.",
-        ]); */
+        ]);
 
         $response = $this->post(
             route('auth.login.phonenumber.verify'),

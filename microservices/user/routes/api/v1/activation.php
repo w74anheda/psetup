@@ -7,6 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('user')->middleware('auth:api')->group(function ()
 {
 
-    Route::patch('activation/{user}',[UserActivationController::class,'activation']);
+    Route::patch('activation/{user}',UserActivationController::class);
 
 });

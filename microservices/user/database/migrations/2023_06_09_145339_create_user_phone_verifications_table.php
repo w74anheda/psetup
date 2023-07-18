@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('user_id')->index();
             $table->string('code')->index();
             $table->string('hash')->unique()->index();
-            $table->timestamp('expire_at');
+            $table->dateTime('expire_at');
             $table->primary([ 'code', 'hash' ]);
             $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
         });

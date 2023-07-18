@@ -12,23 +12,20 @@ use Exception;
 
 class UserService
 {
-    public static function activateHandler(
+    public static function activation(
         User $user,
-        string $firstname = null,
-        string $lastname = null,
-        string $gender = null
+        string $firstname,
+        string $lastname,
+        string $gender
     )
     {
-        if($user->isNew())
-        {
-            $user->first_name   = $firstname;
-            $user->last_name    = $lastname;
-            $user->gender       = $gender;
-            $user->is_new       = false;
-            $user->activated_at = now();
-            $user->save();
-        }
 
+        $user->first_name   = $firstname;
+        $user->last_name    = $lastname;
+        $user->gender       = $gender;
+        $user->is_new       = false;
+        $user->activated_at = now();
+        $user->save();
     }
 
     public static function setLastOnlineAt(User $user, DateTime $dateTime = null)
@@ -82,13 +79,17 @@ class UserService
                 $request->code,
                 $request
             );
+            // dd($tokens);
+            if($user->isNew())
+            {
+                self::activation(
+                    $user,
+                    $request->first_name,
+                    $request->last_name,
+                    $request->gender,
+                );
+            }
 
-            self::activateHandler(
-                $user,
-                $request->first_name,
-                $request->last_name,
-                $request->gender,
-            );
             AuthService::clearVerificationCode($user, $request->hash);
 
             DB::commit();

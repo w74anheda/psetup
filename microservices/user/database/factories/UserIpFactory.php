@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\State;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\City>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserIp>
  */
-class CityFactory extends Factory
+class UserIpFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,8 +18,8 @@ class CityFactory extends Factory
     public function definition(): array
     {
         return [
-            'state_id' => State::factory(),
-            'name'     => fake()->unique()->city()
+            'user_id' => User::factory(),
+            'ip'      => fake()->ipv4()
         ];
     }
 }

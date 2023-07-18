@@ -7,8 +7,8 @@ use App\Presenters\Presenter as ModelPresenter;
 class Api2 extends ModelPresenter
 {
 
-    public function customAttribute()
+    public function full_name()
     {
-        return $this->model + 'some text';
+        return "222{$this->model->first_name} {$this->model->last_name}";
     }
 }

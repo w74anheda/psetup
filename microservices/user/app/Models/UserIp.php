@@ -15,7 +15,7 @@ class UserIp extends Model
         'ip'
     ];
 
-    protected static function boot()
+    /* protected static function boot()
     {
         parent::boot();
 
@@ -23,7 +23,7 @@ class UserIp extends Model
         {
             self::where('user_id', $model->user_id)->delete();
         });
-    }
+    } */
 
 
 

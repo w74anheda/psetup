@@ -10,6 +10,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResponseTypes\ResponseTypeInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
+use League\OAuth2\Server\RequestEvent;
 
 class PhoneGrant extends AbstractGrant
 {
@@ -23,14 +24,12 @@ class PhoneGrant extends AbstractGrant
         $this->refreshTokenTTL = new \DateInterval('P1M');
     }
 
-
     public function respondToAccessTokenRequest(
         ServerRequestInterface $request,
         ResponseTypeInterface $responseType,
         \DateInterval $accessTokenTTL
     )
     {
-
         // Validate request
         $client = $this->validateClient($request);
         $scopes = $this->validateScopes($this->getRequestParameter('scope', $request));
@@ -38,10 +37,20 @@ class PhoneGrant extends AbstractGrant
 
 
         // Finalize the requested scopes
-        $scopes = $this->scopeRepository->finalizeScopes($scopes, $this->getIdentifier(), $client, $user->getIdentifier());
+        $scopes = $this->scopeRepository->finalizeScopes(
+            $scopes, $this->getIdentifier(),
+            $client,
+            $user->getIdentifier()
+        );
 
         // Issue and persist new tokens
-        $accessToken  = $this->issueAccessToken($accessTokenTTL, $client, $user->getIdentifier(), $scopes);
+        $accessToken = $this->issueAccessToken(
+            $accessTokenTTL,
+            $client,
+            $user->getIdentifier(),
+            $scopes
+        );
+
         $refreshToken = $this->issueRefreshToken($accessToken);
 
         // Inject tokens into response
@@ -73,7 +82,7 @@ class PhoneGrant extends AbstractGrant
         }
 
         $verificationCode = UserPhoneVerification::where([ 'hash' => $hash, 'code' => $code ])->first();
-        $user = $verificationCode->user;
+        $user             = $verificationCode->user;
         if(is_null($verificationCode) || $user->phone != $phone)
         {
             throw OAuthServerException::invalidCredentials();

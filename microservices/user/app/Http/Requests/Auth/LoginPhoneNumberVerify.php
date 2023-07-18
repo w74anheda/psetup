@@ -10,13 +10,13 @@ use Illuminate\Validation\Rule;
 
 class LoginPhoneNumberVerify extends FormRequest
 {
-
     protected $stopOnFirstFailure = true;
 
     public $user;
 
     public function authorize(): bool
     {
+
         $user = UserPhoneVerification::where(
             [ 'hash' => $this->hash, 'code' => $this->code ]
             )->first()->user ;
@@ -24,15 +24,15 @@ class LoginPhoneNumberVerify extends FormRequest
         $this->validate([
             'first_name'    => [
                 'string','min:3','max:60',
-                Rule::requiredIf(fn () =>$user->isNew())
+                $user->isNew() ? 'required' : 'nullable'
             ],
             'last_name' => [
                 'string','min:3','max:60',
-                Rule::requiredIf(fn () => $user->isNew())
+                $user->isNew() ? 'required' : 'nullable'
             ],
             'gender'=> [
                 'string',Rule::in(User::GENDERS),
-                Rule::requiredIf(fn () => $user->isNew())
+                $user->isNew() ? 'required' : 'nullable'
             ],
         ]);
 
@@ -43,6 +43,7 @@ class LoginPhoneNumberVerify extends FormRequest
     public function rules(): array
     {
         $code = $this->code;
+
         return [
             'code'       => [ 'required', 'digits_between:1,128' ],
             'hash'       => [
@@ -57,7 +58,7 @@ class LoginPhoneNumberVerify extends FormRequest
                     )
             ],
 
-            'User-Agent' => [ 'required', 'string', new UserAgent ],
+            // 'User-Agent' => [ 'required', 'string', new UserAgent ],
         ];
     }
 

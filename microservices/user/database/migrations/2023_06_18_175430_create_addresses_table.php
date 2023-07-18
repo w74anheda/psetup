@@ -15,7 +15,7 @@ return new class extends Migration
         {
             $table->id();
             $table->string('user_id')->index();
-            $table->bigInteger('city_id')->unsigned()->index();
+            $table->foreignId('city_id');
             $table->string('full_address');
             $table->integer('house_number');
             $table->integer('unit_number');

@@ -9,6 +9,7 @@ use App\Models\Traits\HasAddress;
 use App\Models\Traits\HasIp;
 use App\Models\Traits\HasPhoneVerification;
 use App\Presenters\PresentAble;
+use App\Presenters\Presenter;
 use App\Presenters\User\Api as UserApiPresenter;
 use App\Services\Acl\HasPermission;
 use App\Services\Acl\HasRoles;
@@ -42,7 +43,10 @@ class User extends Authenticatable
         });
     }
 
-    protected $presenterHandler = UserApiPresenter::class;
+    protected function presenterHandler(): Presenter
+    {
+        return new UserApiPresenter($this);
+    }
 
     protected $fillable = [
         'first_name',

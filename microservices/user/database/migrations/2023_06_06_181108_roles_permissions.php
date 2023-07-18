@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create( 'roles_permissions', function (Blueprint $table) {
             $table->bigInteger( 'role_id' )->unsigned();
-            $table->bigInteger( 'permission_id' )->unsigned();
+            $table->foreignId( 'permission_id' );
             $table->foreign( 'role_id' )->references( 'id' )->on( 'roles' )->onDelete( 'cascade' );
             $table->foreign( 'permission_id' )->references( 'id' )->on( 'permissions' )->onDelete( 'cascade' );
             $table->primary( [ 'permission_id', 'role_id' ] );

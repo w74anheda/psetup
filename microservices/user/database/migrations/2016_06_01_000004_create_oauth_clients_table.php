@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('oauth_access_tokens', function (Blueprint $table)
-        {
+        Schema::create('oauth_clients', function (Blueprint $table) {
             $table->id();
             $table->string('user_id')->nullable()->index();
-            $table->uuid('client_id');
-            $table->string('name')->nullable();
-            $table->text('scopes')->nullable();
+            $table->string('name');
+            $table->string('secret', 100)->nullable();
+            $table->string('provider')->nullable();
+            $table->text('redirect');
+            $table->boolean('personal_access_client');
+            $table->boolean('password_client');
             $table->boolean('revoked');
-            $table->string('user_agent')->nullable();
-            $table->string('ip_address',20)->nullable();
             $table->timestamps();
-            $table->dateTime('expires_at')->nullable();
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('oauth_access_tokens');
+        Schema::dropIfExists('oauth_clients');
     }
 };

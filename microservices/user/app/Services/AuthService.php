@@ -8,6 +8,7 @@ use App\Models\UserPhoneVerification;
 use App\Services\Passport\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Laravel\Passport\Client as PassportClient;
@@ -48,24 +49,24 @@ class AuthService
             'hash'      => Str::uuid()
         ]);
     }
+
     public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, Request $request = null)
     {
         $request        = $request ?? request();
-        $passportClient = PassportClient::where('password_client', 1)->first();
+        $passportClient = PassportClient::first();
         $response       = Http::withHeaders(
             [
                 'User-Agent' => $request->header('User-Agent'),
                 'ip-address' => $request->ip(),
             ]
-        )
-            ->post(env('APP_URL') . "/oauth/token", [
-                'grant_type'    => 'phone',
-                'client_id'     => $passportClient->id,
-                'client_secret' => $passportClient->secret,
-                'phone'         => $user->phone,
-                'hash'          => $hash,
-                'code'          => $code,
-            ]);
+        )->post(env('APP_URL') . "/oauth/token", [
+                    'grant_type'    => 'phone',
+                    'client_id'     => $passportClient->id,
+                    'client_secret' => $passportClient->secret,
+                    'phone'         => $user->phone,
+                    'hash'          => $hash,
+                    'code'          => $code,
+                ]);
         return $response->json();
     }
 
@@ -73,9 +74,10 @@ class AuthService
     {
         return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
+
     public static function refreshAccessToken(RefreshAccessTokenRequest $request)
     {
-        $passportClient = PassportClient::where('password_client', 1)->first();
+        $passportClient = PassportClient::first();
 
         $response = Http::withHeaders(
             [

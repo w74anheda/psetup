@@ -12,7 +12,12 @@ use Exception;
 
 class UserService
 {
-    public static function activateHandler(User $user, string $firstname, string $lastname, string $gender)
+    public static function activateHandler(
+        User $user,
+        string $firstname = null,
+        string $lastname = null,
+        string $gender = null
+    )
     {
         if($user->isNew())
         {
@@ -71,7 +76,13 @@ class UserService
         try
         {
             DB::beginTransaction();
-            $tokens = AuthService::getAccessAndRefreshTokenByPhone($user, $request->hash, $request->code, $request);
+            $tokens = AuthService::getAccessAndRefreshTokenByPhone(
+                $user,
+                $request->hash,
+                $request->code,
+                $request
+            );
+
             self::activateHandler(
                 $user,
                 $request->first_name,
@@ -84,6 +95,7 @@ class UserService
         }
         catch (Exception $err)
         {
+            dd($err->getMessage());
             DB::rollBack();
             $isOK = false;
         }

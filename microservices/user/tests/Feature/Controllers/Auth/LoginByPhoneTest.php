@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers\Auth;
 
 use App\Models\User;
 use App\Models\UserPhoneVerification;
+use App\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Http;
@@ -12,10 +13,11 @@ use Tests\TestCase;
 
 class LoginByPhoneTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     public function setup(): void
     {
+        $this->withExceptionHandling();
         parent::setUp();
         $this->artisan('passport:install');
     }
@@ -67,6 +69,7 @@ class LoginByPhoneTest extends TestCase
 
     public function test_verify(): void
     {
+
         $response    = $this->post(
             route('auth.login.phonenumber.request'),
             [ 'phone' => env('SUPER_ADMIN_PHONE_NUMBER') ]
@@ -135,7 +138,14 @@ class LoginByPhoneTest extends TestCase
             'gender'     => "The selected gender is invalid.",
         ]);
 
-        $response = $this->post(
+        /* $this->actingAs(
+            UserService::firstOrCreateUser(
+                env('SUPER_ADMIN_PHONE_NUMBER'),
+                fake()->ipv4()
+            )
+        ); */
+
+        $response = $this->postJson(
             route('auth.login.phonenumber.verify'),
             [
                 'code'       => $requestData['verification']['code'],
@@ -143,10 +153,13 @@ class LoginByPhoneTest extends TestCase
                 'first_name' => 'masoud',
                 'last_name'  => 'nazarpoor',
                 'gender'     => 'male',
+            ],
+            [
+                'HTTP_X-Requested-with' => 'XMLHttpRequest'
             ]
         );
         // $data = $response->decodeResponseJson();
-        dump($response->json());
+        dump($response->getContent(), 1);
 
     }
 }

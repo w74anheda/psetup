@@ -34,5 +34,10 @@ class UserFactory extends Factory
         ];
     }
 
+    public function male()
+    {
+        return $this->state(fn(array $attr) => [ 'gender' => 'male' ]);
+    }
+
 
 }

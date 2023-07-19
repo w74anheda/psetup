@@ -9,7 +9,7 @@
                 v-if="item.value" name="ri:edit-2-line" class="text-primary"
                 size="25" />
             <Icon @click="useModal().modalHandler(true), selectedModal = item.id"
-                v-else="item.value" name="ri:add-line" size="25" />
+                v-else name="ri:add-line" size="25" />
         </div>
         <Transition name="fade">
             <!-- name modal -->
@@ -36,20 +36,6 @@
             <BaseTheModal :title="user?.email ? 'ویرایش ایمیل' : 'افزودن ایمیل'"
                 v-else-if="selectedModal === 3 && modal">
                 <ModalsProfilePersonalInfoEmail />
-            </BaseTheModal>
-
-            <!-- nationalID modal -->
-            <BaseTheModal
-                :title="user?.personal_info.is_completed ? 'ویرایش کد ملی' : 'افزودن کد ملی'"
-                v-else-if="selectedModal === 4 && modal">
-                <ModalsProfilePersonalInfoNationalId />
-            </BaseTheModal>
-
-            <!-- date modal -->
-            <BaseTheModal
-                :title="user?.personal_info.birth_day ? 'ویرایش تاریخ تولد' : 'افزودن تاریخ تولد'"
-                v-else-if="selectedModal === 5 && modal">
-                <ModalsProfilePersonalInfoBirthDay />
             </BaseTheModal>
         </Transition>
     </div>

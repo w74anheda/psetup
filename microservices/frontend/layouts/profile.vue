@@ -1,9 +1,9 @@
 <template>
     <div class="container">
         <BodyTheHeader />
-        <main class="grid grid-cols-3 gap-5 my-7">
+        <main class="grid grid-cols-3 gap-5 my-7 relative">
             <div
-                class="md:col-span-1 max-h-76 col-span-full bg-white sticky top-0 border-secondary border rounded-xl pt-3">
+                class="md:col-span-1 h-80 col-span-full bg-white sticky top-0 border-secondary border rounded-xl pt-3">
                 <div class="flex items-center relative justify-between pb-3 px-3">
                     <div class="flex items-center gap-3">
                         <BaseTheAvatar />
@@ -17,11 +17,6 @@
                         <Icon name="ri:edit-2-line" size="20"
                             class="text-primary" />
                     </nuxt-link>
-                    <ClientOnly>
-                        <Transition name="fade" mode="out-in">
-                            <BaseTheLoading v-if="loading" />
-                        </Transition>
-                    </ClientOnly>
                 </div>
                 <ul class="pt-2">
                     <NuxtLink :to="`/profile/${item.link}`"
@@ -39,12 +34,12 @@
             <div
                 class="md:col-span-2 col-span-full relative bg-white border-secondary border rounded-xl px-3">
                 <slot />
-                <ClientOnly>
-                    <Transition name="fade" mode="out-in">
-                        <BaseTheLoading v-if="loading" />
-                    </Transition>
-                </ClientOnly>
             </div>
+            <ClientOnly>
+                <Transition name="fade" mode="out-in">
+                    <BaseTheLoading v-if="loading" />
+                </Transition>
+            </ClientOnly>
         </main>
     </div>
 </template>
@@ -55,7 +50,7 @@ import { useAuth } from "~~/store/userAuth";
 
 const route = useRoute();
 const profileItems = ref([
-    { id: 0, title: "پروفایل", icon: "ic:baseline-person-outline", link: "" },
+    { id: 0, title: "پیشخوان", icon: "ic:baseline-person-outline", link: "" },
     {
         id: 1,
         title: "آدرس ها",

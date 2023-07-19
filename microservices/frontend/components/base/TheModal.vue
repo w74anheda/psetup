@@ -1,6 +1,6 @@
 <template>
     <div @click.self="useModal().modalHandler(false)" class="main-modal">
-        <div class="modal w-[300px]"
+        <div class="modal w-[300px] transition-all duration-1000 ease-in-out"
             :class="[large ? 'md:w-[800px]' : 'md:w-[420px]']">
             <div class="flex items-center justify-between pb-5">
                 <h1 class="font-IRANSans_Medium text-16">{{ title }}</h1>

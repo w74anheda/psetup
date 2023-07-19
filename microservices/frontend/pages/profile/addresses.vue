@@ -2,22 +2,19 @@
     <div
         class="h-full grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-1 py-3">
         <div class="bg-light-blue w-full p-2 cursor-pointer rounded-xl"
-            @click="useModal().modalHandler(true)">
+            @click="useModal().modalHandler(true), selectedModal = 0">
             <div
-                class="flex flex-col gap-2 text-darker-gray justify-center items-center h-full border-dashed border-2 border-secondary rounded-xl">
+                class="flex flex-col gap-2 p-5 text-darker-gray justify-center items-center h-full border-dashed border-2 border-secondary rounded-xl">
                 <Icon name="ic:outline-add-location" size="25" />
                 افزودن آدرس جدید
             </div>
         </div>
         <ProfileAddresses />
         <Transition name="fade">
-            <BaseTheModal large title="افزودن آدرس جدید" v-if="modal">
-                <ModalsAddressesAddAddress />
-                <!-- <div class="flex justify-between items-center mt-3">
-                    <span class="text-12">لطفا محل خود را بر روی نقشه انتخاب
-                        کنید.</span>
-                    <BaseTheButton title="تایید و ادامه" class="btn-primary" />
-                </div> -->
+            <BaseTheModal :large="largeMapModal" title="افزودن آدرس جدید"
+                v-if="modal && selectedModal === 0">
+                <ModalsAddressesAddAddress
+                    @mapModal="value => largeMapModal = value" />
             </BaseTheModal>
         </Transition>
     </div>
@@ -28,11 +25,15 @@ import { IAddress } from "~~/models/address";
 import { useModal } from "~~/store/base/modal";
 import { useAddress } from "~~/store/addresses";
 
+const largeMapModal = ref(false);
+
 const modal = computed(() => useModal().modal);
+const selectedModal = ref(-1);
 const addresses = ref<IAddress>();
 
 onMounted(async () => {
     // const res = await useAddress().getUserAddresses();
+    // console.log(res);
 })
 
 definePageMeta({

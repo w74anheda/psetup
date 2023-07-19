@@ -18,17 +18,14 @@
     "nuxt-icon": "^0.4.1"
   },
   "dependencies": {
+    "@neshan-maps-platform/vue3-openlayers": "^1.0.6",
     "@pinia/nuxt": "^0.4.11",
     "@vee-validate/nuxt": "^4.10.0",
     "@vee-validate/yup": "^4.10.0",
     "axios": "^1.4.0",
     "click-outside-vue3": "^4.0.1",
-    "ol": "^7.4.0",
-    "ol-contextmenu": "^5.2.1",
-    "ol-ext": "^4.0.9",
     "pinia": "^2.1.4",
     "vue3-lottie": "^2.7.3",
-    "vue3-openlayers": "^1.0.0",
     "yup": "^1.2.0"
   },
   "overrides": {

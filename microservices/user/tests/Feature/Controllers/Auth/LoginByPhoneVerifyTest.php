@@ -178,9 +178,13 @@ class LoginByPhoneVerifyTest extends TestCase
 
     public function test_with_valid_data()
     {
+        $date = Carbon::parse('2023-07-14 10:00:00');
+
+        Carbon::setTestNow($date);
+
         [ $user, $requestData ] = $this->request();
 
-        $response = $this->post(
+        $response = $this->postJson(
             route('auth.login.phonenumber.verify'),
             [
                 'code'       => $requestData['code'],
@@ -191,11 +195,14 @@ class LoginByPhoneVerifyTest extends TestCase
             ]
         );
 
-        $response->assertJson([
-            'error'             => "invalid_client",
-            'error_description' => 'Client authentication failed',
-            'message'           => 'Client authentication failed'
+        $response->assertJsonStructure([
+            'token_type',
+            'expires_in',
+            'access_token',
+            'refresh_token',
         ]);
+        $this->assertEquals($response->json()['token_type'], 'Bearer');
+        $this->assertEquals($response->json()['expires_in'], 1296000);
     }
 
     public function test_LoginPhoneNumberVerify_form_request_return_user()

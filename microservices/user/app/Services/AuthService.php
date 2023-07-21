@@ -5,10 +5,10 @@ namespace App\Services;
 use App\Http\Requests\Auth\RefreshAccessTokenRequest;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
+use App\Services\Http\Facade\CustomHttp;
 use App\Services\Passport\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Laravel\Passport\Client as PassportClient;
@@ -54,21 +54,22 @@ class AuthService
     {
         $request        = $request ?? request();
         $passportClient = PassportClient::first();
-        $response       = Http::withHeaders(
+        $response       = CustomHttp::postJson(
+            env('APP_URL') . "/oauth/token",
+            [
+                'grant_type'    => 'phone',
+                'client_id'     => $passportClient->id,
+                'client_secret' => $passportClient->secret,
+                'phone'         => $user->phone,
+                'hash'          => $hash,
+                'code'          => $code,
+                'scope'         => '*',
+            ],
             [
                 'User-Agent' => $request->header('User-Agent'),
                 'ip-address' => $request->ip(),
-                'HTTP_X-Requested-with' => 'XMLHttpRequest'
             ]
-        )->post(env('APP_URL') . "/oauth/token", [
-                    'grant_type'    => 'phone',
-                    'client_id'     => $passportClient->id,
-                    'client_secret' => $passportClient->secret,
-                    'phone'         => $user->phone,
-                    'hash'          => $hash,
-                    'code'          => $code,
-                    'scope'          =>'*',
-                ]);
+        );
         return $response->json();
     }
 

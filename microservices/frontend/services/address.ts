@@ -5,3 +5,7 @@ import { FetchApi } from '~~/utils/fetchApi';
 export const getAddresses = (): Promise<ApiResponse<IAddress>> => {
     return FetchApi("address");
 }
+
+export const addAddrress = () => {
+    
+}

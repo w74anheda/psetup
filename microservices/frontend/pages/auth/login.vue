@@ -42,10 +42,12 @@ const loginFormSchema = yup.object().shape({
 
 const submitLogin = async () => {
     const res = await auth.getUserLoginData(phone.value);
+    var returnTo = router.currentRoute.value.query.returnTo?.toString();
+
     if (res?.status) {
         auth.phoneNumber = phone.value;
         auth.loginResult = res.data.verification;
-        router.push({ path: "/auth/verify", query: { phone: auth.phoneNumber } });
+        router.push({ path: "/auth/verify", query: { phone: auth.phoneNumber, returnTo } });
         return;
     }
     notify.notify("لطفا دوباره تلاش کنید.", "error");

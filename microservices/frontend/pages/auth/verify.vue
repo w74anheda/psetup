@@ -103,6 +103,7 @@ const checkOtp = (value: number, index: number) => {
 };
 const submitVerify = async () => {
   if (otpCheck.value === 5) {
+    var returnTo = router.currentRoute.value.query.returnTo?.toString();
     const res = await userVerify({
       first_name: auth.loginResult?.is_new ? verifyData.firstName : undefined,
       last_name: auth.loginResult?.is_new ? verifyData.lastName : undefined,
@@ -127,7 +128,11 @@ const submitVerify = async () => {
         `خوش آمدید ${auth.currentUser?.first_name} عزیز دل.`,
         "success"
       );
-      await router.push("/");
+      if (returnTo) {
+        await router.push(returnTo)
+      } else {
+        await router.push("/");
+      }
       return;
     }
     notify.notify("کد وارد شده، صحیح نمی باشد.", "error");

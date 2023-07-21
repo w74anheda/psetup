@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["@/assets/css/main.css"],
+  routeRules: {
+    '/profile/**': { ssr: false },
+    '/auth/**': { ssr: false },
+  },
   modules: [
     "@pinia/nuxt",
     "@nuxtjs/tailwindcss",

@@ -8,6 +8,7 @@ export const useAddress = defineStore('address', () => {
         const res = await getAddresses();
         if (res.status === 200) {
             userAddresses.value = res.data;
+            return res;
         }
     }
 

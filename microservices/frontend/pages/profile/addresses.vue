@@ -8,6 +8,7 @@
                 <Icon name="ic:outline-add-location" size="25" />
                 افزودن آدرس جدید
             </div>
+            {{ addresses }}
         </div>
         <ProfileAddresses />
         <Transition name="fade">
@@ -21,20 +22,13 @@
 </template>
 
 <script setup lang="ts">
-import { IAddress } from "~~/models/address";
 import { useModal } from "~~/store/base/modal";
 import { useAddress } from "~~/store/addresses";
 
 const largeMapModal = ref(false);
-
-const modal = computed(() => useModal().modal);
 const selectedModal = ref(-1);
-const addresses = ref<IAddress>();
-
-onMounted(async () => {
-    // const res = await useAddress().getUserAddresses();
-    // console.log(res);
-})
+const modal = computed(() => useModal().modal);
+const addresses = computed(() => useAddress().userAddresses);
 
 definePageMeta({
     layout: "profile",

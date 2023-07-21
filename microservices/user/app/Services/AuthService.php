@@ -50,9 +50,8 @@ class AuthService
         ]);
     }
 
-    public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, Request $request = null)
+    public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, array $headers = [])
     {
-        $request        = $request ?? request();
         $passportClient = PassportClient::first();
         $response       = CustomHttp::postJson(
             env('APP_URL') . "/oauth/token",
@@ -65,10 +64,7 @@ class AuthService
                 'code'          => $code,
                 'scope'         => '*',
             ],
-            [
-                'User-Agent' => $request->header('User-Agent'),
-                'ip-address' => $request->ip(),
-            ]
+            $headers
         );
         return $response->json();
     }

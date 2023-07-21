@@ -95,7 +95,7 @@ class UserService
         }
         catch (Exception $err)
         {
-            dd($err->getMessage());
+            dd($err->getMessage(),2);
             DB::rollBack();
             $isOK = false;
         }

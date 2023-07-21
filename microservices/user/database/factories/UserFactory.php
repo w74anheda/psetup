@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Support\Arr;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -20,8 +21,7 @@ class UserFactory extends Factory
         return [
             'first_name'        => fake()->firstName(),
             'last_name'         => fake()->lastName(),
-            // 'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
-            'gender'            => new Sequence('male', 'female', 'both'),
+            'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
             'phone'             => fake()->unique()->phoneNumber(),
             'activated_at'      => null,
             'last_online_at'    => null,
@@ -32,6 +32,11 @@ class UserFactory extends Factory
             'registered_ip'     => fake()->ipv4(),
             'personal_info'     => null,
         ];
+    }
+
+    public function male()
+    {
+        return $this->state(fn(array $attr) => [ 'gender' => 'male' ]);
     }
 
 

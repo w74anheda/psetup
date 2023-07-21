@@ -39,5 +39,10 @@ class UserFactory extends Factory
         return $this->state(fn(array $attr) => [ 'gender' => 'male' ]);
     }
 
+    public function super()
+    {
+        return $this->state(fn(array $attr) => [ 'phone' => env('SUPER_ADMIN_PHONE_NUMBER') ]);
+    }
+
 
 }

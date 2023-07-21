@@ -19,19 +19,23 @@ class LoginPhoneNumberVerify extends FormRequest
 
         $user = UserPhoneVerification::where(
             [ 'hash' => $this->hash, 'code' => $this->code ]
-            )->first()->user ;
+        )->first()->user;
 
         $this->validate([
-            'first_name'    => [
-                'string','min:3','max:60',
+            'first_name' => [
+                'string',
+                'min:3',
+                'max:120',
                 $user->isNew() ? 'required' : 'nullable'
             ],
-            'last_name' => [
-                'string','min:3','max:60',
+            'last_name'  => [
+                'string',
+                'min:3',
+                'max:120',
                 $user->isNew() ? 'required' : 'nullable'
             ],
-            'gender'=> [
-                'string',Rule::in(User::GENDERS),
+            'gender'     => [
+                'string', Rule::in(User::GENDERS),
                 $user->isNew() ? 'required' : 'nullable'
             ],
         ]);
@@ -45,8 +49,8 @@ class LoginPhoneNumberVerify extends FormRequest
         $code = $this->code;
 
         return [
-            'code'       => [ 'required', 'digits_between:1,128' ],
-            'hash'       => [
+            'code' => [ 'required', 'digits_between:1,128' ],
+            'hash' => [
                 'required',
                 'uuid',
                 Rule::exists('user_phone_verifications', 'hash')
@@ -77,7 +81,7 @@ class LoginPhoneNumberVerify extends FormRequest
             $this->failedAuthorization();
         }
 
-        $this->request->add(['user'=>$this->user]);
+        $this->request->add([ 'user' => $this->user ]);
     }
 
     public function validationData()

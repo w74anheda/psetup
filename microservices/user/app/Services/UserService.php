@@ -12,6 +12,16 @@ use Exception;
 
 class UserService
 {
+    protected static $authService;
+
+    protected static function authService()
+    {
+        if(!self::$authService)
+            self::$authService = app(AuthService::class);
+        return self::$authService;
+    }
+
+
     public static function completePhoneVerification(
         User $user,
         string $firstname,
@@ -61,20 +71,20 @@ class UserService
     public static function loginRequest(LoginPhoneNumberRequest $request)
     {
         $user         = self::firstOrCreateUser($request->phone, $request->ip());
-        $verification = AuthService::generateVerificationCode($user);
+        $verification = self::authService()::generateVerificationCode($user);
         PhoneNumberRequestEvent::dispatch($user);
         return [ $user, $verification ];
     }
 
     public static function loginVerify(LoginPhoneNumberVerify $request)
     {
+
         $user = $request->user;
         $isOK = true;
-
         try
         {
             DB::beginTransaction();
-            $tokens = AuthService::getAccessAndRefreshTokenByPhone(
+            $tokens = self::authService()::getAccessAndRefreshTokenByPhone(
                 $user,
                 $request->hash,
                 $request->code,
@@ -89,13 +99,13 @@ class UserService
                     $request->gender,
                 );
             }
-            AuthService::clearVerificationCode($user, $request->hash);
+            self::authService()::clearVerificationCode($user, $request->hash);
 
             DB::commit();
         }
         catch (Exception $err)
         {
-            dd($err->getMessage(),2);
+            dd($err->getMessage(), 2);
             DB::rollBack();
             $isOK = false;
         }

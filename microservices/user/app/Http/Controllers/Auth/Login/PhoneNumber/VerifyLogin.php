@@ -10,7 +10,7 @@ class VerifyLogin
 {
     public function __invoke(LoginPhoneNumberVerify $request)
     {
-        [ $isOK, $tokens ] = UserService::loginVerify($request);
+        [ $isOK, $tokens ] = app(UserService::class)::loginVerify($request);
 
         return $isOK
             ? response(

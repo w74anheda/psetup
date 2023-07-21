@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Http\Facade\CustomHttp;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
@@ -186,7 +187,8 @@ return [
 
     'aliases'         => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
-        'Agent' => Jenssegers\Agent\Facades\Agent::class,
+        'Agent'      => Jenssegers\Agent\Facades\Agent::class,
+        'CustomHttp' => CustomHttp::class
     ])->toArray(),
 
 ];

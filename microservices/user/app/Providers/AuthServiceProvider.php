@@ -8,6 +8,7 @@ use App\Services\Passport\CustomAccessTokenRepository;
 use App\Services\Passport\CustomToken;
 use App\Services\Passport\Grants\PhoneGrant;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\File;
 use Laravel\Passport\Bridge\AccessTokenRepository;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
 
@@ -30,19 +31,26 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Passport::tokensExpireIn(now()->addDays(15));
-        Passport::refreshTokensExpireIn(now()->addDays(30));
-        Passport::useTokenModel(CustomToken::class);
+
+        $privateKey = File::exists(storage_path('oauth-private.key'));
+        $publicKey  = File::exists(storage_path('oauth-public.key'));
+        if($publicKey && $privateKey)
+        {
+            Passport::tokensExpireIn(now()->addDays(15));
+            Passport::refreshTokensExpireIn(now()->addDays(30));
+            Passport::useTokenModel(CustomToken::class);
 
 
-        $this->app->bind(
-            AccessTokenRepository::class,
-            CustomAccessTokenRepository::class
-        );
+            $this->app->bind(
+                AccessTokenRepository::class,
+                CustomAccessTokenRepository::class
+            );
 
-        app(AuthorizationServer::class)->enableGrantType(
-            $this->makePhoneGrant(), Passport::tokensExpireIn()
-        );
+            app(AuthorizationServer::class)->enableGrantType(
+                $this->makePhoneGrant(), Passport::tokensExpireIn()
+            );
+        }
+
     }
 
     protected function makePhoneGrant()

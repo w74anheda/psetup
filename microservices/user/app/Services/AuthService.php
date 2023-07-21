@@ -58,6 +58,7 @@ class AuthService
             [
                 'User-Agent' => $request->header('User-Agent'),
                 'ip-address' => $request->ip(),
+                'HTTP_X-Requested-with' => 'XMLHttpRequest'
             ]
         )->post(env('APP_URL') . "/oauth/token", [
                     'grant_type'    => 'phone',
@@ -66,6 +67,7 @@ class AuthService
                     'phone'         => $user->phone,
                     'hash'          => $hash,
                     'code'          => $code,
+                    'scope'          =>'*',
                 ]);
         return $response->json();
     }

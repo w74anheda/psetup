@@ -89,11 +89,7 @@ class UserService
         try
         {
             DB::beginTransaction();
-            $tokens = app(AuthService::class)::getAccessAndRefreshTokenByPhone(
-                $user,
-                $hash,
-                $code
-            );
+            $tokens = app(AuthService::class)::getAccessAndRefreshTokenByPhone($user, $hash, $code);
 
             self::completeRegister($user, $dto);
 
@@ -104,6 +100,7 @@ class UserService
         catch (Exception $err)
         {
             DB::rollBack();
+            report($err);
             $isOK = false;
         }
 

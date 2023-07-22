@@ -6,6 +6,6 @@ export const getAddresses = (): Promise<ApiResponse<IAddress>> => {
     return FetchApi("address");
 }
 
-export const addAddrress = () => {
+// export const addAddrress = () => {
     
-}
+// }

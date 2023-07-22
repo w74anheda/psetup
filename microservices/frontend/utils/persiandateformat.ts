@@ -205,6 +205,6 @@ export const GetTime = (date: Date): string => {
 
     return `${hours}:${min}`;
 };
-function padTo2Digits(num: number) {
+export const padTo2Digits = (num: number) => {
     return num.toString().padStart(2, "00");
 }

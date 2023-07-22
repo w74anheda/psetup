@@ -10,6 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             email: "ایمیل نامعتبر است.",
             min: "${label} باید حداقل ${min} کاراکتر باشد",
             max: "${label} باید حداکثر ${max} کاراکتر باشد",
+            length: "${label} باید ${length} کارکتر باشد."
         },
         number: {
             min: "${label} باید حداقل ${min} باشد",
@@ -27,6 +28,6 @@ export default defineNuxtPlugin((nuxtApp) => {
         ).matches(
             /^(?:0|98|\+98|\+980|0098|098|00980)?(9\d{9})$/,
             "شماره موبایل را به شکل صحیح وارد نمایید."
-          )
+        )
     });
 });

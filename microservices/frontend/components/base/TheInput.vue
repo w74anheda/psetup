@@ -10,7 +10,8 @@
       :class="['form-control', { 'border-danger': errorMessage }]"
       :placeholder="placeholder" @input="handleInputChange" />
     <slot />
-    <span v-if="errorMessage" class="input-error-message">{{ errorMessage
+    <span v-if="errorMessage && showErrorMessage" class="input-error-message">{{
+      errorMessage
     }}</span>
   </div>
 </template>
@@ -36,6 +37,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  showErrorMessage: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const {

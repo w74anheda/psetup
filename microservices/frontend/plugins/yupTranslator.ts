@@ -30,4 +30,16 @@ export default defineNuxtPlugin((nuxtApp) => {
             "شماره موبایل را به شکل صحیح وارد نمایید."
         )
     });
+
+    addMethod(string, "nationalId", function phoneNumber() {
+        return this.test(
+            "nationalId",
+            "کد ملی نامعتبر می باشد.",
+            function (value) {
+                if (value === undefined) return true;
+                return validateNationalId(value.toString());
+            },
+        )
+    });
 });
+

@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
-use App\DTO\DTO;
 use App\DTO\UserCompleteRegisterDTO;
-use App\Http\Requests\Auth\LoginPhoneNumberRequest;
-use App\Http\Requests\Auth\LoginPhoneNumberVerify;
 use App\Models\User;
 use DateTime;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use DB;
 use Exception;
-use App\Services\AuthService;
+use InvalidArgumentException;
+use Str;
 
 class UserService
 {
@@ -52,17 +50,19 @@ class UserService
         DB::beginTransaction();
         try
         {
+            $ip   = $ip ?? request()->ip();
             $user = User::firstOrCreate(
                 [ 'phone' => $phone ],
                 [
                     'registered_ip' => $ip,
-                    'is_new'        => true
+                    'is_new'        => true,
                 ]
             );
             DB::commit();
         }
         catch (Exception $err)
         {
+            report($err);
             DB::rollBack();
             return self::firstOrCreateUser($phone, $ip);
         }
@@ -85,26 +85,25 @@ class UserService
         UserCompleteRegisterDTO $dto
     )
     {
-        $isOK = true;
         try
         {
             DB::beginTransaction();
-            $tokens = app(AuthService::class)::getAccessAndRefreshTokenByPhone($user, $hash, $code);
+            $tokens = AuthService::getAccessAndRefreshTokenByPhone($user, $hash, $code);
+            if(!isset($tokens['token_type']))
+                throw new InvalidArgumentException(implode(' ', $tokens));
 
-            self::completeRegister($user, $dto);
-
-            app(AuthService::class)::clearVerificationCode($user, $hash);
-
+            app(AuthService::class)->clearVerificationCode($user, $hash);
+            app(self::class)->completeRegister($user, $dto);
             DB::commit();
         }
         catch (Exception $err)
         {
             DB::rollBack();
             report($err);
-            $isOK = false;
+            return [ false, null ];
         }
 
-        return [ $isOK, $tokens ?? null ];
+        return [ true, $tokens ];
     }
 
 }

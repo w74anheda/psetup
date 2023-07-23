@@ -37,10 +37,12 @@ class User extends Authenticatable
 
     protected static function booted()
     {
+        parent::boot();
         static::creating(function ($user)
         {
-            $user->id = Str::uuid();
+            $user->{$user->getKeyName()} = Str::uuid();
         });
+
     }
 
     protected function presenterHandler(): Presenter

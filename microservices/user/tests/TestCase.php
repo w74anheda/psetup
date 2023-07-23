@@ -8,14 +8,14 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
 
     public function setup(): void
     {
         $this->withExceptionHandling();
         parent::setUp();
-        // $this->artisan('passport:install --force');
+        $this->artisan('passport:install --force');
         // $this->artisan('passport:keys --force');
     }
 }

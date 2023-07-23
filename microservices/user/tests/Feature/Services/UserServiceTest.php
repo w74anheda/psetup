@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class UserServiceTest extends TestCase
@@ -206,19 +207,129 @@ class UserServiceTest extends TestCase
 
     }
 
+    public function testLoginPhoneVerifyForNewUser()
+    {
+        $user = User::factory()->isNew()->create();
+        $dto  = $this->createDto();
+        $dto->validate();
+        [ $user, $verification ] = UserService::loginPhoneRequest($user->phone);
 
-    public function testLoginPhoneVerify()
+        $this->mock(
+            AuthService::class,
+            function (MockInterface $mock)
+            {
+                $mock
+                    ->shouldReceive('clearVerificationCode')
+                    ->once();
+            }
+        );
+
+        $this->mock(
+            UserService::class,
+            function (MockInterface $mock)
+            {
+                $mock
+                    ->shouldReceive('completeRegister')
+                    ->once();
+            }
+        );
+
+        [ $isOK, $tokens ] = UserService::loginPhoneVerify(
+            $user,
+            $verification->hash,
+            $verification->code,
+            $dto
+        );
+
+        $this->assertTrue($isOK);
+        $this->assertTrue($tokens['token_type'] == 'Bearer');
+        $this->assertTrue($tokens['expires_in'] == 1296000);
+        $this->assertArrayHasKey('token_type', $tokens);
+        $this->assertArrayHasKey('expires_in', $tokens);
+        $this->assertArrayHasKey('access_token', $tokens);
+        $this->assertArrayHasKey('refresh_token', $tokens);
+    }
+
+    public function testLoginPhoneVerifyForNewUserWithEmptyDTO()
+    {
+        $user = User::factory()->isNew()->create();
+        $dto  = $this->createDto(false);
+
+        [ $user, $verification ] = UserService::loginPhoneRequest($user->phone);
+
+        [ $isOK, $tokens ] = UserService::loginPhoneVerify(
+            $user,
+            $verification->hash,
+            $verification->code,
+            $dto
+        );
+        $this->assertFalse($isOK);
+        $this->assertNull($tokens);
+    }
+
+    public function testLoginPhoneVerifyForExistingUserWithEmptyDTO()
+    {
+        $user = User::factory()->create();
+        $dto  = $this->createDto(false);
+
+        [ $user, $verification ] = UserService::loginPhoneRequest($user->phone);
+
+        [ $isOK, $tokens ] = UserService::loginPhoneVerify(
+            $user,
+            $verification->hash,
+            $verification->code,
+            $dto
+        );
+
+        $this->assertTrue($isOK);
+        $this->assertTrue($tokens['token_type'] == 'Bearer');
+        $this->assertTrue($tokens['expires_in'] == 1296000);
+        $this->assertArrayHasKey('token_type', $tokens);
+        $this->assertArrayHasKey('expires_in', $tokens);
+        $this->assertArrayHasKey('access_token', $tokens);
+        $this->assertArrayHasKey('refresh_token', $tokens);
+    }
+
+    public function testLoginPhoneVerifyForExistingUserWithFilledDTO()
+    {
+        $data = User::factory()->make()->toArray();
+        $user = User::factory()->state($data)->create();
+        $dto  = $this->createDto(false);
+
+        [ $user, $verification ] = UserService::loginPhoneRequest($user->phone);
+
+        [ $isOK, $tokens ] = UserService::loginPhoneVerify(
+            $user,
+            $verification->hash,
+            $verification->code,
+            $dto
+        );
+
+        $this->assertTrue($isOK);
+        $this->assertTrue($tokens['token_type'] == 'Bearer');
+        $this->assertTrue($tokens['expires_in'] == 1296000);
+        $this->assertArrayHasKey('token_type', $tokens);
+        $this->assertArrayHasKey('expires_in', $tokens);
+        $this->assertArrayHasKey('access_token', $tokens);
+        $this->assertArrayHasKey('refresh_token', $tokens);
+        $this->assertEquals($user->first_name, $data['first_name']);
+        $this->assertEquals($user->last_name, $data['last_name']);
+        $this->assertEquals($user->gender, $data['gender']);
+    }
+
+    public function testLoginPhoneVerifyWithInvalidHash()
     {
         $user = User::factory()->create();
         $dto  = $this->createDto();
 
-        UserService::loginPhoneVerify(
+        [ $isOK, $tokens ] = UserService::loginPhoneVerify(
             $user,
-            'asd',
-            'asd',
+            'invalid hash',
+            'invalid code',
             $dto
         );
-        $this->assertTrue(true);
+        $this->assertFalse($isOK);
+        $this->assertNull($tokens);
     }
 
     private function createDto(bool $filled = true): UserCompleteRegisterDTO
@@ -232,14 +343,4 @@ class UserServiceTest extends TestCase
                 ->setGender($data['gender']);
         return $dto;
     }
-
-
-
-
-
-
-
-
-
-
 }

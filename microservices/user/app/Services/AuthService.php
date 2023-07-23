@@ -40,7 +40,6 @@ class AuthService
             generate_random_digits_with_specefic_length(
                 app('PHONE_VERIFICATION_CODE_LENGTH')
             );
-
         return $user->phoneVerifications()->create([
             'code'      => $code,
             'expire_at' => now()->addSeconds(
@@ -52,6 +51,7 @@ class AuthService
 
     public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, array $headers = [])
     {
+
         $passportClient = PassportClient::first();
         $response       = CustomHttp::postJson(
             env('APP_URL') . "/oauth/token",
@@ -69,7 +69,7 @@ class AuthService
         return $response->json();
     }
 
-    public static function clearVerificationCode(User $user, string $hash)
+    public static function clearVerificationCode(User $user, string $hash): bool
     {
         return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
@@ -108,4 +108,5 @@ class AuthService
             ->prepend($currentSession);
         return $sessions;
     }
+
 }

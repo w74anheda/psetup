@@ -68,8 +68,8 @@ class UserFactory extends Factory
     {
         return $this->state(
             fn(array $attr) => [
-                'activated_at'      => null,
-                'is_active'         => 0,
+                'activated_at' => null,
+                'is_active'    => 0,
             ]
         );
     }
@@ -78,8 +78,8 @@ class UserFactory extends Factory
     {
         return $this->state(
             fn(array $attr) => [
-                'activated_at'      => now(),
-                'is_active'         => 1,
+                'activated_at' => now(),
+                'is_active'    => 1,
             ]
         );
     }

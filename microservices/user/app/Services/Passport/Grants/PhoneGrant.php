@@ -81,8 +81,13 @@ class PhoneGrant extends AbstractGrant
             throw OAuthServerException::invalidRequest($phone);
         }
 
+
         $verificationCode = UserPhoneVerification::where([ 'hash' => $hash, 'code' => $code ])->first();
-        $user             = $verificationCode->user;
+
+        if(!$verificationCode instanceof UserPhoneVerification)
+            throw OAuthServerException::invalidCredentials();
+
+        $user = $verificationCode->user;
         if(is_null($verificationCode) || $user->phone != $phone)
         {
             throw OAuthServerException::invalidCredentials();

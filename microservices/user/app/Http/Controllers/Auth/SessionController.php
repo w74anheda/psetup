@@ -40,7 +40,7 @@ class SessionController extends Controller
 
     public function deleteAll(Request $request)
     {
-        AuthService::tokensDestroy($request->user());
+        AuthService::allTokensDestroy($request->user());
         return Response(
             [ 'message' => 'successfully deleted' ],
             Response::HTTP_ACCEPTED

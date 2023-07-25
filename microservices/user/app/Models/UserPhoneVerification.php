@@ -10,6 +10,8 @@ class UserPhoneVerification extends Model
 {
     use HasFactory, HasUser;
 
+    protected $primaryKey = ['code', 'hash'];
+    public $incrementing = false;
 
     protected $fillable = [
         'user_id',
@@ -19,6 +21,8 @@ class UserPhoneVerification extends Model
     ];
 
     public $timestamps = false;
+
+
 
 
 }

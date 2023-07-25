@@ -22,9 +22,10 @@ Route::prefix('auth')->name('auth.')->group(function ()
     });
 
     route::post('refreshAccessToken', [ RenewAccessTokenController::class, 'refreshAccessToken' ]);
-    Route::middleware([ 'auth:api' ])->group(function ()
+
+    Route::middleware([ 'auth:api' ])->name('profile.')->group(function ()
     {
-        route::get('me', [ InfoController::class, 'me' ]);
+        route::get('me', [ InfoController::class, 'me' ])->name('me');
         route::patch('complete-profile', [ CompleteProfileController::class, 'complete' ]);
     });
 

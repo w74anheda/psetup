@@ -2,65 +2,67 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Auth\LoginPhoneNumberRequest;
-use App\Http\Requests\Auth\LoginPhoneNumberVerify;
+use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use DateTime;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use DB;
 use Exception;
+use InvalidArgumentException;
+use Str;
 
 class UserService
 {
-    protected static $authService;
 
-    protected static function authService()
-    {
-        if(!self::$authService)
-            self::$authService = app(AuthService::class);
-        return self::$authService;
-    }
-
-
-    public static function completePhoneVerification(
+    public static function completeRegister(
         User $user,
-        string $firstname,
-        string $lastname,
-        string $gender
-    )
+        UserCompleteRegisterDTO $dto,
+        DateTime $activated_at = null,
+    ): User
     {
-        $user->first_name   = $firstname;
-        $user->last_name    = $lastname;
-        $user->gender       = $gender;
-        $user->is_new       = false;
-        $user->is_active    = true;
-        $user->activated_at = now();
-        $user->save();
+
+        if($user->isNew())
+        {
+            $dto->validate([ 'first_name', 'last_name', 'gender' ]);
+            $activated_at       = $activated_at ?? now();
+            $user->first_name   = $dto->first_name;
+            $user->last_name    = $dto->last_name;
+            $user->gender       = $dto->gender;
+            $user->is_new       = false;
+            $user->is_active    = true;
+            $user->activated_at = $activated_at;
+            $user->save();
+        }
+        return $user;
     }
 
-    public static function setLastOnlineAt(User $user, DateTime $dateTime = null)
+    public static function setLastOnlineAt(User $user, DateTime $dateTime = null): User
     {
         $dateTime             = $dateTime ?? now();
         $user->last_online_at = $dateTime;
         $user->save();
+        return $user;
     }
 
-    public static function firstOrCreateUser(string $phone, string $ip): User
+    public static function firstOrCreateUser(string $phone, string $ip = null): User
     {
+        $ip = $ip ?? request()->ip();
         DB::beginTransaction();
         try
         {
+            $ip   = $ip ?? request()->ip();
             $user = User::firstOrCreate(
                 [ 'phone' => $phone ],
                 [
                     'registered_ip' => $ip,
-                    'is_new'        => true
+                    'is_new'        => true,
                 ]
             );
             DB::commit();
         }
         catch (Exception $err)
         {
+            report($err);
             DB::rollBack();
             return self::firstOrCreateUser($phone, $ip);
         }
@@ -68,49 +70,40 @@ class UserService
         return $user;
     }
 
-    public static function loginRequest(LoginPhoneNumberRequest $request)
+    public static function loginPhoneRequest(string $phone)
     {
-        $user         = self::firstOrCreateUser($request->phone, $request->ip());
-        $verification = self::authService()::generateVerificationCode($user);
+        $user         = self::firstOrCreateUser($phone);
+        $verification = app(AuthService::class)::generateVerificationCode($user);
         PhoneNumberRequestEvent::dispatch($user);
         return [ $user, $verification ];
     }
 
-    public static function loginVerify(LoginPhoneNumberVerify $request)
+    public static function loginPhoneVerify(
+        User $user,
+        string $hash,
+        string $code,
+        UserCompleteRegisterDTO $dto
+    )
     {
-
-        $user = $request->user;
-        $isOK = true;
         try
         {
             DB::beginTransaction();
-            $tokens = self::authService()::getAccessAndRefreshTokenByPhone(
-                $user,
-                $request->hash,
-                $request->code,
-                $request
-            );
-            if($user->isNew())
-            {
-                self::completePhoneVerification(
-                    $user,
-                    $request->first_name,
-                    $request->last_name,
-                    $request->gender,
-                );
-            }
-            self::authService()::clearVerificationCode($user, $request->hash);
+            $tokens = AuthService::getAccessAndRefreshTokenByPhone($user, $hash, $code);
+            if(!isset($tokens['token_type']))
+                throw new InvalidArgumentException(implode(' ', $tokens));
 
+            app(AuthService::class)->clearVerificationCode($user, $hash);
+            app(self::class)->completeRegister($user, $dto);
             DB::commit();
         }
         catch (Exception $err)
         {
-            dd($err->getMessage(), 2);
             DB::rollBack();
-            $isOK = false;
+            report($err);
+            return [ false, null ];
         }
 
-        return [ $isOK, $tokens ?? null ];
+        return [ true, $tokens ];
     }
 
 }

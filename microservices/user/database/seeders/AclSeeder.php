@@ -7,7 +7,6 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 
 class AclSeeder extends Seeder
 {
@@ -29,12 +28,10 @@ class AclSeeder extends Seeder
             'permission.dettach.of.user',
             'permission.drop.all.of.user',
             'user.activation',
-            'state.list',
             'state.create',
             'state.update',
             'state.delete',
             'state.delete.all',
-            'city.list',
             'city.create',
             'city.update',
             'city.delete',

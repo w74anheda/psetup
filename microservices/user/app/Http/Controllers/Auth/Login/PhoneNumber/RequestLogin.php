@@ -11,7 +11,7 @@ class RequestLogin
 {
     public function __invoke(LoginPhoneNumberRequest $request)
     {
-        [ $user, $verification ] = UserService::loginRequest($request);
+        [ $user, $verification ] = UserService::loginPhoneRequest($request->phone);
 
         return response(
             [

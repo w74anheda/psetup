@@ -11,7 +11,6 @@ class CityController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:city.list')->only('index');
         $this->middleware('can:city.create')->only('store');
         $this->middleware('can:city.update')->only('update');
         $this->middleware('can:city.delete')->only('destroy');

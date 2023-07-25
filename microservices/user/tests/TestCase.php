@@ -7,9 +7,8 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use
-        CreatesApplication,
-        RefreshDatabase;
+    use CreatesApplication;
+    use RefreshDatabase;
 
 
     public function setup(): void
@@ -17,6 +16,6 @@ abstract class TestCase extends BaseTestCase
         $this->withExceptionHandling();
         parent::setUp();
         $this->artisan('passport:install --force');
-        $this->artisan('passport:keys --force');
+        // $this->artisan('passport:keys --force');
     }
 }

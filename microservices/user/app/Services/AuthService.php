@@ -15,21 +15,18 @@ use Laravel\Passport\Client as PassportClient;
 
 class AuthService
 {
-    public static function tokenDestroy(CustomToken $token): string
+    public static function tokenDestroy(CustomToken $token): bool
     {
         $refreshTokenRepository = resolve(RefreshTokenRepository::class);
         $refreshTokenRepository->revokeRefreshToken($token->id);
-        $token->revoke();
-        // $token->delete();
-        return $token->id;
+        return $token->revoke();
     }
 
-    public static function tokensDestroy(User $user)
+    public static function allTokensDestroy(User $user)
     {
         $refreshTokenRepository = resolve(RefreshTokenRepository::class);
         $user->tokens->each(
             fn($token) => $token->revoke() &&
-            // $token->delete() &&
             $refreshTokenRepository->revokeRefreshToken($token->id)
         );
     }
@@ -38,21 +35,20 @@ class AuthService
     {
         $code = $code ??
             generate_random_digits_with_specefic_length(
-                app('PHONE_VERIFICATION_CODE_LENGTH')
+                env('PHONE_VERIFICATION_CODE_LENGTH')
             );
-
         return $user->phoneVerifications()->create([
             'code'      => $code,
             'expire_at' => now()->addSeconds(
-                app('PHONE_VERIFICATION_CODE_LIFETIME_SECONDS')
+                env('PHONE_VERIFICATION_CODE_LIFETIME_SECONDS')
             ),
             'hash'      => Str::uuid()
         ]);
     }
 
-    public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, Request $request = null)
+    public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, array $headers = [])
     {
-        $request        = $request ?? request();
+
         $passportClient = PassportClient::first();
         $response       = CustomHttp::postJson(
             env('APP_URL') . "/oauth/token",
@@ -65,15 +61,12 @@ class AuthService
                 'code'          => $code,
                 'scope'         => '*',
             ],
-            [
-                'User-Agent' => $request->header('User-Agent'),
-                'ip-address' => $request->ip(),
-            ]
+            $headers
         );
         return $response->json();
     }
 
-    public static function clearVerificationCode(User $user, string $hash)
+    public static function clearVerificationCode(User $user, string $hash): bool
     {
         return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
@@ -112,4 +105,5 @@ class AuthService
             ->prepend($currentSession);
         return $sessions;
     }
+
 }

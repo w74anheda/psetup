@@ -26,7 +26,7 @@ class LoginByPhoneVerifyTest extends TestCase
 
     protected function request(User $user = null)
     {
-        $user     = $user ?? User::factory()->super()->create();
+        $user     = $user ?? User::factory()->isNew()->super()->create();
         $response = $this->post(
             route('auth.login.phonenumber.request'),
             [ 'phone' => $user->phone ]
@@ -194,7 +194,6 @@ class LoginByPhoneVerifyTest extends TestCase
                 'gender'     => fake()->randomElement([ 'male', 'female', 'both' ]),
             ]
         );
-
         $response->assertJsonStructure([
             'token_type',
             'expires_in',

@@ -12,7 +12,6 @@ class StateController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:state.list')->only('index');
         $this->middleware('can:state.create')->only('store');
         $this->middleware('can:state.update')->only('update');
         $this->middleware('can:state.delete')->only('destroy');

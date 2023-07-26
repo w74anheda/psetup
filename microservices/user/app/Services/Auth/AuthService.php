@@ -12,7 +12,7 @@ use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token\Parser;
 
-class AuthService implements AuthServiceInterface
+class AuthService
 {
     public static function tokenDestroy(CustomToken $token): bool
     {

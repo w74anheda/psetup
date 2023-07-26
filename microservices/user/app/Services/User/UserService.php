@@ -6,12 +6,12 @@ use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use DateTime;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
-use App\Services\Auth\AuthServiceInterface;
+use App\Services\Auth\AuthService;
 use DB;
 use Exception;
 use InvalidArgumentException;
 
-class UserService implements UserServiceInterface
+class UserService
 {
 
     public static function completeRegister(
@@ -73,7 +73,7 @@ class UserService implements UserServiceInterface
     public static function loginPhoneRequest(string $phone)
     {
         $user         = self::firstOrCreateUser($phone);
-        $verification = app(AuthServiceInterface::class)->generateVerificationCode($user);
+        $verification = app(AuthService::class)->generateVerificationCode($user);
         PhoneNumberRequestEvent::dispatch($user);
         return [ $user, $verification ];
     }
@@ -88,11 +88,11 @@ class UserService implements UserServiceInterface
         try
         {
             DB::beginTransaction();
-            $tokens = app(AuthServiceInterface::class)->getAccessAndRefreshTokenByPhone($user, $hash, $code);
+            $tokens = AuthService::getAccessAndRefreshTokenByPhone($user, $hash, $code);
             if(!isset($tokens['token_type']))
                 throw new InvalidArgumentException(implode(' ', $tokens));
 
-            app(AuthServiceInterface::class)->clearVerificationCode($user, $hash);
+            app(AuthService::class)->clearVerificationCode($user, $hash);
             app(self::class)->completeRegister($user, $dto);
             DB::commit();
         }

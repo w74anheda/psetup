@@ -6,10 +6,9 @@ use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 use Laravel\Passport\Token;
-use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Token\Parser;
 use App\Models\User;
 use App\Models\UserIp;
+use App\Services\Auth\AuthService;
 
 class Authenticate extends Middleware
 {
@@ -36,13 +35,6 @@ class Authenticate extends Middleware
     }
 
 
-    protected function getTokenByAccessToken(User $user, string $accessToken)
-    {
-        $tokenID = (new Parser(new JoseEncoder()))->parse($accessToken)->claims()->all()['jti'];
-        $token   = $user->tokens()->where('id', $tokenID)->first();
-        return $token;
-    }
-
     protected function isValidTokenForThisRequest(Request $request, Token $token)
     {
         return true;
@@ -55,8 +47,7 @@ class Authenticate extends Middleware
     {
         if($request->expectsJson())
         {
-            $token = $this->getTokenByAccessToken(
-                $request->user(),
+            $token = app(AuthService::class)->getTokenModelByAccessToken(
                 $request->bearerToken()
             );
 

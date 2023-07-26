@@ -8,6 +8,7 @@ use App\Services\Auth\AuthService;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
+use Laravel\Passport\Passport;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token\Parser;
 use Tests\TestCase;
@@ -311,6 +312,24 @@ class AuthServiceTest extends TestCase
         {
             $this->assertFalse($session['current']);
         }
+    }
+
+    public function testgetTokenModelByAccessToken()
+    {
+        $user  = User::factory()->isNew()->create();
+        $token = $this->createToken($user);
+
+        $tokenModel            = AuthService::getTokenModelByAccessToken($token['access_token'])->toArray();
+        $tokenModel['revoked'] = 0;
+        $this->assertDatabaseHas(
+            (new(Passport::tokenModel()))->getTable(),
+            [ 'id' => $tokenModel['id'] ]
+        );
+    }
+    public function testgetTokenModelByAccessTokenWithInvalidAccessToken()
+    {
+        $tokenModel = AuthService::getTokenModelByAccessToken('invalid access token');
+        $this->assertNull($tokenModel);
     }
 
 

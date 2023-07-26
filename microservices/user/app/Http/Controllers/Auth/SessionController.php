@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
 use App\Services\Passport\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,7 +17,7 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
-        $sessions = AuthService::getAllSessionsWithCurrent(
+        $sessions = AuthService::sessions(
             $request->token->user,
             $request->token,
             [ 'id', 'user_agent', 'created_at' ]

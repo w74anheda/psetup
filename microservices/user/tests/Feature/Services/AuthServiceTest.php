@@ -4,13 +4,8 @@ namespace Tests\Feature\Services;
 
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
-use App\Services\AuthService;
-use App\Services\Passport\CustomToken;
-use App\Services\UserService;
+use App\Services\Auth\AuthService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Lcobucci\JWT\Encoding\JoseEncoder;
@@ -269,6 +264,55 @@ class AuthServiceTest extends TestCase
         $this->assertTrue($newToken['error'] == 'invalid_request');
         $this->assertTrue($newToken['message'] == 'The refresh token is invalid.');
     }
+
+    public function testSessions()
+    {
+        $user  = User::factory()->isNew()->create();
+        $token = $this->createToken($user);
+
+        $count = rand(2, 10);
+        foreach( range(1, $count) as $_ )
+        {
+            $this->createToken($user);
+        }
+
+        $sessions = AuthService::sessions($user, $token['access_token']);
+        $this->assertCount($count + 1, $sessions);
+
+        $this->assertEquals(
+            AuthService::getTokenModelByAccessToken($token['access_token'])->id,
+            $sessions[0]['id']
+        );
+
+        $this->assertTrue($sessions[0]['current']);
+
+        $this->assertArrayHasKey('id', $sessions[0]);
+        $this->assertArrayHasKey('user_agent', $sessions[0]);
+        $this->assertArrayHasKey('ip_address', $sessions[0]);
+        $this->assertArrayHasKey('created_at', $sessions[0]);
+        $this->assertArrayHasKey('expires_at', $sessions[0]);
+        $this->assertArrayHasKey('current', $sessions[0]);
+    }
+
+    public function testSessionsWithInvalidAccessToken()
+    {
+        $user  = User::factory()->isNew()->create();
+        $count = rand(2, 10);
+
+        foreach( range(1, $count) as $_ )
+        {
+            $this->createToken($user);
+        }
+
+        $sessions = AuthService::sessions($user, 'invalid access token');
+        $this->assertCount($count, $sessions);
+
+        foreach( $sessions as $session )
+        {
+            $this->assertFalse($session['current']);
+        }
+    }
+
 
 
 }

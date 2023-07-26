@@ -8,7 +8,6 @@
                 <Icon name="ic:outline-add-location" size="25" />
                 افزودن آدرس جدید
             </div>
-            {{ addresses }}
         </div>
         <ProfileAddresses />
         <Transition name="fade">
@@ -28,9 +27,14 @@ import { useAddress } from "~~/store/addresses";
 const largeMapModal = ref(false);
 const selectedModal = ref(-1);
 const modal = computed(() => useModal().modal);
-const addresses = computed(() => useAddress().userAddresses);
 
-definePageMeta({
-    layout: "profile",
-});
+onMounted(async () => {
+    await useAddress().getUserAddresses();
+    await useAddress().getState();
+    await useAddress().getCity();
+}),
+
+    definePageMeta({
+        layout: "profile",
+    });
 </script>

@@ -3,12 +3,14 @@
         <Form v-if="tab === 0" :validation-schema="addressFormSchema"
             v-slot="{ meta }" class="md:col-span-1 col-span-full">
             <div class="md:flex block md:gap-2">
-                <BaseTheAutocomplete label="استان"
-                    :items="['Apple', 'Banana', 'Cherry', 'Grapes']" name="state"
-                    v-model="addressFormData.state" />
-                <BaseTheAutocomplete label="شهر"
-                    :items="['Apple', 'Banana', 'Cherry', 'Grapes']" name="city"
-                    v-model="addressFormData.city" />
+                <BaseTheAutocomplete label="استان" :items="states" name="state"
+                    v-model="addressFormData.state"
+                    @setValue="(state) => getCityByState(state)" />
+                <transition name="fade">
+                    <BaseTheAutocomplete v-if="addressFormData.state" label="شهر"
+                        :items="cities" name="city"
+                        v-model="addressFormData.city" />
+                </transition>
             </div>
             <div class="flex gap-2">
                 <BaseTheInput type="number" class="!w-16" label="پلاک"
@@ -32,7 +34,11 @@
 </template>
 
 <script setup lang="ts">
+import { useAddress } from '~~/store/addresses';
 import * as Yup from 'yup';
+
+const states = computed(() => useAddress().states);
+const cities = ref();
 
 const tab = ref(0);
 const emit = defineEmits(['mapModal']);
@@ -60,4 +66,9 @@ const addressFormSchema = Yup.object().shape({
 onMounted(() => {
     emit('mapModal', false);
 })
+
+const getCityByState = async (state: number) => {
+    cities.value = useAddress().cities.filter(city => city.state_id === state);
+    addressFormData.city = '';
+}
 </script>

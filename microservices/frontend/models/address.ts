@@ -1,9 +1,6 @@
 export interface IAddress {
     id: number;
-    user_id: number;
-    city: City;
-}
-export interface IAddressDTO extends IAddress {
+    user_id: string;
     city_id: number;
     full_address: string;
     house_number: number;
@@ -11,7 +8,9 @@ export interface IAddressDTO extends IAddress {
     postalcode: string;
     latitude: string;
     longitude: string;
+    city: City;
 }
+
 export interface City {
     id: number;
     state_id: number;

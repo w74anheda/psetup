@@ -45,9 +45,9 @@ class AuthServiceTest extends TestCase
 
     public function testTokenDestroy(): void
     {
-        $user = User::factory()->isNew()->create();
-        $this->createToken($user);
-        $token = $user->tokens()->first();
+        $user        = User::factory()->isNew()->create();
+        $bearerToken = $this->createToken($user)['access_token'];
+        $token       = $user->tokens()->first();
         $this->mock(
             RefreshTokenRepository::class,
             function ($mock) use ($token)
@@ -135,6 +135,21 @@ class AuthServiceTest extends TestCase
         $user   = User::factory()->create();
         $result = AuthService::clearVerificationCode($user, Str::random(20));
         $this->assertFalse($result);
+    }
+
+    public function testasdsd()
+    {
+        $user        = User::factory()->isNew()->create();
+        $bearerToken = $this->createToken($user)['access_token'];
+
+        $response = $this->actingAs($user, 'api')
+            ->getJson(
+                route('auth.profile.me'),
+                [
+                    'Authorization' => "Bearer {$bearerToken}"
+                ]
+            );
+
     }
 
 

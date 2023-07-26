@@ -13,8 +13,8 @@ class VerifyLogin
     {
         $dto = (new UserCompleteRegisterDTO);
         $dto->setFirstName($request->first_name)
-            ->setFirstName($request->last_name)
-            ->setFirstName($request->gender);
+            ->setLastName($request->last_name)
+            ->setGender($request->gender);
 
         [ $isOK, $tokens ] = app(UserService::class)::loginPhoneVerify(
             $request->user,

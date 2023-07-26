@@ -48,7 +48,6 @@ class AuthService
 
     public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, array $headers = [])
     {
-
         $passportClient = PassportClient::first();
         $response       = CustomHttp::postJson(
             env('APP_URL') . "/oauth/token",

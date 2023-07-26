@@ -11,6 +11,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\File;
 use Laravel\Passport\Bridge\AccessTokenRepository;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
+use Laravel\Passport\Client as PassportClient;
 
 use Laravel\Passport\Passport;
 use League\OAuth2\Server\AuthorizationServer;
@@ -48,6 +49,11 @@ class AuthServiceProvider extends ServiceProvider
 
             app(AuthorizationServer::class)->enableGrantType(
                 $this->makePhoneGrant(), Passport::tokensExpireIn()
+            );
+
+            $this->app->bind(
+                'PassportAuthPhoneClient',
+                fn($app)=> PassportClient::first()
             );
         }
 

@@ -2,16 +2,12 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Auth\RefreshAccessTokenRequest;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
 use App\Services\Http\Facade\CustomHttp;
 use App\Services\Passport\CustomToken;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
-use Laravel\Passport\Client as PassportClient;
 
 class AuthService
 {
@@ -48,7 +44,7 @@ class AuthService
 
     public static function getAccessAndRefreshTokenByPhone(User $user, string $hash, string $code, array $headers = [])
     {
-        $passportClient = PassportClient::first();
+        $passportClient = app('PassportAuthPhoneClient');
         $response       = CustomHttp::postJson(
             env('APP_URL') . "/oauth/token",
             [
@@ -60,7 +56,13 @@ class AuthService
                 'code'          => $code,
                 'scope'         => '*',
             ],
-            $headers
+            array_merge(
+                [
+                    'User-Agent' => request()->header('User-Agent'),
+                    'ip-address' => request()->ip(),
+                ],
+                $headers
+            )
         );
         return $response->json();
     }
@@ -70,22 +72,27 @@ class AuthService
         return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
 
-    public static function refreshAccessToken(RefreshAccessTokenRequest $request)
+    public static function refreshAccessToken(string $refresh_token, array $headers = [])
     {
-        $passportClient = PassportClient::first();
+        $passportClient = app('PassportAuthPhoneClient');
 
-        $response = Http::withHeaders(
+        $response = CustomHttp::postJson(
+            env('APP_URL') . "/oauth/token",
             [
-                'User-Agent' => $request->header('User-Agent'),
-                'ip-address' => $request->ip(),
-            ]
-        )->post(env('APP_URL') . "/oauth/token", [
-                    'grant_type'    => 'refresh_token',
-                    'refresh_token' => $request->refresh_token,
-                    'client_id'     => $passportClient->id,
-                    'client_secret' => $passportClient->secret,
-                    'scope'         => '',
-                ]);
+                'grant_type'    => 'refresh_token',
+                'refresh_token' => $refresh_token,
+                'client_id'     => $passportClient->id,
+                'client_secret' => $passportClient->secret,
+                'scope'         => '',
+            ],
+            array_merge(
+                [
+                    'User-Agent' => request()->header('User-Agent'),
+                    'ip-address' => request()->ip(),
+                ],
+                $headers
+            )
+        );
         return $response->json();
     }
 

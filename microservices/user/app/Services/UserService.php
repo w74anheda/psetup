@@ -9,7 +9,6 @@ use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use DB;
 use Exception;
 use InvalidArgumentException;
-use Str;
 
 class UserService
 {

@@ -73,6 +73,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($user->gender, $dto->gender);
         $this->assertTrue($user->activated_at == $date);
     }
+
     public function testCompleteRegisterForIsNewUserWithEmptyDTO()
     {
         $user = User::factory()->isNew()->create();

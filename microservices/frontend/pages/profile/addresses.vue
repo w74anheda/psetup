@@ -29,9 +29,11 @@ const selectedModal = ref(-1);
 const modal = computed(() => useModal().modal);
 
 onMounted(async () => {
-    await useAddress().getUserAddresses();
-    await useAddress().getState();
-    await useAddress().getCity();
+    if (!useAddress().userAddresses) {
+        await useAddress().getUserAddresses();
+        await useAddress().getState();
+        await useAddress().getCity();
+    }
 }),
 
     definePageMeta({

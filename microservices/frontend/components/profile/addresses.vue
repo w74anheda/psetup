@@ -19,16 +19,21 @@
             <Icon name="ic:outline-person-outline" size="20" />
             {{ user?.first_name }} {{ user?.last_name }}
         </div>
-        <div class="text-center lg:pt-6 text-16 text-primary">
+        <div class="flex gap-1 items-center text-12 text-primary">
+            <Icon name="ri:checkbox-circle-line" size="18"/> 
             آدرس پیشفرض
         </div>
-        <div class="text-left absolute left-2 bottom-0 my-2">
-            <Icon @click="useDropdown().dropdownHandler(true)"
+        <div class="text-left absolute left-2 -bottom-1 my-2">
+            <Icon
+                @click="useDropdown().dropdownHandler(true), selectedAddress = item.id"
                 name="ic:outline-more-horiz" size="25" />
-            <BaseTheDropdown position="bottom-right">
-                <span>ویرایش</span>
-                <span>حذف</span>
-            </BaseTheDropdown>
+            <Transition name="alert">
+                <BaseTheDropdown v-if="dropdown && selectedAddress === item.id"
+                    position="bottom-right">
+                    <span>ویرایش</span>
+                    <span @click="deleteUserAddress(item.id)">حذف</span>
+                </BaseTheDropdown>
+            </Transition>
         </div>
     </div>
 </template>
@@ -37,10 +42,24 @@
 import { useDropdown } from '~~/store/base/dropdown'
 import { useAddress } from "~~/store/addresses";
 import { useAuth } from '~~/store/userAuth';
+import { deleteAddress } from '~~/services/address';
+import { useNotify } from '~~/store/notify';
+
+const dropdown = computed(() => useDropdown().dropdown);
 
 const addresses = computed(() => useAddress().userAddresses);
 const user = computed(() => useAuth().currentUser)
+const selectedAddress = ref(-1);
 
+const deleteUserAddress = async (id: number) => {
+    const res = await deleteAddress(id);
+    if (res.status === 202) {
+        await useAddress().getUserAddresses();
+        useNotify().notify('آدرس مورد نظر با موفقیت حذف شد.', 'success')
+    } else {
+        useNotify().notify('آدرس حذف نشد، دوباره امتحان کنید.', 'error')
+    }
+}
 </script>
 
 <style scoped></style>

@@ -7,7 +7,9 @@
             <img src="/images/bmw-logo.png" />
         </NuxtLink>
         <div class="basis-1/2 md:block hidden">
-            <BaseTheInput label="" name="search" placeholder="دنبال چی میگردی؟" />
+            <BaseTheInput label="" name="search" placeholder="دنبال چی میگردی؟">
+                <Icon name="ri:search-2-line" class="absolute left-2 top-2.5 text-dark-gray" size="16" />
+            </BaseTheInput>
         </div>
         <div class="flex">
             <BaseTheButton title="سبد خرید" class="main-header-basket">
@@ -18,24 +20,22 @@
                 class="main-header-basket-responsive">
                 <Icon name="ri:shopping-cart-line" size="20" />
             </BaseTheButton>
-            <ClientOnly>
-                <NuxtLink to="/auth/login" v-if="!useAuth().isLogin">
-                    <BaseTheButton title="ورود | ثبت نام"
-                        class="main-header-login-signup md:!flex !hidden" />
-                    <BaseTheButton title=""
-                        class="main-header-login-signup md:!hidden !flex">
-                        <icon name="ri:logout-box-r-line" size="20" />
-                    </BaseTheButton>
-                </NuxtLink>
-                <NuxtLink to="/profile" v-else>
-                    <BaseTheButton :title="user ? `${user.first_name} ${user.last_name}` : 'کاربر عزیز'
-                        " class="main-header-profile md:!flex !hidden" />
-                    <BaseTheButton title=""
-                        class="main-header-profile md:!hidden !flex">
-                        <icon name="ri:map-pin-user-line" size="20" />
-                    </BaseTheButton>
-                </NuxtLink>
-            </ClientOnly>
+            <NuxtLink to="/auth/login" v-if="!useAuth().isLogin">
+                <BaseTheButton title="ورود | ثبت نام"
+                    class="main-header-login-signup md:!flex !hidden" />
+                <BaseTheButton title=""
+                    class="main-header-login-signup md:!hidden !flex">
+                    <icon name="ri:logout-box-r-line" size="20" />
+                </BaseTheButton>
+            </NuxtLink>
+            <NuxtLink to="/profile" v-else>
+                <BaseTheButton :title="user ? `${user.first_name} ${user.last_name}` : 'کاربر عزیز'
+                    " class="main-header-profile md:!flex !hidden" />
+                <BaseTheButton title=""
+                    class="main-header-profile md:!hidden !flex">
+                    <icon name="ri:map-pin-user-line" size="20" />
+                </BaseTheButton>
+            </NuxtLink>
         </div>
     </div>
     <div class="sub-header">
@@ -44,11 +44,9 @@
         <div class="">01</div>
         <div class="">01</div>
     </div>
-    <ClientOnly>
-        <Teleport to="body">
-            <BaseTheDrawer />
-        </Teleport>
-    </ClientOnly>
+    <Teleport to="body">
+        <BaseTheDrawer />
+    </Teleport>
 </template>
 
 <script setup lang="ts">

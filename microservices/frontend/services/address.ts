@@ -11,9 +11,18 @@ export const getStates = (): Promise<ApiResponse<State>> => {
 }
 
 export const getCities = (): Promise<ApiResponse<City>> => {
-return FetchApi("city");
+    return FetchApi("city");
 }
 
-// export const addAddrress = () => {
-    
-// }
+export const addAddress = (command: IAddress): Promise<ApiResponse<IAddress>> => {
+    return FetchApi("address", {
+        method: "POST",
+        data: command
+    })
+}
+
+export const deleteAddress = (addressId: number): Promise<ApiResponse<undefined>> => {
+    return FetchApi("address/" + addressId, {
+        method: "DELETE",
+    })
+}

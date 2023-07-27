@@ -5,16 +5,18 @@ export default defineNuxtPlugin((nuxtApp) => {
     setLocale({
         mixed: {
             required: "لطفا ${path} را وارد نمایید.",
+            oneOf: "${path} نامعتبر میباشد."
         },
         string: {
             email: "ایمیل نامعتبر است.",
             min: "${label} باید حداقل ${min} کاراکتر باشد",
             max: "${label} باید حداکثر ${max} کاراکتر باشد",
-            length: "${label} باید ${length} کارکتر باشد."
+            length: "${label} باید ${length} کارکتر باشد.",
         },
         number: {
             min: "${label} باید حداقل ${min} باشد",
             max: "${label} باید حداکثر ${max} باشد",
+            positive: "${label}, معتبر نیست."
         },
     });
     addMethod(string, "phone", function phoneNumber() {

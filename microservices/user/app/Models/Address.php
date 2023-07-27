@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Models\Traits\HasCity;
 use App\Models\Traits\HasUser;
+use App\Presenters\Address\Api as AddressApiPresenter;
+use App\Presenters\PresentAble;
+use App\Presenters\Presenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +15,8 @@ class Address extends Model
     use
         HasFactory,
         HasUser,
-        HasCity;
+        HasCity,
+        PresentAble;
 
     protected $fillable = [
         'user_id',
@@ -26,5 +30,10 @@ class Address extends Model
     ];
 
     public $timestamps = false;
+
+    protected function presenterHandler(): Presenter
+    {
+        return new AddressApiPresenter($this);
+    }
 
 }

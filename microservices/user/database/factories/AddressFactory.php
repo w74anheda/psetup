@@ -22,9 +22,9 @@ class AddressFactory extends Factory
             'user_id'      => User::factory(),
             'city_id'      => City::factory(),
             'full_address' => fake()->streetAddress(),
-            'house_number' => fake()->numberBetween(100, 1000),
-            'unit_number'  => fake()->numberBetween(1, 10),
-            'postalcode'   => fake()->postcode(),
+            'house_number' => (string) fake()->numberBetween(100, 1000),
+            'unit_number'  => (string) fake()->numberBetween(1, 10),
+            'postalcode'   => (string) generate_random_digits_with_specefic_length(10),
             'latitude'     => fake()->latitude(),
             'longitude'    => fake()->longitude(),
         ];

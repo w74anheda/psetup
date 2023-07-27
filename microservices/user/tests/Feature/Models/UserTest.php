@@ -22,7 +22,7 @@ class UserTest extends TestCase
     {
         $data = User::factory()->make()->getAttributes();
         $user = User::create($data);
-        $this->assertDatabaseCount('users', 1);
+        $this->assertDatabaseCount($user->getTable(), 1);
 
         unset($data['personal_info']);
         $this->assertDatabaseHas('users', $data);

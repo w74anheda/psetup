@@ -27,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Tests\TestCase;
 use App\Presenters\User\Api as UserApiPresenter;
-use App\Services\UserService;
+use App\Services\User\UserService;
 use Carbon\Carbon;
 use Ramsey\Uuid\Lazy\LazyUuidFromString;
 use Illuminate\Foundation\Auth\User as Authenticatable;

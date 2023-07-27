@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth\Login\PhoneNumber;
 
 use App\DTO\UserCompleteRegisterDTO;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
-use App\Services\UserService;
+use App\Services\User\UserService;
 use Illuminate\Http\Response;
 
 class VerifyLogin

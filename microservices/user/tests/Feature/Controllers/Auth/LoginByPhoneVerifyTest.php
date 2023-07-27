@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\LoginPhoneNumberVerify;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
 use App\Services\AuthService;
-use App\Services\UserService;
+use App\Services\User\UserService;
 use Carbon\Carbon;
 use DateTime;
 use DB;

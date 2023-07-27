@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\AuthService;
 use App\Services\Http\CustomHttp;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;

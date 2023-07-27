@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Auth\Login\PhoneNumber;
 
 use App\Http\Requests\Auth\LoginPhoneNumberRequest;
-use App\Models\User;
-use App\Services\UserService;
+use App\Services\User\UserService;
 use Illuminate\Http\Response;
 
 class RequestLogin

@@ -326,6 +326,7 @@ class AuthServiceTest extends TestCase
             [ 'id' => $tokenModel['id'] ]
         );
     }
+
     public function testgetTokenModelByAccessTokenWithInvalidAccessToken()
     {
         $tokenModel = AuthService::getTokenModelByAccessToken('invalid access token');

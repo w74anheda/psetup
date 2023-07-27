@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth\Login\PhoneNumber;
 
 use App\DTO\UserCompleteRegisterDTO;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
-use App\Services\UserService;
+use App\Services\User\UserService;
 use Illuminate\Http\Response;
 
 class VerifyLogin
@@ -12,9 +12,12 @@ class VerifyLogin
     public function __invoke(LoginPhoneNumberVerify $request)
     {
         $dto = (new UserCompleteRegisterDTO);
-        $dto->setFirstName($request->first_name)
-            ->setLastName($request->last_name)
-            ->setGender($request->gender);
+        if($request->user->isNew())
+        {
+            $dto->setFirstName($request->first_name)
+                ->setLastName($request->last_name)
+                ->setGender($request->gender);
+        }
 
         [ $isOK, $tokens ] = app(UserService::class)::loginPhoneVerify(
             $request->user,

@@ -5,8 +5,8 @@ namespace Tests\Feature\Services;
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
-use App\Services\AuthService;
-use App\Services\UserService;
+use App\Services\Auth\AuthService;
+use App\Services\User\UserService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
@@ -73,6 +73,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($user->gender, $dto->gender);
         $this->assertTrue($user->activated_at == $date);
     }
+
     public function testCompleteRegisterForIsNewUserWithEmptyDTO()
     {
         $user = User::factory()->isNew()->create();

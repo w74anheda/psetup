@@ -4,19 +4,24 @@ namespace Tests\Feature\Services;
 
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
-use App\Services\AuthService;
-use App\Services\Passport\CustomToken;
-use App\Services\UserService;
+use App\Services\Auth\AuthService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
+use Laravel\Passport\Passport;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Token\Parser;
 use Tests\TestCase;
 
 class AuthServiceTest extends TestCase
 {
+
+    private function getTokenByAccessToken(User $user, string $accessToken)
+    {
+        $tokenID = (new Parser(new JoseEncoder()))->parse($accessToken)->claims()->all()['jti'];
+        $token   = $user->tokens()->where('id', $tokenID)->first();
+        return $token;
+    }
 
     private function createDto(bool $filled = true): UserCompleteRegisterDTO
     {
@@ -32,14 +37,13 @@ class AuthServiceTest extends TestCase
 
     private function createToken(User $user)
     {
-        [ $_, $verification ] = UserService::loginPhoneRequest($user->phone);
-        $dto                  = $this->createDto();
-        [ $isOK, $token ]     = UserService::loginPhoneVerify(
+        $verification = AuthService::generateVerificationCode($user);
+        $token        = AuthService::getAccessAndRefreshTokenByPhone(
             $user,
             $verification->hash,
-            $verification->code,
-            $dto
+            $verification->code
         );
+
         return $token;
     }
 
@@ -137,20 +141,198 @@ class AuthServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testasdsd()
+    public function testGetAccessAndRefreshTokenByPhone()
     {
-        $user        = User::factory()->isNew()->create();
-        $bearerToken = $this->createToken($user)['access_token'];
+        $user         = User::factory()->isNew()->create();
+        $verification = AuthService::generateVerificationCode($user);
 
-        $response = $this->actingAs($user, 'api')
-            ->getJson(
-                route('auth.profile.me'),
-                [
-                    'Authorization' => "Bearer {$bearerToken}"
-                ]
-            );
+        $token = AuthService::getAccessAndRefreshTokenByPhone(
+            $user,
+            $verification->hash,
+            $verification->code
+        );
 
+        $this->assertArrayHasKey('token_type', $token);
+        $this->assertArrayHasKey('expires_in', $token);
+        $this->assertArrayHasKey('access_token', $token);
+        $this->assertArrayHasKey('refresh_token', $token);
+        $this->assertTrue($token['token_type'] == 'Bearer');
+        $this->assertTrue($token['expires_in'] == 1296000);
+
+        $tokenModel = $this->getTokenByAccessToken($user, $token['access_token']);
+        $this->assertTrue($tokenModel->user->id == $user->id);
     }
+
+    public function testGetAccessAndRefreshTokenByPhoneWithInvalidHashAndCode()
+    {
+        $user = User::factory()->isNew()->create();
+
+        $token = AuthService::getAccessAndRefreshTokenByPhone(
+            $user,
+            'invalid hash',
+            'invalid code'
+        );
+
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('error_description', $token);
+        $this->assertArrayHasKey('message', $token);
+        $this->assertTrue($token['error'] == 'invalid_grant');
+        $this->assertTrue($token['error_description'] == 'The user credentials were incorrect.');
+        $this->assertTrue($token['message'] == 'The user credentials were incorrect.');
+    }
+
+    public function testGetAccessAndRefreshTokenByPhoneWithCustomUserAgentAndIp()
+    {
+        $user         = User::factory()->isNew()->create();
+        $verification = AuthService::generateVerificationCode($user);
+
+        $userAgent = fake()->userAgent();
+        $ip        = fake()->ipv4();
+        $token     = AuthService::getAccessAndRefreshTokenByPhone(
+            $user,
+            $verification->hash,
+            $verification->code,
+            [
+                'User-Agent' => $userAgent,
+                'ip-address' => $ip
+            ]
+        );
+
+        $tokenModel = $this->getTokenByAccessToken($user, $token['access_token']);
+
+        $this->assertEquals($tokenModel->user_agent, $userAgent);
+        $this->assertEquals($tokenModel->ip_address, $ip);
+    }
+
+    public function testRefreshAccessToken()
+    {
+        $user         = User::factory()->isNew()->create();
+        $verification = AuthService::generateVerificationCode($user);
+
+        $token = AuthService::getAccessAndRefreshTokenByPhone(
+            $user,
+            $verification->hash,
+            $verification->code
+        );
+
+        $newToken = AuthService::refreshAccessToken($token['refresh_token']);
+
+        $this->assertArrayHasKey('token_type', $newToken);
+        $this->assertArrayHasKey('expires_in', $newToken);
+        $this->assertArrayHasKey('access_token', $newToken);
+        $this->assertArrayHasKey('refresh_token', $newToken);
+        $this->assertTrue($newToken['token_type'] == 'Bearer');
+        $this->assertTrue($newToken['expires_in'] == 1296000);
+
+        $tokenModel = $this->getTokenByAccessToken($user, $newToken['access_token']);
+        $this->assertTrue($tokenModel->user->id == $user->id);
+    }
+
+    public function testRefreshAccessTokenWithCustomUserAgentAndIp()
+    {
+        $user         = User::factory()->isNew()->create();
+        $verification = AuthService::generateVerificationCode($user);
+
+        $token     = AuthService::getAccessAndRefreshTokenByPhone(
+            $user,
+            $verification->hash,
+            $verification->code
+        );
+        $userAgent = fake()->userAgent();
+        $ip        = fake()->ipv4();
+
+        $newToken = AuthService::refreshAccessToken(
+            $token['refresh_token'],
+            [
+                'User-Agent' => $userAgent,
+                'ip-address' => $ip
+            ]
+        );
+
+        $tokenModel = $this->getTokenByAccessToken($user, $newToken['access_token']);
+
+        $this->assertEquals($tokenModel->user_agent, $userAgent);
+        $this->assertEquals($tokenModel->ip_address, $ip);
+    }
+
+    public function testRefreshAccessTokenWithInvalidRefreshToken()
+    {
+        $newToken = AuthService::refreshAccessToken('invalid refresh token');
+
+        $this->assertArrayHasKey('error', $newToken);
+        $this->assertArrayHasKey('error_description', $newToken);
+        $this->assertArrayHasKey('message', $newToken);
+        $this->assertTrue($newToken['error'] == 'invalid_request');
+        $this->assertTrue($newToken['message'] == 'The refresh token is invalid.');
+    }
+
+    public function testSessions()
+    {
+        $user  = User::factory()->isNew()->create();
+        $token = $this->createToken($user);
+
+        $count = rand(2, 10);
+        foreach( range(1, $count) as $_ )
+        {
+            $this->createToken($user);
+        }
+
+        $sessions = AuthService::sessions($user, $token['access_token']);
+        $this->assertCount($count + 1, $sessions);
+
+        $this->assertEquals(
+            AuthService::getTokenModelByAccessToken($token['access_token'])->id,
+            $sessions[0]['id']
+        );
+
+        $this->assertTrue($sessions[0]['current']);
+
+        $this->assertArrayHasKey('id', $sessions[0]);
+        $this->assertArrayHasKey('user_agent', $sessions[0]);
+        $this->assertArrayHasKey('ip_address', $sessions[0]);
+        $this->assertArrayHasKey('created_at', $sessions[0]);
+        $this->assertArrayHasKey('expires_at', $sessions[0]);
+        $this->assertArrayHasKey('current', $sessions[0]);
+    }
+
+    public function testSessionsWithInvalidAccessToken()
+    {
+        $user  = User::factory()->isNew()->create();
+        $count = rand(2, 10);
+
+        foreach( range(1, $count) as $_ )
+        {
+            $this->createToken($user);
+        }
+
+        $sessions = AuthService::sessions($user, 'invalid access token');
+        $this->assertCount($count, $sessions);
+
+        foreach( $sessions as $session )
+        {
+            $this->assertFalse($session['current']);
+        }
+    }
+
+    public function testgetTokenModelByAccessToken()
+    {
+        $user  = User::factory()->isNew()->create();
+        $token = $this->createToken($user);
+
+        $tokenModel            = AuthService::getTokenModelByAccessToken($token['access_token'])->toArray();
+        $tokenModel['revoked'] = 0;
+        $this->assertDatabaseHas(
+            (new(Passport::tokenModel()))->getTable(),
+            [ 'id' => $tokenModel['id'] ]
+        );
+    }
+
+    public function testgetTokenModelByAccessTokenWithInvalidAccessToken()
+    {
+        $tokenModel = AuthService::getTokenModelByAccessToken('invalid access token');
+        $this->assertNull($tokenModel);
+    }
+
 
 
 }

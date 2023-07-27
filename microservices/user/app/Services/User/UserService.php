@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\User;
 
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use DateTime;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
+use App\Services\Auth\AuthService;
 use DB;
 use Exception;
 use InvalidArgumentException;
-use Str;
 
 class UserService
 {
@@ -73,7 +73,7 @@ class UserService
     public static function loginPhoneRequest(string $phone)
     {
         $user         = self::firstOrCreateUser($phone);
-        $verification = app(AuthService::class)::generateVerificationCode($user);
+        $verification = app(AuthService::class)->generateVerificationCode($user);
         PhoneNumberRequestEvent::dispatch($user);
         return [ $user, $verification ];
     }

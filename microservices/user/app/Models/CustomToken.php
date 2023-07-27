@@ -1,6 +1,6 @@
 <?php
+namespace App\Models;
 
-namespace App\Services\Passport;
 
 use Laravel\Passport\Bridge\RefreshTokenRepository;
 use Laravel\Passport\Token;

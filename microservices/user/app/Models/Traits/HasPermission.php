@@ -1,7 +1,7 @@
 <?php
+namespace App\Models\Traits;
 
 
-namespace App\Services\Acl;
 
 use App\Models\Permission;
 use App\Models\Role;

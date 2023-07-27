@@ -10,21 +10,15 @@ use App\Models\User;
 use App\Models\UserIp;
 use App\Models\UserPhoneVerification;
 use App\Presenters\Presenter;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Ramsey\Uuid\Lazy\LazyUuidFromString;
 use Tests\TestCase;
 use App\Presenters\User\Api as UserApiPresenter;
-use App\Presenters\User\Api2;
+use Carbon\Carbon;
 
 class UserTest extends TestCase
 {
-    use RefreshDatabase;
 
-    public function test_insert_data(): User
+    public function testInsertData()
     {
         $data = User::factory()->make()->getAttributes();
         $user = User::create($data);
@@ -33,40 +27,88 @@ class UserTest extends TestCase
         unset($data['personal_info']);
         $this->assertDatabaseHas('users', $data);
         $this->assertModelExists($user);
-        return $user;
+        $this->assertTrue($user->id instanceof LazyUuidFromString);
     }
 
-    /**
-     * @depends test_insert_data
-     */
-    public function test_check_user_factory($user)
+    public function testUserFactoryActivatedUser()
     {
-        $this->assertTrue($user->id instanceof LazyUuidFromString);
+        Carbon::setTestNow('2023-01-01 00:00:01');
+
+        $user = User::factory()->make();
+
         $this->assertIsString($user->first_name);
         $this->assertIsString($user->last_name);
         $this->assertContains($user->gender, [ 'male', 'female', 'both' ]);
         $this->assertIsString($user->phone);
-        $this->assertTrue(is_null($user->activated_at));
+        $this->assertEquals($user->activated_at, now());
         $this->assertTrue(!!filter_var($user->email, FILTER_VALIDATE_EMAIL));
         $this->assertTrue(is_null($user->email_verified_at));
-        $this->assertFalse($user->is_active);
-        $this->assertTrue($user->is_new);
+        $this->assertTrue($user->is_active);
+        $this->assertFalse($user->is_new);
         $this->assertTrue(!!filter_var($user->registered_ip, FILTER_VALIDATE_IP));
-        $this->assertTrue(is_array($user->personal_info));
-        $this->assertArrayHasKey('is_completed', $user->personal_info);
-        $this->assertArrayHasKey('birth_day', $user->personal_info);
-        $this->assertArrayHasKey('is_completed', $user->personal_info);
-        $this->assertArrayHasKey('national_id', $user->personal_info);
         $this->assertFalse($user->personal_info['is_completed']);
-        $this->assertTrue(is_null($user->personal_info['birth_day']));
-        $this->assertTrue(is_null($user->personal_info['national_id']));
+        $this->assertNull($user->personal_info['birth_day']);
+        $this->assertNull($user->personal_info['national_id']);
+
     }
 
-    /**
-     * @depends test_insert_data
-     */
-    public function test_check_attributes($user): void
+    public function testUserFactoryNewUser()
     {
+        $user = User::factory()->isNew()->make();
+        $this->assertNull($user->first_name);
+        $this->assertNull($user->last_name);
+        $this->assertNull($user->gender);
+        $this->assertIsString($user->phone);
+        $this->assertNull($user->activated_at);
+        $this->assertNull($user->email);
+        $this->assertNull($user->email_verified_at);
+        $this->assertFalse($user->is_active);
+        $this->assertTrue($user->is_new);
+        $this->assertNull($user->registered_ip);
+        $this->assertFalse($user->personal_info['is_completed']);
+        $this->assertNull($user->personal_info['birth_day']);
+        $this->assertNull($user->personal_info['national_id']);
+    }
+
+    public function testUserFactoryMaleUser()
+    {
+        $user = User::factory()->male()->make();
+        $this->assertEquals($user->gender, 'male');
+    }
+
+    public function testUserFactorySuerAdminUser()
+    {
+        $user = User::factory()->super()->make();
+        $this->assertEquals($user->phone, env('SUPER_ADMIN_PHONE_NUMBER'));
+    }
+
+    public function testUserFactoryNotActiveUser()
+    {
+        $user = User::factory()->notActive()->make();
+        $this->assertNull($user->first_name);
+        $this->assertNull($user->last_name);
+        $this->assertNull($user->gender);
+        $this->assertNull($user->activated_at);
+        $this->assertNull($user->registered_ip);
+        $this->assertNull($user->last_online_at);
+        $this->assertNull($user->email_verified_at);
+        $this->assertEquals($user->is_active, 0);
+        $this->assertEquals($user->is_new, 1);
+    }
+
+    public function testUserFactoryCompletedUser()
+    {
+        Carbon::setTestNow('2023-01-01 00:00:01');
+
+        $user = User::factory()->completed()->make();
+        $this->assertTrue($user->personal_info['is_completed']);
+        $this->assertEquals($user->personal_info['birth_day'], now());
+        $this->assertIsString($user->personal_info['national_id']);
+    }
+
+    public function testAttributes(): void
+    {
+        $user       = User::factory()->make();
         $attributes = [
             'first_name',
             'last_name',
@@ -81,15 +123,15 @@ class UserTest extends TestCase
             'is_new',
             'personal_info',
         ];
+
         foreach( $attributes as $key ) $this->assertArrayHasKey($key, $user->getAttributes());
     }
 
-    /**
-     * @depends test_insert_data
-     */
-    public function test_cast_hidden_fillable($user): void
+    public function testCastHiddenFillable(): void
     {
+        $user = User::factory()->make();
         $this->assertSame($user::GENDERS, [ 'male', 'female', 'both' ]);
+
         $this->assertSame(
             $user->getCasts(),
             [
@@ -131,11 +173,9 @@ class UserTest extends TestCase
 
     }
 
-    /**
-     * @depends test_insert_data
-     */
-    public function test_relations($user): void
+    public function testRelations(): void
     {
+        $user = User::factory()->make();
         $count       = rand(1, 10);
         $userfactory = User::factory();
 
@@ -166,20 +206,16 @@ class UserTest extends TestCase
 
     }
 
-    /**
-     * @depends test_insert_data
-     */
-    public function test_has_presenter($user)
+    public function testHasPresenter()
     {
+        $user = User::factory()->make();
         $this->assertTrue($user->present() instanceof Presenter);
         $this->assertTrue($user->present() instanceof UserApiPresenter);
     }
 
-    /**
-     * @depends test_insert_data
-     */
-    public function test_id_hash_type($user)
+    public function testIdHashType()
     {
+        $user = User::factory()->make();
         $this->assertFalse($user->incrementing);
         $this->assertEquals($user->getKeyType(), 'string');
     }

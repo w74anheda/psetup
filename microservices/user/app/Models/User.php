@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Casts\PersonalInfoCast;
 use App\Models\Traits\HasAddress;
 use App\Models\Traits\HasIp;
+use App\Models\Traits\HasPermission;
 use App\Models\Traits\HasPhoneVerification;
+use App\Models\Traits\HasRoles;
 use App\Presenters\PresentAble;
 use App\Presenters\Presenter;
 use App\Presenters\User\Api as UserApiPresenter;
-use App\Services\Acl\HasPermission;
-use App\Services\Acl\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;

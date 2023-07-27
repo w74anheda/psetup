@@ -2,10 +2,10 @@
 
 namespace App\Services\Auth;
 
+use App\Models\CustomToken;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
 use App\Services\Http\Facade\CustomHttp;
-use App\Services\Passport\CustomToken;
 use Exception;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;

@@ -4,8 +4,8 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
+use App\Models\CustomToken;
 use App\Services\Passport\CustomAccessTokenRepository;
-use App\Services\Passport\CustomToken;
 use App\Services\Passport\Grants\PhoneGrant;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\File;

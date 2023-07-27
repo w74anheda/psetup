@@ -11,7 +11,7 @@ class VerifyLogin
 {
     public function __invoke(LoginPhoneNumberVerify $request)
     {
-        $dto = (new UserCompleteRegisterDTO);
+        $dto = new UserCompleteRegisterDTO;
         if($request->user->isNew())
         {
             $dto->setFirstName($request->first_name)

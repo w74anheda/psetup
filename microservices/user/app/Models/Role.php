@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Services\Acl\HasPermission;
+use App\Models\Traits\HasPermission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

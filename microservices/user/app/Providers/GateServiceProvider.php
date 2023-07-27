@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Address;
+use App\Models\CustomToken;
 use App\Models\User;
-use App\Services\Passport\CustomToken;
 use Gate;
 use Illuminate\Support\ServiceProvider;
 

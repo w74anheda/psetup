@@ -5,8 +5,10 @@ RUN docker-php-ext-install sockets \
     && docker-php-ext-install pdo pdo_mysql \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     && apk add --update libzip-dev curl-dev \
-    && docker-php-ext-install curl 
+    && docker-php-ext-install curl
 
+RUN apk add --update linux-headers \
+    && pecl install xdebug-3.2.2 && docker-php-ext-enable xdebug
 
 WORKDIR /www/microservices/user
 

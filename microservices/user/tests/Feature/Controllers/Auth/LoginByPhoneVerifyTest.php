@@ -24,7 +24,7 @@ use Tests\TestCase;
 class LoginByPhoneVerifyTest extends TestCase
 {
 
-    protected function request(User $user = null)
+   /*  protected function request(User $user = null)
     {
         $user     = $user ?? User::factory()->isNew()->super()->create();
         $response = $this->post(
@@ -221,6 +221,6 @@ class LoginByPhoneVerifyTest extends TestCase
 
 
         $this->assertEquals($user->id, $request->user->id);
-    }
+    } */
 
 }

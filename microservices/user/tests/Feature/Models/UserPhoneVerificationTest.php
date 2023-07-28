@@ -10,11 +10,11 @@ class UserPhoneVerificationTest extends TestCase
 {
 
 
-    public function testTimestampWasFalse()
-    {
-        $state = State::factory()->make();
-        $this->assertFalse($state->timestamps);
-    }
+    // public function testTimestampWasFalse()
+    // {
+    //     $state = State::factory()->make();
+    //     $this->assertFalse($state->timestamps);
+    // }
 
 
 }

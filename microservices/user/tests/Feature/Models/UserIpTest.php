@@ -63,7 +63,7 @@ class UserIpTest extends TestCase
 
     }
 
-    public function stestRelations()
+    public function testRelations()
     {
         $userIpfactory = UserIp::factory();
         $userIp        = $userIpfactory->for(User::factory())->create();

@@ -34,4 +34,20 @@ abstract class TestCase extends BaseTestCase
             "The model {$model->getTable()} with composite key values does not exist."
         );
     }
+    public function assertIsDate(string $date)
+    {
+        $isDate = date('Y-m-d', strtotime($date)) == $date;
+        Assert::assertTrue(
+            !!$isDate,
+            "invalid date format"
+        );
+    }
+    public function assertIsDateTime(string $date)
+    {
+        $isDate = date('Y-m-d H:i:s', strtotime($date)) == $date;
+        Assert::assertTrue(
+            !!$isDate,
+            "invalid date time format"
+        );
+    }
 }

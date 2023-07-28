@@ -4,8 +4,6 @@ namespace Tests\Feature\Models;
 
 use App\Models\User;
 use App\Models\UserIp;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UserIpTest extends TestCase

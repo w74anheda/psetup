@@ -26,4 +26,9 @@ class UserPhoneVerificationFactory extends Factory
             'hash'      => Str::uuid(),
         ];
     }
+
+    public function expired()
+    {
+        return $this->state(fn(array $attr) => [ 'expire_at' => Carbon::now()->subDays(10) ]);
+    }
 }

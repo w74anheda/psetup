@@ -10,9 +10,16 @@ class UserIp extends Model
 {
     use HasFactory, HasUser;
 
+    protected $primaryKey = [ 'user_id', 'ip' ];
+
+    public $incrementing = false;
+
     protected $fillable = [
         'user_id',
         'ip'
     ];
+
+    //return $this->hasMany('relatedModels', ['foreignKey1', 'foreignKey2'], ['localKey1', 'localKey2']);
+
 
 }

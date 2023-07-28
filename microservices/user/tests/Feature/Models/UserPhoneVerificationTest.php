@@ -8,13 +8,13 @@ use Tests\TestCase;
 
 class UserPhoneVerificationTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
 
-        $response->assertStatus(200);
+
+    public function testTimestampWasFalse()
+    {
+        $state = State::factory()->make();
+        $this->assertFalse($state->timestamps);
     }
+
+
 }

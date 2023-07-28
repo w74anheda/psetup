@@ -1,7 +1,7 @@
 <template>
-    <div class="border p-2 border-primary shadow rounded-xl relative cursor-pointer"
+    <div class="border p-2 h-56 border-primary shadow rounded-xl relative cursor-pointer"
         v-for="item in addresses" :key="item.id">
-        <div class="font-IRANSans_Medium my-1">{{ item.full_address }}, پلاک {{
+        <div class="font-IRANSans_Medium my-1 truncate">{{ item.full_address }}, پلاک {{
             item.house_number }}, واحد {{ item.unit_number }}</div>
         <div class="flex gap-2 items-center my-2 text-dark-gray">
             <Icon name="ic:outline-my-location" size="20" />
@@ -19,8 +19,9 @@
             <Icon name="ic:outline-person-outline" size="20" />
             {{ user?.first_name }} {{ user?.last_name }}
         </div>
-        <div class="flex gap-1 items-center text-12 text-primary">
-            <Icon name="ri:checkbox-circle-line" size="18"/> 
+        <div
+            class="absolute bottom-2.5 flex gap-1 items-center text-12 text-primary">
+            <Icon name="ri:checkbox-circle-line" size="18" />
             آدرس پیشفرض
         </div>
         <div class="text-left absolute left-2 -bottom-1 my-2">
@@ -30,7 +31,7 @@
             <Transition name="alert">
                 <BaseTheDropdown v-if="dropdown && selectedAddress === item.id"
                     position="bottom-right">
-                    <span>ویرایش</span>
+                    <span @click="editMode(item)">ویرایش</span>
                     <span @click="deleteUserAddress(item.id)">حذف</span>
                 </BaseTheDropdown>
             </Transition>
@@ -44,7 +45,10 @@ import { useAddress } from "~~/store/addresses";
 import { useAuth } from '~~/store/userAuth';
 import { deleteAddress } from '~~/services/address';
 import { useNotify } from '~~/store/notify';
+import { useModal } from '~~/store/base/modal';
+import { IAddress } from '~~/models/address';
 
+const emit = defineEmits(["editMode"]);
 const dropdown = computed(() => useDropdown().dropdown);
 
 const addresses = computed(() => useAddress().userAddresses);
@@ -59,6 +63,10 @@ const deleteUserAddress = async (id: number) => {
     } else {
         useNotify().notify('آدرس حذف نشد، دوباره امتحان کنید.', 'error')
     }
+}
+const editMode = (item: IAddress) => {
+    emit('editMode', { data: item, mode: 'edit' });
+    useModal().modalHandler(true);
 }
 </script>
 

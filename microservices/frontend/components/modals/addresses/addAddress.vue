@@ -31,24 +31,32 @@
         </Form>
         <BaseTheMap v-else @SetCoordinate="value => coordinate = value" />
     </Transition>
-    <BaseTheButton @click="addUserAddress" v-if="coordinate" title="ثبت آدرس"
-        class="btn-primary mt-5" />
+    <span v-if="coordinate">
+        <BaseTheButton v-if="address" @click="editUserAddress" title="ویرایش آدرس"
+            class="btn-primary mt-5" />
+        <BaseTheButton v-else @click="addUserAddress" title="ثبت آدرس"
+            class="btn-primary mt-5" />
+    </span>
 </template>
 
 <script setup lang="ts">
-import { useAddress } from '~~/store/addresses';
-import { addAddress } from '~~/services/address'
 import * as Yup from 'yup';
+import { useAddress } from '~~/store/addresses';
+import { addAddress, editAddress } from '~~/services/address'
 import { useModal } from "~~/store/base/modal";
 import { useNotify } from '~~/store/notify';
+import { IAddress } from '~~/models/address';
 
+const props = defineProps<{
+    address?: IAddress
+}>()
 
 const emit = defineEmits(['mapModal']);
 const states = computed(() => useAddress().states);
 const cities = ref();
 const tab = ref(0);
-const coordinate = ref(null);
-const cityId = ref(null);
+const coordinate = ref();
+const cityId = ref<number | null>(null);
 
 const addressFormData = reactive({
     state: '',
@@ -70,9 +78,19 @@ const addressFormSchema = Yup.object().shape({
 
 onMounted(() => {
     emit('mapModal', false);
+    if (props.address) {
+        getCityByState(props.address.city.state_id);
+        cityId.value = props.address.city_id;
+        addressFormData.state = props.address.city.state.name;
+        addressFormData.city = props.address.city.name;
+        addressFormData.houseNumber = props.address.house_number.toString();
+        addressFormData.unitNumber = props.address.unit_number.toString();
+        addressFormData.postalCode = props.address.postalcode;
+        addressFormData.postalAddress = props.address.full_address;
+    }
 })
 
-const getCityByState = async (state: number) => {
+const getCityByState = (state: number) => {
     cities.value = useAddress().cities.filter(city => city.state_id === state);
     addressFormData.city = '';
 }
@@ -95,5 +113,24 @@ const addUserAddress = async () => {
     }
     useModal().modalHandler(false);
 
+}
+const editUserAddress = async () => {
+    //@ts-ignore
+    const res = await editAddress(props.address?.id, {
+        city_id: cityId.value!,
+        full_address: addressFormData.postalAddress,
+        house_number: Number(addressFormData.houseNumber),
+        unit_number: Number(addressFormData.unitNumber),
+        postalcode: addressFormData.postalCode,
+        latitude: coordinate.value![0],
+        longitude: coordinate.value![1],
+    });
+    if (res.status === 202) {
+        await useAddress().getUserAddresses();
+        useNotify().notify("آدرس با موفقیت ویرایش شد.", "info")
+    } else {
+        useNotify().notify("مشکلی وجود دارد، دوباره امتحان کنید.", "error")
+    }
+    useModal().modalHandler(false);
 }
 </script>

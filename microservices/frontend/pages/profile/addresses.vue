@@ -2,19 +2,21 @@
     <div
         class="h-full grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-1 py-3">
         <div class="bg-light-blue w-full p-2 cursor-pointer rounded-xl"
-            @click="useModal().modalHandler(true), selectedModal = 0">
+            @click="useModal().modalHandler(true), (mode = 'add')">
             <div
                 class="flex flex-col gap-2 p-5 text-darker-gray justify-center items-center h-full border-dashed border-2 border-secondary rounded-xl">
                 <Icon name="ic:outline-add-location" size="25" />
                 افزودن آدرس جدید
             </div>
         </div>
-        <ProfileAddresses />
+        <ProfileAddresses @editMode="(val) => (mode = val)" />
         <Transition name="fade">
-            <BaseTheModal :large="largeMapModal" title="افزودن آدرس جدید"
-                v-if="modal && selectedModal === 0">
+            <BaseTheModal :large="largeMapModal"
+                :title="mode === 'add' ? 'افزودن آدرس' : 'ویرایش آدرس'"
+                v-if="modal">
                 <ModalsAddressesAddAddress
-                    @mapModal="value => largeMapModal = value" />
+                    :address="mode === 'add' ? undefined : mode.data"
+                    @mapModal="(value) => (largeMapModal = value)" />
             </BaseTheModal>
         </Transition>
     </div>
@@ -24,18 +26,17 @@
 import { useModal } from "~~/store/base/modal";
 import { useAddress } from "~~/store/addresses";
 
-const largeMapModal = ref(false);
-const selectedModal = ref(-1);
 const modal = computed(() => useModal().modal);
+const largeMapModal = ref(false);
+const mode = ref<any>(null);
 
 onMounted(async () => {
-    if (!useAddress().userAddresses) {
+    if (!useAddress().userAddresses.length) {
         await useAddress().getUserAddresses();
-        await useAddress().getState();
-        await useAddress().getCity();
+        useAddress().getState();
+        useAddress().getCity();
     }
 }),
-
     definePageMeta({
         layout: "profile",
     });

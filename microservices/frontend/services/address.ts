@@ -21,6 +21,13 @@ export const addAddress = (command: IAddress): Promise<ApiResponse<IAddress>> =>
     })
 }
 
+export const editAddress = (addressId: number, command: IAddress): Promise<ApiResponse<undefined>> => {
+    return FetchApi("address/" + addressId, {
+        method: "PATCH",
+        data: command
+    })
+}
+
 export const deleteAddress = (addressId: number): Promise<ApiResponse<undefined>> => {
     return FetchApi("address/" + addressId, {
         method: "DELETE",

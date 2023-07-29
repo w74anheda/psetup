@@ -2,7 +2,7 @@
 
 namespace App\Services\Auth;
 
-use App\Models\CustomToken;
+use App\Models\PassportCustomToken;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
 use App\Services\Http\Facade\CustomHttp;
@@ -14,7 +14,7 @@ use Lcobucci\JWT\Token\Parser;
 
 class AuthService
 {
-    public static function tokenDestroy(CustomToken $token): bool
+    public static function tokenDestroy(PassportCustomToken $token): bool
     {
         $refreshTokenRepository = resolve(RefreshTokenRepository::class);
         $refreshTokenRepository->revokeRefreshToken($token->id);
@@ -136,7 +136,7 @@ class AuthService
         try
         {
             $tokenID = (new Parser(new JoseEncoder()))->parse($accessToken)->claims()->all()['jti'];
-            $token   = CustomToken::where('id', $tokenID)->first();
+            $token   = PassportCustomToken::where('id', $tokenID)->first();
             return $token;
         }
         catch (Exception $err)

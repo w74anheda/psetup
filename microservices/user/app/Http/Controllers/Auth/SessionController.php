@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomToken;
+use App\Models\PassportCustomToken;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,7 +29,7 @@ class SessionController extends Controller
         );
     }
 
-    public function delete(CustomToken $token)
+    public function delete(PassportCustomToken $token)
     {
         AuthService::tokenDestroy($token);
         return Response(

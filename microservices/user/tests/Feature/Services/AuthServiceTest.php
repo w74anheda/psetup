@@ -102,8 +102,7 @@ class AuthServiceTest extends TestCase
         Carbon::setTestNow('2023-01-01 00:00:00');
         $user             = User::factory()->create();
         $verificationCode = AuthService::generateVerificationCode($user);
-
-        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->toArray());
+        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->getAttributes());
         $this->assertTrue($user->id == $verificationCode->user->id);
 
         $expireAt = now()->addSeconds(
@@ -116,12 +115,13 @@ class AuthServiceTest extends TestCase
     public function testGenerateVerificationCodeWithPassCode(): void
     {
         $user             = User::factory()->create();
-        $code             = Str::random(5);
+        $code             = generate_random_digits_with_specefic_length(5);
         $verificationCode = AuthService::generateVerificationCode($user, $code);
 
-        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->toArray());
+        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->getAttributes());
         $this->assertTrue($user->id == $verificationCode->user->id);
         $this->assertTrue($code == $verificationCode->code);
+        $this->assertIsNumeric($verificationCode->code);
     }
 
     public function testClearVerificationCodeWithValidHash(): void

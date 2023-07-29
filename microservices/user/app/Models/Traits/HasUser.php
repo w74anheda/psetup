@@ -6,8 +6,8 @@ use App\Models\User;
 
 trait HasUser
 {
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'users_permissions');
     }
 }

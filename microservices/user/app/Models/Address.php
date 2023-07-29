@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\HasCity;
-use App\Models\Traits\HasUser;
+use App\Models\Traits\BelongsToUser;
 use App\Presenters\Address\Api as AddressApiPresenter;
 use App\Presenters\PresentAble;
 use App\Presenters\Presenter;
@@ -14,7 +14,7 @@ class Address extends Model
 {
     use
         HasFactory,
-        HasUser,
+        BelongsToUser,
         HasCity,
         PresentAble;
 

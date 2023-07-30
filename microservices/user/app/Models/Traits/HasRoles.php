@@ -13,7 +13,8 @@ trait HasRoles
 
     public function roles()
     {
-        switch ($this) {
+        switch($this)
+        {
 
             case $this instanceof User:
                 return $this->belongsToMany(Role::class, 'users_roles');
@@ -22,22 +23,19 @@ trait HasRoles
         }
     }
 
-    protected function getAllRoles(string ...$roles_name)
+    protected function getAllRoles(string...$roles_name)
     {
-        return Role::whereIntegerInRaw('name', Arr::flatten($roles_name))->get();
+        return Role::whereIn('name', Arr::flatten($roles_name))->get();
     }
 
-    public function addRoles(string ...$roles_name)
+    public function addRoles(string...$roles_name): self
     {
-
         $roles = $this->getAllRoles(...$roles_name);
-
         $this->roles()->syncWithoutDetaching($roles);
-
         return $this;
     }
 
-    public function removeRoles(string ...$roles_name)
+    public function removeRoles(string...$roles_name): self
     {
 
         $roles = $this->getAllRoles(...$roles_name);
@@ -47,11 +45,10 @@ trait HasRoles
         return $this;
     }
 
-    public function refreshRoles(string ...$roles_name)
+    public function refreshRoles(string...$roles_name): self
     {
 
         $roles = $this->getAllRoles(...$roles_name);
-
         $this->roles()->sync($roles);
 
         return $this;

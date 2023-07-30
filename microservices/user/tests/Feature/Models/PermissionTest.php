@@ -5,6 +5,7 @@ namespace Tests\Feature\Models;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PermissionTest extends TestCase
@@ -65,7 +66,7 @@ class PermissionTest extends TestCase
 
     public function testRelations(): void
     {
-        $count       = rand(1, 10);
+        $count             = rand(1, 10);
         $permissionfactory = Permission::factory();
 
         $permissions = $permissionfactory->has(User::factory()->count($count))->create();
@@ -84,6 +85,67 @@ class PermissionTest extends TestCase
         $permission = Permission::factory()->make();
         $this->assertFalse($permission->timestamps);
     }
+
+    public function testHasAndRoles()
+    {
+        $role       = Role::factory()->create();
+        $permission = Permission::factory()->create();
+
+        $this->assertFalse(
+            $permission->hasRole($role->name)
+        );
+
+        $permission = $permission->addRoles($role->name);
+        $this->assertTrue($permission instanceof Permission);
+        $permission->load([ 'roles' ]);
+        $this->assertTrue(
+            $permission->hasRole($role->name)
+        );
+    }
+    public function testRemoveRoles()
+    {
+        $roles      = Role::factory()->count(rand(1, 10))->create();
+        $permission = Permission::factory()->create();
+        $permission->addRoles(...$roles->pluck('name'));
+
+        $permission = $permission->removeRoles(...$roles->pluck('name'));
+        $this->assertTrue($permission instanceof Permission);
+        $permission->load([ 'roles' ]);
+        foreach( $roles as $role )
+        {
+            $this->assertFalse(
+                $permission->hasRole($role->name)
+            );
+        }
+
+    }
+
+    public function testRefreshRoles()
+    {
+        $roles      = Role::factory()->count(rand(1, 4))->create();
+        $permission = Permission::factory()->create();
+        $permission->addRoles(...$roles->pluck('name'));
+
+        $new_roles  = Role::factory()->count(rand(1, 4))->create();
+        $permission = $permission->refreshRoles(...$new_roles->pluck('name'));
+        $this->assertTrue($permission instanceof Permission);
+
+        $this->assertFalse(
+            $permission->roles->contains('id', $roles->first()->id)
+        );
+        $this->assertTrue(
+            $permission->roles->contains('id', $new_roles->first()->id)
+        );
+
+    }
+
+
+
+
+
+
+
+
 
 
 

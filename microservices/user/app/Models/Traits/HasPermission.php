@@ -17,19 +17,19 @@ trait HasPermission
 
     abstract public function hasPermission(string $permission_name): bool;
 
-    private function getPermissions(string...$permissions_name)
+    protected function getPermissions(string...$permissions_name)
     {
         return Permission::whereIn('name', $permissions_name)->get();
     }
 
-    public function addPermissions(string...$permissions_name)
+    public function addPermissions(string...$permissions_name): self
     {
         $permissions = $this->getPermissions(...$permissions_name);
         $this->permissions()->syncWithoutDetaching($permissions);
         return $this;
     }
 
-    public function removePermissions(string...$permissions_name)
+    public function removePermissions(string...$permissions_name): self
     {
 
         $permissions = $this->getPermissions(...$permissions_name);
@@ -39,7 +39,7 @@ trait HasPermission
         return $this;
     }
 
-    public function refreshPermissions(string...$permissions_name)
+    public function refreshPermissions(string...$permissions_name): self
     {
 
         $permissions = $this->getPermissions(...$permissions_name);

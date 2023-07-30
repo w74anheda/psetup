@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,7 +16,7 @@ class InfoController extends Controller
     {
         $user = $request->user();
         return response(
-            [ ...$user->toArray(), 'permissions' => $user->allPermissions()->get() ],
+            [ ...$user->toArray(), 'permissions' => UserService::allPermissions($user) ],
             Response::HTTP_OK
         );
     }

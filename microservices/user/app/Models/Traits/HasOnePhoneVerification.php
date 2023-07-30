@@ -4,7 +4,7 @@ namespace App\Models\Traits;
 
 use App\Models\UserPhoneVerification;
 
-trait HasPhoneVerification
+trait HasOnePhoneVerification
 {
     public function phoneVerifications()
     {

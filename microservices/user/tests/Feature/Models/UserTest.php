@@ -175,7 +175,7 @@ class UserTest extends TestCase
 
     public function testRelations(): void
     {
-        $user = User::factory()->make();
+        $user        = User::factory()->make();
         $count       = rand(1, 10);
         $userfactory = User::factory();
 
@@ -219,4 +219,122 @@ class UserTest extends TestCase
         $this->assertFalse($user->incrementing);
         $this->assertEquals($user->getKeyType(), 'string');
     }
+
+    public function testHasAndAddPermission()
+    {
+        $user       = User::factory()->create();
+        $permission = Permission::factory()->create();
+
+        $this->assertFalse(
+            $user->hasPermission($permission->name)
+        );
+
+        $user = $user->addPermissions($permission->name);
+        $this->assertTrue($user instanceof User);
+        $user->load([ 'permissions' ]);
+
+        $this->assertTrue(
+            $user->hasPermission($permission->name)
+        );
+    }
+
+    public function testRemovePeremissions()
+    {
+        $permissions = Permission::factory()->count(rand(1, 10))->create();
+        $user        = User::factory()->create();
+        $user->addPermissions(...$permissions->pluck('name'));
+
+        $user = $user->removePermissions(...$permissions->pluck('name'));
+        $this->assertTrue($user instanceof User);
+
+        $user->load([ 'permissions' ]);
+        foreach( $permissions as $permissions )
+        {
+            $this->assertFalse(
+                $user->hasPermission($permissions->name)
+            );
+        }
+
+    }
+
+    public function testRefreshPeremissions()
+    {
+        $user        = User::factory()->create();
+        $permissions = Permission::factory()->count(rand(1, 10))->create();
+        $user->addPermissions(...$permissions->pluck('name'));
+
+        $new_permissions  = Permission::factory()->count(rand(1, 10))->create();
+
+        $user = $user->refreshPermissions(...$new_permissions->pluck('name'));
+
+        $this->assertTrue($user instanceof User);
+
+        $this->assertFalse(
+            $user->permissions->contains('name', $permissions->first()->name)
+        );
+
+        $this->assertTrue(
+            $user->permissions->contains('name', $new_permissions->first()->name)
+        );
+
+    }
+
+    public function testHasAndAddRoles()
+    {
+        $user        = User::factory()->create();
+        $role       = Role::factory()->create();
+
+        $this->assertFalse(
+            $user->hasRole($role->name)
+        );
+
+        $user = $user->addRoles($role->name);
+        $this->assertTrue($user instanceof User);
+        $user->load([ 'roles' ]);
+        $this->assertTrue(
+            $user->hasRole($role->name)
+        );
+    }
+
+    public function testRemoveRoles()
+    {
+        $user        = User::factory()->create();
+        $roles      = Role::factory()->count(rand(1, 10))->create();
+        $user->addRoles(...$roles->pluck('name'));
+
+        $user = $user->removeRoles(...$roles->pluck('name'));
+        $this->assertTrue($user instanceof User);
+        $user->load([ 'roles' ]);
+        foreach( $roles as $role )
+        {
+            $this->assertFalse(
+                $user->hasRole($role->name)
+            );
+        }
+
+    }
+
+    public function testRefreshRoles()
+    {
+        $user        = User::factory()->create();
+        $roles      = Role::factory()->count(rand(1, 4))->create();
+        $user->addRoles(...$roles->pluck('name'));
+
+        $new_roles  = Role::factory()->count(rand(1, 4))->create();
+        $user = $user->refreshRoles(...$new_roles->pluck('name'));
+        $this->assertTrue($user instanceof User);
+
+        $this->assertFalse(
+            $user->roles->contains('name', $roles->first()->name)
+        );
+        $this->assertTrue(
+            $user->roles->contains('name', $new_roles->first()->name)
+        );
+
+    }
+
+
+
+
+
 }

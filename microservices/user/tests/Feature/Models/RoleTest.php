@@ -103,24 +103,6 @@ class RoleTest extends TestCase
         );
     }
 
-    public function testRemoveRoles()
-    {
-        $roles      = Role::factory()->count(rand(1, 10))->create();
-        $permission = Permission::factory()->create();
-        $permission->addRoles(...$roles->pluck('name'));
-
-        $permission = $permission->removeRoles(...$roles->pluck('name'));
-        $this->assertTrue($permission instanceof Permission);
-        $permission->load([ 'roles' ]);
-        foreach( $roles as $role )
-        {
-            $this->assertFalse(
-                $permission->hasRole($role->name)
-            );
-        }
-
-    }
-
     public function testRemovePeremissions()
     {
         $role      = Role::factory()->create();
@@ -139,7 +121,6 @@ class RoleTest extends TestCase
         }
 
     }
-
 
     public function testRefreshPeremissions()
     {

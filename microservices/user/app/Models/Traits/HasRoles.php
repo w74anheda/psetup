@@ -14,7 +14,6 @@ trait HasRoles
 
     abstract public function roles(): BelongsToMany;
 
-
     protected function getRoles(string...$roles_name)
     {
         return Role::whereIn('name', Arr::flatten($roles_name))->get();

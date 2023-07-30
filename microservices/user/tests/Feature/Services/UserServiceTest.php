@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -344,4 +346,56 @@ class UserServiceTest extends TestCase
                 ->setGender($data['gender']);
         return $dto;
     }
+
+    public function testHasPermissionThroughRole()
+    {
+        $user       = User::factory()->create();
+        $role       = Role::factory()->create();
+        $permission_A = Permission::factory()->create();
+        $permission_B = Permission::factory()->create();
+        $role->addPermissions($permission_A->name);
+
+        $this->assertFalse(
+            UserService::hasPermissionThroughRole($user, $permission_A->name)
+        );
+
+        $user->addRoles($role->name);
+        $this->assertTrue(
+            UserService::hasPermissionThroughRole($user, $permission_A->name)
+        );
+        $this->assertFalse(
+            UserService::hasPermissionThroughRole($user, $permission_B->name)
+        );
+
+    }
+
+    public function testAllPermissions()
+    {
+        $user       = User::factory()->create();
+        $role       = Role::factory()->create();
+        $permission_A = Permission::factory()->create();
+        $permission_B = Permission::factory()->create();
+        $permission_C = Permission::factory()->create();
+        $permission_D = Permission::factory()->create();
+
+        $role->addPermissions($permission_A->name);
+        $role->addPermissions($permission_B->name);
+        $user->addPermissions($permission_C->name);
+        $user->addRoles($role->name);
+
+        $permissions = UserService::allPermissions($user);
+
+        $this->assertTrue(
+            $permissions->contains('name',$permission_A->name) &&
+            $permissions->contains('name',$permission_B->name) &&
+            $permissions->contains('name',$permission_C->name)
+        );
+        $this->assertFalse(
+            $permissions->contains('name',$permission_D->name)
+        );
+
+    }
+
+
+
 }

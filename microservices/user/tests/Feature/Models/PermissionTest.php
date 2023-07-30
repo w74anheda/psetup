@@ -86,7 +86,7 @@ class PermissionTest extends TestCase
         $this->assertFalse($permission->timestamps);
     }
 
-    public function testHasAndRoles()
+    public function testHasAndAddRoles()
     {
         $role       = Role::factory()->create();
         $permission = Permission::factory()->create();
@@ -102,6 +102,7 @@ class PermissionTest extends TestCase
             $permission->hasRole($role->name)
         );
     }
+
     public function testRemoveRoles()
     {
         $roles      = Role::factory()->count(rand(1, 10))->create();
@@ -131,10 +132,10 @@ class PermissionTest extends TestCase
         $this->assertTrue($permission instanceof Permission);
 
         $this->assertFalse(
-            $permission->roles->contains('id', $roles->first()->id)
+            $permission->roles->contains('name', $roles->first()->name)
         );
         $this->assertTrue(
-            $permission->roles->contains('id', $new_roles->first()->id)
+            $permission->roles->contains('name', $new_roles->first()->name)
         );
 
     }

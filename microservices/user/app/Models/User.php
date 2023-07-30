@@ -11,7 +11,9 @@ use App\Models\Traits\HasRoles;
 use App\Presenters\PresentAble;
 use App\Presenters\Presenter;
 use App\Presenters\User\Api as UserApiPresenter;
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -87,6 +89,61 @@ class User extends Authenticatable
     public function isNew(): bool
     {
         return !!$this->is_new;
+    }
+
+    public function hasPermission(string $permission_name): bool
+    {
+        $permission = Permission::where('name', $permission_name)->first();
+        if(!$permission) return false;
+        return $this->hasPermissionThroughRole($permission)
+            || $this->permissions->contains('name', $permission_name);
+    }
+
+    protected function hasPermissionThroughRole(Permission $permission): bool
+    {
+
+        foreach( $permission->roles as $role )
+        {
+            if($this->roles->contains($role))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'users_permissions');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'users_roles');
+    }
+
+    public function allPermissions()
+    {
+        if(!$this instanceof User) return null;
+
+        $a = DB::table('users')
+            ->select('permissions.id as id', 'permissions.name as name')
+            ->join('users_permissions', 'users.id', '=', 'users_permissions.user_id')
+            ->join('permissions', 'permissions.id', '=', 'users_permissions.user_id')
+            ->where([ 'user_id' => $this->id ])
+            ->distinct();
+
+        $b = DB::table('users')
+            ->select('permissions.id as id', 'permissions.name as name')
+            ->join('users_roles', 'users.id', '=', 'users_roles.user_id')
+            ->join('roles', 'users_roles.role_id', '=', 'roles.id')
+            ->join('roles_permissions', 'roles.id', '=', 'roles_permissions.role_id')
+            ->join('permissions', 'permissions.id', '=', 'roles_permissions.permission_id')
+            ->where([ 'user_id' => $this->id ])
+            ->distinct();
+
+        return $a->union($b)->orderBy('id');
     }
 
 }

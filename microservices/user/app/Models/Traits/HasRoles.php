@@ -6,31 +6,23 @@ namespace App\Models\Traits;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 
 trait HasRoles
 {
 
-    public function roles()
-    {
-        switch($this)
-        {
+    abstract public function roles(): BelongsToMany;
 
-            case $this instanceof User:
-                return $this->belongsToMany(Role::class, 'users_roles');
-            case $this instanceof Permission:
-                return $this->belongsToMany(Role::class, 'roles_permissions');
-        }
-    }
 
-    protected function getAllRoles(string...$roles_name)
+    protected function getRoles(string...$roles_name)
     {
         return Role::whereIn('name', Arr::flatten($roles_name))->get();
     }
 
     public function addRoles(string...$roles_name): self
     {
-        $roles = $this->getAllRoles(...$roles_name);
+        $roles = $this->getRoles(...$roles_name);
         $this->roles()->syncWithoutDetaching($roles);
         return $this;
     }
@@ -38,7 +30,7 @@ trait HasRoles
     public function removeRoles(string...$roles_name): self
     {
 
-        $roles = $this->getAllRoles(...$roles_name);
+        $roles = $this->getRoles(...$roles_name);
 
         $this->roles()->detach($roles);
 
@@ -48,7 +40,7 @@ trait HasRoles
     public function refreshRoles(string...$roles_name): self
     {
 
-        $roles = $this->getAllRoles(...$roles_name);
+        $roles = $this->getRoles(...$roles_name);
         $this->roles()->sync($roles);
 
         return $this;

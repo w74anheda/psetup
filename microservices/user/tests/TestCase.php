@@ -12,6 +12,7 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
     use RefreshDatabase;
 
+    // vendor/bin/phpunit  --coverage-html coverage_report
 
     public function setup(): void
     {

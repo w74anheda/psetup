@@ -2,42 +2,27 @@
 
 namespace Tests\Feature\Controllers\Auth;
 
-use App\Http\Controllers\Auth\Login\PhoneNumber\VerifyLogin;
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
 use App\Models\User;
-use App\Models\UserPhoneVerification;
-use App\Services\AuthService;
-use App\Services\User\UserService;
-use Carbon\Carbon;
-use DateTime;
-use DB;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Laravel\Passport\Client;
-use Laravel\Passport\ClientRepository;
-use Laravel\Passport\Passport;
-use Mockery\MockInterface;
 use Tests\TestCase;
 
 class LoginByPhoneVerifyTest extends TestCase
 {
 
-   /*  protected function request(User $user = null)
+    protected function request(User $user = null)
     {
-        $user     = $user ?? User::factory()->isNew()->super()->create();
+        $user     = $user ?? User::factory()->isNew()->create();
         $response = $this->post(
             route('auth.login.phonenumber.request'),
             [ 'phone' => $user->phone ]
         );
 
         $data = $response->decodeResponseJson()->json();
-        $this->assertTrue($data['verification']['is_new']);
         return [ $user, $data['verification'] ];
     }
 
-    public function test_without_data()
+    public function testWithoutData()
     {
         $response = $this->post(
             route('auth.login.phonenumber.verify'),
@@ -46,7 +31,7 @@ class LoginByPhoneVerifyTest extends TestCase
         $response->assertSessionHasErrors([ 'code' => "The code field is required." ]);
     }
 
-    public function test_with_invalid_code_type()
+    public function testWithInvalidCodeType()
     {
         $response = $this->post(
             route('auth.login.phonenumber.verify'),
@@ -57,7 +42,7 @@ class LoginByPhoneVerifyTest extends TestCase
         ]);
     }
 
-    public function test_with_just_valid_code()
+    public function testWithJustValidCode()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -68,7 +53,7 @@ class LoginByPhoneVerifyTest extends TestCase
         $response->assertSessionHasErrors([ 'hash' => "The hash field is required." ]);
     }
 
-    public function test_with_valid_code_and_invalid_hash_type()
+    public function testWithValidCodeAndInvalidHashType()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -83,7 +68,7 @@ class LoginByPhoneVerifyTest extends TestCase
     }
 
 
-    public function test_with_valid_code_and_hash()
+    public function testWithValidCodeAndHash()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -101,7 +86,7 @@ class LoginByPhoneVerifyTest extends TestCase
         ]);
     }
 
-    public function test_with_min_length_first_and_last_name()
+    public function testWithMinLengthFirstAndLastName()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -121,7 +106,7 @@ class LoginByPhoneVerifyTest extends TestCase
         ]);
     }
 
-    public function test_with_max_length_first_and_last_name()
+    public function testWithMaxLengthFirstAndLastName()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -140,7 +125,7 @@ class LoginByPhoneVerifyTest extends TestCase
         ]);
     }
 
-    public function test_with_invalid_type_first_and_last_name()
+    public function testWithInvalidTypeFirstAndLast_name()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -159,7 +144,7 @@ class LoginByPhoneVerifyTest extends TestCase
         ]);
     }
 
-    public function test_with_invalid_type_gender()
+    public function testWithInvalidTypeGender()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -176,12 +161,8 @@ class LoginByPhoneVerifyTest extends TestCase
         ]);
     }
 
-    public function test_with_valid_data()
+    public function testWithValidData()
     {
-        $date = Carbon::parse('2023-07-14 10:00:00');
-
-        Carbon::setTestNow($date);
-
         [ $user, $requestData ] = $this->request();
 
         $response = $this->postJson(
@@ -194,17 +175,23 @@ class LoginByPhoneVerifyTest extends TestCase
                 'gender'     => fake()->randomElement([ 'male', 'female', 'both' ]),
             ]
         );
+
         $response->assertJsonStructure([
             'token_type',
             'expires_in',
             'access_token',
             'refresh_token',
         ]);
+
         $this->assertEquals($response->json()['token_type'], 'Bearer');
         $this->assertEquals($response->json()['expires_in'], 1296000);
+
+        $user->refresh();
+        $this->assertFalse($user->isNew());
+        $this->assertTrue($user->isActive());
     }
 
-    public function test_LoginPhoneNumberVerify_form_request_return_user()
+    public function testReturnedUserFromLoginPhoneNumberVerifyRequest()
     {
         [ $user, $requestData ] = $this->request();
 
@@ -221,6 +208,125 @@ class LoginByPhoneVerifyTest extends TestCase
 
 
         $this->assertEquals($user->id, $request->user->id);
-    } */
+    }
+
+    public function testIsNotNewUserWithNullData()
+    {
+
+        [ $user, $requestData ] = $this->request();
+
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+                'first_name' => fake()->firstName(),
+                'last_name'  => fake()->lastName(),
+                'gender'     => fake()->randomElement([ 'male', 'female', 'both' ]),
+            ]
+        );
+
+        $user->refresh();
+        [ $user, $requestData ] = $this->request($user);
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+                'first_name' => null,
+                'last_name'  => null,
+                'gender'     => null,
+            ]
+        );
+        $response->assertJsonStructure([
+            'token_type',
+            'expires_in',
+            'access_token',
+            'refresh_token',
+        ]);
+
+
+        $user->refresh();
+        [ $user, $requestData ] = $this->request($user);
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+            ]
+        );
+        $response->assertJsonStructure([
+            'token_type',
+            'expires_in',
+            'access_token',
+            'refresh_token',
+        ]);
+
+
+    }
+
+    public function testIsNotNewUserWithNewData()
+    {
+        $first_name = fake()->firstName();
+        $last_name = fake()->lastName();
+        $gender = fake()->randomElement([ 'male', 'female', 'both' ]);
+        [ $user, $requestData ] = $this->request();
+
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+                'first_name' => $first_name,
+                'last_name'  => $last_name,
+                'gender'     => $gender,
+            ]
+        );
+        $user->refresh();
+        $this->assertEquals($user->first_name,$first_name);
+        $this->assertEquals($user->last_name,$last_name);
+        $this->assertEquals($user->gender,$gender);
+
+
+
+        [ $user, $requestData ] = $this->request($user);
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+                'first_name' => fake()->firstName(),
+                'last_name'  => fake()->lastName(),
+                'gender'     => fake()->randomElement([ 'male', 'female', 'both' ]),
+            ]
+        );
+
+        $response->assertJsonStructure([
+            'token_type',
+            'expires_in',
+            'access_token',
+            'refresh_token',
+        ]);
+
+        $user->refresh();
+        $this->assertEquals($user->first_name,$first_name);
+        $this->assertEquals($user->last_name,$last_name);
+        $this->assertEquals($user->gender,$gender);
+
+
+        [ $user, $requestData ] = $this->request($user);
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+                'first_name' => 'in',
+                'last_name'  => 'in',
+                'gender'     => 'in',
+            ]
+        );
+
+    }
+
 
 }

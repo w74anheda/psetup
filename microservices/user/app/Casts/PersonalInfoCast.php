@@ -16,7 +16,7 @@ class PersonalInfoCast implements CastsAttributes
             'is_completed' => $value['is_completed'] ?? false,
             'birth_day'    =>
             ($value['birth_day'] ?? null)
-            ? Carbon::parse($value['birth_day'])->format('Y-m-d') : null,
+            ? Carbon::parse($value['birth_day']) : null,
             'national_id'  => $value['national_id'] ?? null,
         ];
     }

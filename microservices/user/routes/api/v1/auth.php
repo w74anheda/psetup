@@ -21,7 +21,10 @@ Route::prefix('auth')->name('auth.')->group(function ()
 
     });
 
-    route::post('refreshAccessToken', [ RenewAccessTokenController::class, 'refreshAccessToken' ]);
+    route::post(
+        'refreshAccessToken',
+        [ RenewAccessTokenController::class, 'refreshAccessToken' ]
+    )->name('refreshAccessToken');
 
     Route::middleware([ 'auth:api' ])->name('profile.')->group(function ()
     {

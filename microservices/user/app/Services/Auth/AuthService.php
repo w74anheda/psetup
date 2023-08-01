@@ -75,7 +75,7 @@ class AuthService
         return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
 
-    public static function refreshAccessToken(string $refresh_token, array $headers = [])
+    public static function refreshAccessToken(string $refresh_token, array $headers = []): array
     {
         $passportClient = app('PassportAuthPhoneClient');
 

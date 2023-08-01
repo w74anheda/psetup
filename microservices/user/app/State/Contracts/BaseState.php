@@ -2,7 +2,7 @@
 
 namespace App\State\Contracts;
 
-abstract class BaseState
+class BaseState
 {
 
     public function __construct(protected $entity)

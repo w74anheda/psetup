@@ -14,6 +14,9 @@ class CompleteProfileController extends Controller
         // call complete profile in user service
         // call action from user state
         // create api resourse
+
+        // add userService test for verify login and check user name and ...
+
         $user = $request->user();
 
         if(!$user->personal_info['is_completed'] ?? false)

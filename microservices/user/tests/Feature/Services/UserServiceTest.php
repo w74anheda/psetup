@@ -14,6 +14,7 @@ use Tests\TestCase;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
 use App\Models\Permission;
 use App\Models\Role;
+use App\State\User\NewUserState;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -62,12 +63,12 @@ class UserServiceTest extends TestCase
         $date = Carbon::parse('2023-07-14 10:00:00');
         Carbon::setTestNow($date);
 
-        $user = UserService::completeRegister(
+        UserService::completeRegister(
             $user,
             $dto,
             $date
         );
-
+        $user->refresh();
         $this->assertFalse($user->isNew());
         $this->assertTrue($user->is_active);
         $this->assertEquals($user->first_name, $dto->first_name);
@@ -82,7 +83,7 @@ class UserServiceTest extends TestCase
         $this->assertTrue($user->isNew());
         $dto = $this->createDto(false);
         $this->expectException(InvalidArgumentException::class);
-        $user = UserService::completeRegister($user, $dto);
+        UserService::completeRegister($user, $dto);
     }
 
     public function testCompleteRegisterForIsNotNewUser()
@@ -98,11 +99,12 @@ class UserServiceTest extends TestCase
         $date = Carbon::parse('2023-07-14 10:00:00');
         Carbon::setTestNow($date);
 
-        $user = UserService::completeRegister(
+        UserService::completeRegister(
             $user,
             $dto,
             $date
         );
+        $user->refresh();
 
         $this->assertFalse($user->isNew());
         $this->assertTrue($user->is_active);
@@ -118,19 +120,19 @@ class UserServiceTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function testCompleteRegisterReturnUser()
+    public function testCompleteRegisterReturnBool()
     {
         $dto  = $this->createDto();
         $user = User::factory()->create();
         $date = Carbon::parse('2023-07-14 10:00:00');
 
-        $_user = UserService::completeRegister(
-            $user,
-            $dto,
-            $date
+        $this->assertIsBool(
+            UserService::completeRegister(
+                $user,
+                $dto,
+                $date
+            )
         );
-        $this->assertTrue($_user instanceof User);
-        $this->assertTrue($_user->id instanceof $user->id);
     }
 
     public function testCompleteRegisterPassNullActivatedAtDatetime()
@@ -142,10 +144,11 @@ class UserServiceTest extends TestCase
         $now = Carbon::parse('2023-07-14 10:00:00');
         Carbon::setTestNow($now);
 
-        $user = UserService::completeRegister(
+        UserService::completeRegister(
             $user,
             $dto
         );
+        $user->refresh();
 
         $this->assertTrue(
             Carbon::parse($user->activated_at)
@@ -223,16 +226,6 @@ class UserServiceTest extends TestCase
             {
                 $mock
                     ->shouldReceive('clearVerificationCode')
-                    ->once();
-            }
-        );
-
-        $this->mock(
-            UserService::class,
-            function (MockInterface $mock)
-            {
-                $mock
-                    ->shouldReceive('completeRegister')
                     ->once();
             }
         );

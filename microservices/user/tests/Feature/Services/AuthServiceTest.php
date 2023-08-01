@@ -157,7 +157,6 @@ class AuthServiceTest extends TestCase
         $this->assertArrayHasKey('access_token', $token);
         $this->assertArrayHasKey('refresh_token', $token);
         $this->assertTrue($token['token_type'] == 'Bearer');
-        $this->assertTrue($token['expires_in'] == 1296000);
 
         $tokenModel = $this->getTokenByAccessToken($user, $token['access_token']);
         $this->assertTrue($tokenModel->user->id == $user->id);

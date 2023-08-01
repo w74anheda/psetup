@@ -18,7 +18,7 @@ class UserService
         User $user,
         UserCompleteRegisterDTO $dto,
         DateTime $activated_at = null,
-    ): User
+    ): bool
     {
 
         if($user->isNew())
@@ -31,9 +31,9 @@ class UserService
             $user->is_new       = false;
             $user->is_active    = true;
             $user->activated_at = $activated_at;
-            $user->save();
+            return $user->save();
         }
-        return $user;
+        return false;
     }
 
     public static function setLastOnlineAt(User $user, DateTime $dateTime = null): User
@@ -93,7 +93,7 @@ class UserService
                 throw new InvalidArgumentException(implode(' ', $tokens));
 
             app(AuthService::class)->clearVerificationCode($user, $hash);
-            app(self::class)->completeRegister($user, $dto);
+            $user->state()->completeRegitration($dto);
             DB::commit();
         }
         catch (Exception $err)

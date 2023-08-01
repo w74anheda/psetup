@@ -333,6 +333,14 @@ class UserTest extends TestCase
 
     }
 
+    public function testMethodIsProfileCompleted()
+    {
+        $user        = User::factory()->isNew()->create();
+        $this->assertFalse($user->isProfileCompleted());
+        $user        = User::factory()->completed()->create();
+        $this->assertTrue($user->isProfileCompleted());
+    }
+
 
 
 

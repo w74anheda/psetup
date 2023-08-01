@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.1-fpm-alpine3.16
 
 RUN docker-php-ext-install sockets \
     && apk add libxml2-dev && docker-php-ext-install soap \
@@ -7,8 +7,13 @@ RUN docker-php-ext-install sockets \
     && apk add --update libzip-dev curl-dev \
     && docker-php-ext-install curl
 
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
+RUN apk add --no-cache linux-headers \
+	&& apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS\
+    && apk add autoconf
+
+RUN pecl install xdebug
+
+  
 
 WORKDIR /www/microservices/user
 

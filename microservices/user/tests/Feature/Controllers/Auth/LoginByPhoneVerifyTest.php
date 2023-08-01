@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers\Auth;
 
 use App\Http\Requests\Auth\LoginPhoneNumberVerify;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -28,6 +29,7 @@ class LoginByPhoneVerifyTest extends TestCase
             route('auth.login.phonenumber.verify'),
             []
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([ 'code' => "The code field is required." ]);
     }
 
@@ -37,6 +39,7 @@ class LoginByPhoneVerifyTest extends TestCase
             route('auth.login.phonenumber.verify'),
             [ 'code' => 'random invalid code' ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([
             'code' => "The code field must be between 1 and 128 digits."
         ]);
@@ -50,6 +53,7 @@ class LoginByPhoneVerifyTest extends TestCase
             route('auth.login.phonenumber.verify'),
             [ 'code' => $requestData['code'] ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([ 'hash' => "The hash field is required." ]);
     }
 
@@ -64,6 +68,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'hash' => 'random invalid hash'
             ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([ 'hash' => "The hash field must be a valid UUID." ]);
     }
 
@@ -79,6 +84,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'hash' => $requestData['hash']
             ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([
             'first_name' => 'The first name field is required.',
             'last_name'  => 'The last name field is required.',
@@ -100,6 +106,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'gender'     => 'in',
             ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([
             'first_name' => "The first name field must be at least 3 characters.",
             'last_name'  => "The last name field must be at least 3 characters.",
@@ -119,6 +126,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'last_name'  => Str::random(121),
             ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([
             'first_name' => "The first name field must not be greater than 120 characters.",
             'last_name'  => "The last name field must not be greater than 120 characters.",
@@ -138,6 +146,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'last_name'  => [],
             ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([
             'first_name' => "The first name field must be a string.",
             'last_name'  => "The last name field must be a string.",
@@ -156,6 +165,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'gender' => 'asdsads',
             ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([
             'gender' => "The selected gender is invalid.",
         ]);
@@ -182,7 +192,7 @@ class LoginByPhoneVerifyTest extends TestCase
             'access_token',
             'refresh_token',
         ]);
-
+        $response->assertStatus(Response::HTTP_OK);
         $this->assertEquals($response->json()['token_type'], 'Bearer');
         $this->assertEquals($response->json()['expires_in'], 1296000);
 
@@ -238,6 +248,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'gender'     => null,
             ]
         );
+        $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([
             'token_type',
             'expires_in',
@@ -255,6 +266,7 @@ class LoginByPhoneVerifyTest extends TestCase
                 'hash'       => $requestData['hash'],
             ]
         );
+        $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([
             'token_type',
             'expires_in',
@@ -301,6 +313,8 @@ class LoginByPhoneVerifyTest extends TestCase
             ]
         );
 
+        $response->assertStatus(Response::HTTP_OK);
+
         $response->assertJsonStructure([
             'token_type',
             'expires_in',
@@ -312,19 +326,6 @@ class LoginByPhoneVerifyTest extends TestCase
         $this->assertEquals($user->first_name,$first_name);
         $this->assertEquals($user->last_name,$last_name);
         $this->assertEquals($user->gender,$gender);
-
-
-        [ $user, $requestData ] = $this->request($user);
-        $response = $this->postJson(
-            route('auth.login.phonenumber.verify'),
-            [
-                'code'       => $requestData['code'],
-                'hash'       => $requestData['hash'],
-                'first_name' => 'in',
-                'last_name'  => 'in',
-                'gender'     => 'in',
-            ]
-        );
 
     }
 

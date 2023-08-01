@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Controllers\Auth;
 
+use App\Models\User;
+use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class LoginByPhoneRequestTest extends TestCase
@@ -13,6 +15,7 @@ class LoginByPhoneRequestTest extends TestCase
             route('auth.login.phonenumber.request'),
             []
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([ 'phone' => "The phone field is required." ]);
 
     }
@@ -23,6 +26,7 @@ class LoginByPhoneRequestTest extends TestCase
             route('auth.login.phonenumber.request'),
             [ 'phone' => null ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([ 'phone' => "The phone field is required." ]);
 
     }
@@ -33,6 +37,7 @@ class LoginByPhoneRequestTest extends TestCase
             route('auth.login.phonenumber.request'),
             [ 'phone' => '090359' ]
         );
+        $response->assertStatus(Response::HTTP_FOUND);
         $response->assertSessionHasErrors([ 'phone' => "phone number format invalid" ]);
 
     }
@@ -41,10 +46,10 @@ class LoginByPhoneRequestTest extends TestCase
     {
         $response = $this->post(
             route('auth.login.phonenumber.request'),
-            [ 'phone' => '09163216412' ]
+            [ 'phone' => User::factory()->make()->phone ]
         );
 
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure(
             [
                 'message',

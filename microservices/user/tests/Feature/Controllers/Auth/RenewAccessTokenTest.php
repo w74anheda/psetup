@@ -81,4 +81,30 @@ class RenewAccessTokenTest extends TestCase
         $this->assertEquals($response->json()['error'], 'Refresh Token Invalid');
 
     }
+
+    public function testRefreshAccessTokenWithInvalidUserAgent(): void
+    {
+        [ $user, $requestData ] = $this->request();
+
+        $response = $this->postJson(
+            route('auth.login.phonenumber.verify'),
+            [
+                'code'       => $requestData['code'],
+                'hash'       => $requestData['hash'],
+                'first_name' => fake()->firstName(),
+                'last_name'  => fake()->lastName(),
+                'gender'     => fake()->randomElement([ 'male', 'female', 'both' ]),
+            ]
+        )->json();
+
+        $response = $this->postJson(
+            route('auth.refreshAccessToken'),
+            [ 'refresh_token' => 'invalid Token' ],
+        );
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonStructure([ 'errors' => [ 'User-Agent' ] ]);
+        $this->assertEquals($response->json()['errors']['User-Agent'][0], 'User-Agent invalid!');
+    }
+
+
 }

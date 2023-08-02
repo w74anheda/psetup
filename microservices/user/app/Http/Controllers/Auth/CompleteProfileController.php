@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\DTO\UserCompleteProfileDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\CompleteProfileRequest;
 use Illuminate\Http\Response;
@@ -10,23 +11,15 @@ class CompleteProfileController extends Controller
 {
     public function complete(CompleteProfileRequest $request)
     {
-        //create tdo
-        // call complete profile in user service
-        // call action from user state
-        // create api resourse
-
-        // add userService test for verify login and check user name and ...
-
+        $dto  = (new UserCompleteProfileDTO)
+            ->setBirthDay($request->input('birth_day'))
+            ->setNationalId($request->input('national_id'));
         $user = $request->user();
+        $user->state()->completeProfile($dto);
 
-        if(!$user->personal_info['is_completed'] ?? false)
-        {
-            $user->personal_info = array_merge(
-                [ 'is_completed' => true ],
-                $request->only([ 'birth_day', 'national_id' ]),
-            );
-            $user->save();
-        }
+        // create controller test
+        // create api resourse
+        // add userService test for verify login and check user name and ...
 
         return response(
             $user,

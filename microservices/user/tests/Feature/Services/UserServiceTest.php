@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Services;
 
+use App\DTO\UserCompleteProfileDTO;
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
@@ -342,8 +343,8 @@ class UserServiceTest extends TestCase
 
     public function testHasPermissionThroughRole()
     {
-        $user       = User::factory()->create();
-        $role       = Role::factory()->create();
+        $user         = User::factory()->create();
+        $role         = Role::factory()->create();
         $permission_A = Permission::factory()->create();
         $permission_B = Permission::factory()->create();
         $role->addPermissions($permission_A->name);
@@ -364,8 +365,8 @@ class UserServiceTest extends TestCase
 
     public function testAllPermissions()
     {
-        $user       = User::factory()->create();
-        $role       = Role::factory()->create();
+        $user         = User::factory()->create();
+        $role         = Role::factory()->create();
         $permission_A = Permission::factory()->create();
         $permission_B = Permission::factory()->create();
         $permission_C = Permission::factory()->create();
@@ -379,14 +380,50 @@ class UserServiceTest extends TestCase
         $permissions = UserService::allPermissions($user);
 
         $this->assertTrue(
-            $permissions->contains('name',$permission_A->name) &&
-            $permissions->contains('name',$permission_B->name) &&
-            $permissions->contains('name',$permission_C->name)
+            $permissions->contains('name', $permission_A->name) &&
+            $permissions->contains('name', $permission_B->name) &&
+            $permissions->contains('name', $permission_C->name)
         );
         $this->assertFalse(
-            $permissions->contains('name',$permission_D->name)
+            $permissions->contains('name', $permission_D->name)
         );
 
+    }
+
+    public function testProfileCompleteNotCompletedUser()
+    {
+        $birth_day   = now();
+        $national_id = generate_random_digits_with_specefic_length(10);
+        $user        = User::factory()->create();
+        $dto         = (new UserCompleteProfileDTO)
+            ->setBirthDay($birth_day)
+            ->setNationalId($national_id);
+
+        $this->assertFalse($user->isProfileCompleted());
+        $this->assertTrue(UserService::profileComplete($user, $dto));
+
+        $this->assertTrue($user->isProfileCompleted());
+        $this->assertEquals($user->personal_info['birth_day']->toString(), $birth_day->toString());
+        $this->assertEquals($user->personal_info['national_id'], $national_id);
+    }
+
+    public function testProfileCompleteCompletedUser()
+    {
+        $birth_day   = now();
+        $national_id = generate_random_digits_with_specefic_length(10);
+        $user        = User::factory()->completed()->create();
+        $old_birth_day = $user->personal_info['birth_day'];
+        $old_national_id = $user->personal_info['national_id'];
+        $dto         = (new UserCompleteProfileDTO)
+            ->setBirthDay($birth_day)
+            ->setNationalId($national_id);
+
+        $this->assertTrue($user->isProfileCompleted());
+        $this->assertFalse(UserService::profileComplete($user, $dto));
+        $this->assertTrue($user->isProfileCompleted());
+
+        $this->assertEquals($user->personal_info['birth_day']->toString(), $old_birth_day->toString());
+        $this->assertEquals($user->personal_info['national_id'], $old_national_id);
     }
 
 

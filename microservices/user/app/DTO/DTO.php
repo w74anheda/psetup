@@ -5,8 +5,9 @@ namespace App\DTO;
 use InvalidArgumentException;
 use ReflectionObject;
 use ReflectionProperty;
+use Illuminate\Contracts\Support\Arrayable;
 
-class DTO
+class DTO implements Arrayable
 {
 
     public function validate(array $required = null)
@@ -35,5 +36,14 @@ class DTO
             return $this->{$name};
     }
 
+    public function toArray()
+    {
+        $data = [];
+        foreach( $this->props() as $key )
+        {
+            $data[ $key ] = $this->{$key};
+        }
+        return $data;
+    }
 
 }

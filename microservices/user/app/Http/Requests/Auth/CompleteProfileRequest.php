@@ -2,11 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\User;
 use App\Rules\IranianNationalID;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 class CompleteProfileRequest extends FormRequest
 {

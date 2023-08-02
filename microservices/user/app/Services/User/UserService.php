@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\DTO\UserCompleteProfileDTO;
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use DateTime;
@@ -137,6 +138,19 @@ class UserService
             ->distinct();
 
         return $execute ? $a->union($b)->orderBy('id')->get() : $a->union($b);
+    }
+
+    public static function profileComplete(User $user, UserCompleteProfileDTO $dto): bool
+    {
+        if(!$user->isProfileCompleted())
+        {
+            $user->personal_info = array_merge(
+                [ 'is_completed' => true ],
+                $dto->toArray(),
+            );
+            return $user->save();
+        }
+        return false;
     }
 
 }

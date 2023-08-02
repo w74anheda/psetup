@@ -13,6 +13,7 @@ class SessionController extends Controller
     public function __construct()
     {
         $this->middleware('can:its-own-token,token')->only('delete');
+        // add middleware to deleteAll method
     }
 
     public function index(Request $request)

@@ -21,9 +21,14 @@ class UserPhoneVerificationFactory extends Factory
     {
         return [
             'user_id'   => User::factory(),
+            'hash'      => Str::uuid(),
             'code'      => generate_random_digits_with_specefic_length(env('PHONE_VERIFICATION_CODE_LENGTH')),
             'expire_at' => Carbon::now()->addSeconds(env('PHONE_VERIFICATION_CODE_LIFETIME_SECONDS')),
-            'hash'      => Str::uuid(),
         ];
+    }
+
+    public function expired()
+    {
+        return $this->state(fn(array $attr) => [ 'expire_at' => Carbon::now()->subDays(10) ]);
     }
 }

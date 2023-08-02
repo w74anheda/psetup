@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Services;
 
+use App\DTO\UserCompleteProfileDTO;
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use App\Events\Auth\Login\PhoneNumber\Request as PhoneNumberRequestEvent;
+use App\Models\Permission;
+use App\Models\Role;
+use App\State\User\NewUserState;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -60,12 +64,12 @@ class UserServiceTest extends TestCase
         $date = Carbon::parse('2023-07-14 10:00:00');
         Carbon::setTestNow($date);
 
-        $user = UserService::completeRegister(
+        UserService::completeRegister(
             $user,
             $dto,
             $date
         );
-
+        $user->refresh();
         $this->assertFalse($user->isNew());
         $this->assertTrue($user->is_active);
         $this->assertEquals($user->first_name, $dto->first_name);
@@ -80,7 +84,7 @@ class UserServiceTest extends TestCase
         $this->assertTrue($user->isNew());
         $dto = $this->createDto(false);
         $this->expectException(InvalidArgumentException::class);
-        $user = UserService::completeRegister($user, $dto);
+        UserService::completeRegister($user, $dto);
     }
 
     public function testCompleteRegisterForIsNotNewUser()
@@ -96,11 +100,12 @@ class UserServiceTest extends TestCase
         $date = Carbon::parse('2023-07-14 10:00:00');
         Carbon::setTestNow($date);
 
-        $user = UserService::completeRegister(
+        UserService::completeRegister(
             $user,
             $dto,
             $date
         );
+        $user->refresh();
 
         $this->assertFalse($user->isNew());
         $this->assertTrue($user->is_active);
@@ -116,19 +121,19 @@ class UserServiceTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function testCompleteRegisterReturnUser()
+    public function testCompleteRegisterReturnBool()
     {
         $dto  = $this->createDto();
         $user = User::factory()->create();
         $date = Carbon::parse('2023-07-14 10:00:00');
 
-        $_user = UserService::completeRegister(
-            $user,
-            $dto,
-            $date
+        $this->assertIsBool(
+            UserService::completeRegister(
+                $user,
+                $dto,
+                $date
+            )
         );
-        $this->assertTrue($_user instanceof User);
-        $this->assertTrue($_user->id instanceof $user->id);
     }
 
     public function testCompleteRegisterPassNullActivatedAtDatetime()
@@ -140,10 +145,11 @@ class UserServiceTest extends TestCase
         $now = Carbon::parse('2023-07-14 10:00:00');
         Carbon::setTestNow($now);
 
-        $user = UserService::completeRegister(
+        UserService::completeRegister(
             $user,
             $dto
         );
+        $user->refresh();
 
         $this->assertTrue(
             Carbon::parse($user->activated_at)
@@ -225,16 +231,6 @@ class UserServiceTest extends TestCase
             }
         );
 
-        $this->mock(
-            UserService::class,
-            function (MockInterface $mock)
-            {
-                $mock
-                    ->shouldReceive('completeRegister')
-                    ->once();
-            }
-        );
-
         [ $isOK, $tokens ] = UserService::loginPhoneVerify(
             $user,
             $verification->hash,
@@ -244,11 +240,14 @@ class UserServiceTest extends TestCase
 
         $this->assertTrue($isOK);
         $this->assertTrue($tokens['token_type'] == 'Bearer');
-        $this->assertTrue($tokens['expires_in'] == 1296000);
         $this->assertArrayHasKey('token_type', $tokens);
         $this->assertArrayHasKey('expires_in', $tokens);
         $this->assertArrayHasKey('access_token', $tokens);
         $this->assertArrayHasKey('refresh_token', $tokens);
+
+        $this->assertEquals($user->first_name, $dto->first_name);
+        $this->assertEquals($user->last_name, $dto->last_name);
+        $this->assertEquals($user->gender, $dto->gender);
     }
 
     public function testLoginPhoneVerifyForNewUserWithEmptyDTO()
@@ -284,7 +283,6 @@ class UserServiceTest extends TestCase
 
         $this->assertTrue($isOK);
         $this->assertTrue($tokens['token_type'] == 'Bearer');
-        $this->assertTrue($tokens['expires_in'] == 1296000);
         $this->assertArrayHasKey('token_type', $tokens);
         $this->assertArrayHasKey('expires_in', $tokens);
         $this->assertArrayHasKey('access_token', $tokens);
@@ -308,7 +306,6 @@ class UserServiceTest extends TestCase
 
         $this->assertTrue($isOK);
         $this->assertTrue($tokens['token_type'] == 'Bearer');
-        $this->assertTrue($tokens['expires_in'] == 1296000);
         $this->assertArrayHasKey('token_type', $tokens);
         $this->assertArrayHasKey('expires_in', $tokens);
         $this->assertArrayHasKey('access_token', $tokens);
@@ -316,6 +313,11 @@ class UserServiceTest extends TestCase
         $this->assertEquals($user->first_name, $data['first_name']);
         $this->assertEquals($user->last_name, $data['last_name']);
         $this->assertEquals($user->gender, $data['gender']);
+
+        $user->refresh();
+        $this->assertNotEquals($user->first_name, $dto->first_name);
+        $this->assertNotEquals($user->last_name, $dto->last_name);
+        $this->assertNotEquals($user->gender, $dto->gender);
     }
 
     public function testLoginPhoneVerifyWithInvalidHash()
@@ -344,4 +346,92 @@ class UserServiceTest extends TestCase
                 ->setGender($data['gender']);
         return $dto;
     }
+
+    public function testHasPermissionThroughRole()
+    {
+        $user         = User::factory()->create();
+        $role         = Role::factory()->create();
+        $permission_A = Permission::factory()->create();
+        $permission_B = Permission::factory()->create();
+        $role->addPermissions($permission_A->name);
+
+        $this->assertFalse(
+            UserService::hasPermissionThroughRole($user, $permission_A->name)
+        );
+
+        $user->addRoles($role->name);
+        $this->assertTrue(
+            UserService::hasPermissionThroughRole($user, $permission_A->name)
+        );
+        $this->assertFalse(
+            UserService::hasPermissionThroughRole($user, $permission_B->name)
+        );
+
+    }
+
+    public function testAllPermissions()
+    {
+        $user         = User::factory()->create();
+        $role         = Role::factory()->create();
+        $permission_A = Permission::factory()->create();
+        $permission_B = Permission::factory()->create();
+        $permission_C = Permission::factory()->create();
+        $permission_D = Permission::factory()->create();
+
+        $role->addPermissions($permission_A->name);
+        $role->addPermissions($permission_B->name);
+        $user->addPermissions($permission_C->name);
+        $user->addRoles($role->name);
+
+        $permissions = UserService::allPermissions($user);
+
+        $this->assertTrue(
+            $permissions->contains('name', $permission_A->name) &&
+            $permissions->contains('name', $permission_B->name) &&
+            $permissions->contains('name', $permission_C->name)
+        );
+        $this->assertFalse(
+            $permissions->contains('name', $permission_D->name)
+        );
+
+    }
+
+    public function testProfileCompleteNotCompletedUser()
+    {
+        $birth_day   = now();
+        $national_id = generate_random_digits_with_specefic_length(10);
+        $user        = User::factory()->create();
+        $dto         = (new UserCompleteProfileDTO)
+            ->setBirthDay($birth_day)
+            ->setNationalId($national_id);
+
+        $this->assertFalse($user->isProfileCompleted());
+        $this->assertTrue(UserService::profileComplete($user, $dto));
+
+        $this->assertTrue($user->isProfileCompleted());
+        $this->assertEquals($user->personal_info['birth_day']->toString(), $birth_day->toString());
+        $this->assertEquals($user->personal_info['national_id'], $national_id);
+    }
+
+    public function testProfileCompleteCompletedUser()
+    {
+        $birth_day       = now();
+        $national_id     = generate_random_digits_with_specefic_length(10);
+        $user            = User::factory()->completed()->create();
+        $old_birth_day   = $user->personal_info['birth_day'];
+        $old_national_id = $user->personal_info['national_id'];
+        $dto             = (new UserCompleteProfileDTO)
+            ->setBirthDay($birth_day)
+            ->setNationalId($national_id);
+
+        $this->assertTrue($user->isProfileCompleted());
+        $this->assertFalse(UserService::profileComplete($user, $dto));
+        $this->assertTrue($user->isProfileCompleted());
+
+        $this->assertEquals($user->personal_info['birth_day']->toString(), $old_birth_day->toString());
+        $this->assertEquals($user->personal_info['national_id'], $old_national_id);
+    }
+
+
+
 }

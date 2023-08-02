@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\DTO\UserCompleteProfileDTO;
 use App\DTO\UserCompleteRegisterDTO;
 use App\Models\User;
 use DateTime;
@@ -18,7 +19,7 @@ class UserService
         User $user,
         UserCompleteRegisterDTO $dto,
         DateTime $activated_at = null,
-    ): User
+    ): bool
     {
 
         if($user->isNew())
@@ -31,9 +32,9 @@ class UserService
             $user->is_new       = false;
             $user->is_active    = true;
             $user->activated_at = $activated_at;
-            $user->save();
+            return $user->save();
         }
-        return $user;
+        return false;
     }
 
     public static function setLastOnlineAt(User $user, DateTime $dateTime = null): User
@@ -93,7 +94,7 @@ class UserService
                 throw new InvalidArgumentException(implode(' ', $tokens));
 
             app(AuthService::class)->clearVerificationCode($user, $hash);
-            app(self::class)->completeRegister($user, $dto);
+            $user->state()->completeRegitration($dto);
             DB::commit();
         }
         catch (Exception $err)
@@ -104,6 +105,52 @@ class UserService
         }
 
         return [ true, $tokens ];
+    }
+
+    public static function hasPermissionThroughRole(User $user, string $permission_name): bool
+    {
+        $user->load([ 'roles.permissions' ]);
+        foreach( $user->roles as $role )
+        {
+            if($role->hasPermission($permission_name))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static function allPermissions(User $user, bool $execute = true)
+    {
+        $a = DB::table('users')
+            ->select('permissions.id as id', 'permissions.name as name')
+            ->join('users_permissions', 'users.id', '=', 'users_permissions.user_id')
+            ->join('permissions', 'permissions.id', '=', 'users_permissions.permission_id')
+            ->where([ 'user_id' => $user->id ])
+            ->distinct();
+
+        $b = DB::table('users')
+            ->select('permissions.id as id', 'permissions.name as name')
+            ->join('users_roles', 'users.id', '=', 'users_roles.user_id')
+            ->join('roles', 'users_roles.role_id', '=', 'roles.id')
+            ->join('roles_permissions', 'roles.id', '=', 'roles_permissions.role_id')
+            ->join('permissions', 'permissions.id', '=', 'roles_permissions.permission_id')
+            ->where([ 'user_id' => $user->id ])
+            ->distinct();
+
+        return $execute ? $a->union($b)->orderBy('id')->get() : $a->union($b);
+    }
+
+    public static function profileComplete(User $user, UserCompleteProfileDTO $dto): bool
+    {
+        if(!$user->isProfileCompleted())
+        {
+            $user->personal_info = array_merge(
+                [ 'is_completed' => true ],
+                $dto->toArray(),
+            );
+            return $user->save();
+        }
+        return false;
     }
 
 }

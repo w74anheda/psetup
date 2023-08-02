@@ -2,21 +2,28 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Casts\PersonalInfoCast;
 use App\Models\Traits\HasAddress;
 use App\Models\Traits\HasIp;
-use App\Models\Traits\HasPhoneVerification;
+use App\Models\Traits\HasPermission;
+use App\Models\Traits\HasOnePhoneVerification;
+use App\Models\Traits\HasRoles;
 use App\Presenters\PresentAble;
 use App\Presenters\Presenter;
 use App\Presenters\User\Api as UserApiPresenter;
-use App\Services\Acl\HasPermission;
-use App\Services\Acl\HasRoles;
+use App\Services\User\UserService;
+use App\State\Contracts\BaseState;
+use App\State\Contracts\StateAble;
+use App\State\User\NewUserState;
+use App\State\User\ProfileCompletedState;
+use App\State\User\UnProfileCompletedState;
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -27,9 +34,10 @@ class User extends Authenticatable
         HasPermission,
         HasRoles,
         PresentAble,
-        HasPhoneVerification,
+        HasOnePhoneVerification,
         HasAddress,
-        HasIp;
+        HasIp,
+        StateAble;
 
     protected $keyType = 'string';
 
@@ -89,6 +97,42 @@ class User extends Authenticatable
     public function isNew(): bool
     {
         return !!$this->is_new;
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'users_permissions');
+    }
+
+    public function hasPermission(string $permission_name): bool
+    {
+        return UserService::hasPermissionThroughRole($this, $permission_name)
+            || $this->permissions->contains('name', $permission_name);
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'users_roles');
+    }
+
+    public function state(): BaseState
+    {
+        switch($this)
+        {
+            case $this->isNew():
+                return new NewUserState($this);
+            case $this->personal_info['is_completed']:
+                return new ProfileCompletedState($this);
+            case !$this->personal_info['is_completed']:
+                return new UnProfileCompletedState($this);
+            default:
+                throw new InvalidArgumentException('invalid state');
+        }
+    }
+
+    public function isProfileCompleted(): bool
+    {
+        return $this->personal_info['is_completed'];
     }
 
 }

@@ -90,6 +90,10 @@ services:
     container_name: ${PROJECT_NAME}_user_microservice
     volumes:
       - ${MIC_USER_PATH}:${MIC_USER_WORKING_DIR}
+      - ${MIC_USER_DOCKER_PATH}/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ${MIC_USER_DOCKER_PATH}/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+      - ${MIC_USER_DOCKER_PATH}/php.ini:/usr/local/etc/php/php.ini
+
     depends_on:
       - user_microservice_db
       - user_microservice_db_test

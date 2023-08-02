@@ -11,26 +11,22 @@ use Illuminate\Support\Arr;
  */
 class UserFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+
     public function definition(): array
     {
         return [
             'first_name'        => fake()->firstName(),
             'last_name'         => fake()->lastName(),
             'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
-            'phone'             => fake()->unique()->phoneNumber(),
+            'phone'             => '0916' . generate_random_digits_with_specefic_length(7),
             'activated_at'      => now(),
-            'last_online_at'    => null,
+            'last_online_at'    => now(),
             'email'             => fake()->unique()->safeEmail(),
             'email_verified_at' => null,
             'is_active'         => 1,
             'is_new'            => 0,
             'registered_ip'     => fake()->ipv4(),
-            'personal_info'     => null,
+            'personal_info'     => null
         ];
     }
 
@@ -51,7 +47,6 @@ class UserFactory extends Factory
                 'first_name'        => null,
                 'last_name'         => null,
                 'gender'            => null,
-                'phone'             => fake()->unique()->phoneNumber(),
                 'activated_at'      => null,
                 'last_online_at'    => null,
                 'email'             => null,
@@ -74,12 +69,34 @@ class UserFactory extends Factory
         );
     }
 
-    public function active()
+    public function completed()
     {
         return $this->state(
             fn(array $attr) => [
-                'activated_at' => now(),
-                'is_active'    => 1,
+                'personal_info' => [
+                    'is_completed' => true,
+                    'birth_day'    => now()->toString(),
+                    'national_id'  => (string) fake()->randomNumber(9, true)
+                ],
+            ]
+        );
+    }
+    public function registered()
+    {
+        return $this->state(
+            fn(array $attr) => [
+                'first_name'        => fake()->firstName(),
+                'last_name'         => fake()->lastName(),
+                'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
+                'phone'             => '0916' . generate_random_digits_with_specefic_length(7),
+                'activated_at'      => now(),
+                'last_online_at'    => now(),
+                'email'             => fake()->unique()->safeEmail(),
+                'email_verified_at' => null,
+                'is_active'         => 1,
+                'is_new'            => 0,
+                'registered_ip'     => fake()->ipv4(),
+                'personal_info'     => null
             ]
         );
     }

@@ -4,8 +4,8 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
+use App\Models\PassportCustomToken;
 use App\Services\Passport\CustomAccessTokenRepository;
-use App\Services\Passport\CustomToken;
 use App\Services\Passport\Grants\PhoneGrant;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\File;
@@ -39,7 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         {
             Passport::tokensExpireIn(now()->addDays(15));
             Passport::refreshTokensExpireIn(now()->addDays(30));
-            Passport::useTokenModel(CustomToken::class);
+            Passport::useTokenModel(PassportCustomToken::class);
 
 
             $this->app->bind(

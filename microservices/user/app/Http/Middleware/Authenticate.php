@@ -16,12 +16,12 @@ class Authenticate extends Middleware
     {
         $this->authenticate($request, $guards);
 
-        if(auth()->check())
-        {
-            $this->validateTokenForThisRequest($request, $next, $guards);
-            $this->storeUserIP($request->user(), $request->ip());
-            $this->checkUserWasActivate($request->user());
-        }
+        // if(auth()->check())
+        // {
+        //     $this->validateTokenForThisRequest($request, $next, $guards);
+        //     $this->storeUserIP($request->user(), $request->ip());
+        //     $this->checkUserWasActivate($request->user());
+        // }
 
         return $next($request);
     }

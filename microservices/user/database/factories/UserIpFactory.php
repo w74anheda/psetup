@@ -19,7 +19,7 @@ class UserIpFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'ip'      => fake()->ipv4()
+            'ip'      => fake()->unique()->ipv4()
         ];
     }
 }

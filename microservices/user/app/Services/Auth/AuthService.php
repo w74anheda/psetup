@@ -2,10 +2,10 @@
 
 namespace App\Services\Auth;
 
+use App\Models\PassportCustomToken;
 use App\Models\User;
 use App\Models\UserPhoneVerification;
 use App\Services\Http\Facade\CustomHttp;
-use App\Services\Passport\CustomToken;
 use Exception;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
@@ -14,7 +14,7 @@ use Lcobucci\JWT\Token\Parser;
 
 class AuthService
 {
-    public static function tokenDestroy(CustomToken $token): bool
+    public static function tokenDestroy(PassportCustomToken $token): bool
     {
         $refreshTokenRepository = resolve(RefreshTokenRepository::class);
         $refreshTokenRepository->revokeRefreshToken($token->id);
@@ -75,7 +75,7 @@ class AuthService
         return $user->phoneVerifications()->where('hash', $hash)->delete();
     }
 
-    public static function refreshAccessToken(string $refresh_token, array $headers = [])
+    public static function refreshAccessToken(string $refresh_token, array $headers = []): array
     {
         $passportClient = app('PassportAuthPhoneClient');
 
@@ -136,7 +136,7 @@ class AuthService
         try
         {
             $tokenID = (new Parser(new JoseEncoder()))->parse($accessToken)->claims()->all()['jti'];
-            $token   = CustomToken::where('id', $tokenID)->first();
+            $token   = PassportCustomToken::where('id', $tokenID)->first();
             return $token;
         }
         catch (Exception $err)

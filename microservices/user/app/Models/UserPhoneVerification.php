@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasUser;
+use App\Models\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UserPhoneVerification extends Model
 {
-    use HasFactory, HasUser;
+    use HasFactory, BelongsToUser;
 
-    protected $primaryKey = ['code', 'hash'];
+    protected $primaryKey = [ 'code', 'hash' ];
     public $incrementing = false;
 
     protected $fillable = [
@@ -22,7 +22,10 @@ class UserPhoneVerification extends Model
 
     public $timestamps = false;
 
-
+    protected $casts = [
+        'expire_at' => 'datetime',
+        'code'      => 'int',
+    ];
 
 
 }

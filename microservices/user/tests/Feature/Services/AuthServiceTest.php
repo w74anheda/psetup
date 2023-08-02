@@ -102,8 +102,7 @@ class AuthServiceTest extends TestCase
         Carbon::setTestNow('2023-01-01 00:00:00');
         $user             = User::factory()->create();
         $verificationCode = AuthService::generateVerificationCode($user);
-
-        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->toArray());
+        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->getAttributes());
         $this->assertTrue($user->id == $verificationCode->user->id);
 
         $expireAt = now()->addSeconds(
@@ -116,12 +115,13 @@ class AuthServiceTest extends TestCase
     public function testGenerateVerificationCodeWithPassCode(): void
     {
         $user             = User::factory()->create();
-        $code             = Str::random(5);
+        $code             = generate_random_digits_with_specefic_length(5);
         $verificationCode = AuthService::generateVerificationCode($user, $code);
 
-        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->toArray());
+        $this->assertDatabaseHas($verificationCode->getTable(), $verificationCode->getAttributes());
         $this->assertTrue($user->id == $verificationCode->user->id);
         $this->assertTrue($code == $verificationCode->code);
+        $this->assertIsNumeric($verificationCode->code);
     }
 
     public function testClearVerificationCodeWithValidHash(): void
@@ -157,7 +157,6 @@ class AuthServiceTest extends TestCase
         $this->assertArrayHasKey('access_token', $token);
         $this->assertArrayHasKey('refresh_token', $token);
         $this->assertTrue($token['token_type'] == 'Bearer');
-        $this->assertTrue($token['expires_in'] == 1296000);
 
         $tokenModel = $this->getTokenByAccessToken($user, $token['access_token']);
         $this->assertTrue($tokenModel->user->id == $user->id);

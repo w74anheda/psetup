@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\DTO\UserCompleteProfileDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\CompleteProfileRequest;
-use Carbon\Carbon;
+use App\Http\Resources\UserBaseResource;
 use Illuminate\Http\Response;
 
 class CompleteProfileController extends Controller
@@ -12,19 +13,11 @@ class CompleteProfileController extends Controller
     public function complete(CompleteProfileRequest $request)
     {
         $user = $request->user();
+        $dto  = (new UserCompleteProfileDTO)
+            ->setBirthDay($request->input('birth_day'))
+            ->setNationalId($request->input('national_id'));
 
-        if(!$user->personal_info['is_completed'] ?? false)
-        {
-            $user->personal_info = array_merge(
-                [ 'is_completed' => true ],
-                $request->only([ 'birth_day', 'national_id' ]),
-            );
-            $user->save();
-        }
-
-        return response(
-            $user,
-            Response::HTTP_ACCEPTED
-        );
+        $user->state()->completeProfile($dto);
+        return new UserBaseResource($user);
     }
 }

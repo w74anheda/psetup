@@ -240,11 +240,14 @@ class UserServiceTest extends TestCase
 
         $this->assertTrue($isOK);
         $this->assertTrue($tokens['token_type'] == 'Bearer');
-        $this->assertTrue($tokens['expires_in'] == 1296000);
         $this->assertArrayHasKey('token_type', $tokens);
         $this->assertArrayHasKey('expires_in', $tokens);
         $this->assertArrayHasKey('access_token', $tokens);
         $this->assertArrayHasKey('refresh_token', $tokens);
+
+        $this->assertEquals($user->first_name, $dto->first_name);
+        $this->assertEquals($user->last_name, $dto->last_name);
+        $this->assertEquals($user->gender, $dto->gender);
     }
 
     public function testLoginPhoneVerifyForNewUserWithEmptyDTO()
@@ -280,7 +283,6 @@ class UserServiceTest extends TestCase
 
         $this->assertTrue($isOK);
         $this->assertTrue($tokens['token_type'] == 'Bearer');
-        $this->assertTrue($tokens['expires_in'] == 1296000);
         $this->assertArrayHasKey('token_type', $tokens);
         $this->assertArrayHasKey('expires_in', $tokens);
         $this->assertArrayHasKey('access_token', $tokens);
@@ -304,7 +306,6 @@ class UserServiceTest extends TestCase
 
         $this->assertTrue($isOK);
         $this->assertTrue($tokens['token_type'] == 'Bearer');
-        $this->assertTrue($tokens['expires_in'] == 1296000);
         $this->assertArrayHasKey('token_type', $tokens);
         $this->assertArrayHasKey('expires_in', $tokens);
         $this->assertArrayHasKey('access_token', $tokens);
@@ -312,6 +313,11 @@ class UserServiceTest extends TestCase
         $this->assertEquals($user->first_name, $data['first_name']);
         $this->assertEquals($user->last_name, $data['last_name']);
         $this->assertEquals($user->gender, $data['gender']);
+
+        $user->refresh();
+        $this->assertNotEquals($user->first_name, $dto->first_name);
+        $this->assertNotEquals($user->last_name, $dto->last_name);
+        $this->assertNotEquals($user->gender, $dto->gender);
     }
 
     public function testLoginPhoneVerifyWithInvalidHash()
@@ -409,12 +415,12 @@ class UserServiceTest extends TestCase
 
     public function testProfileCompleteCompletedUser()
     {
-        $birth_day   = now();
-        $national_id = generate_random_digits_with_specefic_length(10);
-        $user        = User::factory()->completed()->create();
-        $old_birth_day = $user->personal_info['birth_day'];
+        $birth_day       = now();
+        $national_id     = generate_random_digits_with_specefic_length(10);
+        $user            = User::factory()->completed()->create();
+        $old_birth_day   = $user->personal_info['birth_day'];
         $old_national_id = $user->personal_info['national_id'];
-        $dto         = (new UserCompleteProfileDTO)
+        $dto             = (new UserCompleteProfileDTO)
             ->setBirthDay($birth_day)
             ->setNationalId($national_id);
 

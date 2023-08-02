@@ -29,7 +29,7 @@ Route::prefix('auth')->name('auth.')->group(function ()
     Route::middleware([ 'auth:api' ])->name('profile.')->group(function ()
     {
         route::get('me', [ InfoController::class, 'me' ])->name('me');
-        route::patch('complete-profile', [ CompleteProfileController::class, 'complete' ]);
+        route::patch('complete-profile', [ CompleteProfileController::class, 'complete' ])->name('complete');
     });
 
 

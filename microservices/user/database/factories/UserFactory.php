@@ -18,7 +18,7 @@ class UserFactory extends Factory
             'first_name'        => fake()->firstName(),
             'last_name'         => fake()->lastName(),
             'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
-            'phone'             => '0916'.generate_random_digits_with_specefic_length(7),
+            'phone'             => '0916' . generate_random_digits_with_specefic_length(7),
             'activated_at'      => now(),
             'last_online_at'    => now(),
             'email'             => fake()->unique()->safeEmail(),
@@ -63,16 +63,8 @@ class UserFactory extends Factory
     {
         return $this->state(
             fn(array $attr) => [
-                'first_name'        => null,
-                'last_name'         => null,
-                'gender'            => null,
-                'activated_at'      => null,
-                'is_active'         => 0,
-                'is_new'            => 1,
-                'registered_ip'     => null,
-                'last_online_at'    => null,
-                'email'             => null,
-                'email_verified_at' => null,
+                'activated_at' => null,
+                'is_active'    => 0,
             ]
         );
     }
@@ -86,6 +78,25 @@ class UserFactory extends Factory
                     'birth_day'    => now()->toString(),
                     'national_id'  => (string) fake()->randomNumber(9, true)
                 ],
+            ]
+        );
+    }
+    public function registered()
+    {
+        return $this->state(
+            fn(array $attr) => [
+                'first_name'        => fake()->firstName(),
+                'last_name'         => fake()->lastName(),
+                'gender'            => fake()->randomElement([ 'male', 'female', 'both' ]),
+                'phone'             => '0916' . generate_random_digits_with_specefic_length(7),
+                'activated_at'      => now(),
+                'last_online_at'    => now(),
+                'email'             => fake()->unique()->safeEmail(),
+                'email_verified_at' => null,
+                'is_active'         => 1,
+                'is_new'            => 0,
+                'registered_ip'     => fake()->ipv4(),
+                'personal_info'     => null
             ]
         );
     }

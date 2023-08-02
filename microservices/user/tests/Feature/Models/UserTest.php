@@ -85,15 +85,8 @@ class UserTest extends TestCase
     public function testUserFactoryNotActiveUser()
     {
         $user = User::factory()->notActive()->make();
-        $this->assertNull($user->first_name);
-        $this->assertNull($user->last_name);
-        $this->assertNull($user->gender);
         $this->assertNull($user->activated_at);
-        $this->assertNull($user->registered_ip);
-        $this->assertNull($user->last_online_at);
-        $this->assertNull($user->email_verified_at);
         $this->assertEquals($user->is_active, 0);
-        $this->assertEquals($user->is_new, 1);
     }
 
     public function testUserFactoryCompletedUser()

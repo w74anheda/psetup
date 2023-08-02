@@ -5,6 +5,7 @@ namespace App\State\User;
 use App\DTO\UserCompleteProfileDTO;
 use App\DTO\UserCompleteRegisterDTO;
 use App\State\Contracts\BaseState;
+use InvalidArgumentException;
 
 class UserState extends BaseState
 {
@@ -16,7 +17,7 @@ class UserState extends BaseState
 
     public function completeProfile(UserCompleteProfileDTO $dto): bool
     {
-        return false;
+        throw new InvalidArgumentException('state not allowed');
     }
 
 

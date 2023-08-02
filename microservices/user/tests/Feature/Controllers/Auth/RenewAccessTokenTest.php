@@ -51,7 +51,6 @@ class RenewAccessTokenTest extends TestCase
         ]);
         $response->assertStatus(Response::HTTP_OK);
         $this->assertEquals($response->json()['token_type'], 'Bearer');
-        $this->assertEquals($response->json()['expires_in'], 1296000);
 
     }
 

@@ -10,7 +10,7 @@ export const useAuth = defineStore("auth", () => {
     const verifyResult: Ref<IVerifyDTO | null> = ref(null);
     const currentUser: Ref<IUser | null> = ref(null);
 
-    const isLogin = computed(() => verifyResult.value !== null);
+    const isLogin = computed(() => verifyResult.value);
 
     const getUserLoginData = async (phone: string) => {
         const res = await userLogin(phone);

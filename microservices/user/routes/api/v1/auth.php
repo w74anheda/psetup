@@ -33,11 +33,11 @@ Route::prefix('auth')->name('auth.')->group(function ()
     });
 
 
-    Route::middleware([ 'auth:api' ])->prefix('sessions')->group(function ()
+    Route::middleware([ 'auth:api' ])->prefix('sessions')->name('sessions.')->group(function ()
     {
-        route::get('', [ SessionController::class, 'index' ]);
-        route::delete('delete/all', [ SessionController::class, 'deleteAll' ]);
-        route::delete('delete/{token}', [ SessionController::class, 'delete' ]);
+        route::get('', [ SessionController::class, 'index' ])->name('index');
+        route::delete('delete/{token}', [ SessionController::class, 'delete' ])->name('delete');
+        route::delete('delete/all', [ SessionController::class, 'deleteAll' ])->name('delete.all');
     });
 
 });

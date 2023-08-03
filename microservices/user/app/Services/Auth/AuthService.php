@@ -99,36 +99,36 @@ class AuthService
         return $response->json();
     }
 
-    public static function sessions(User $user, string $access_token = null, array $fields = [])
+    public static function sessions(User $user, string $access_token = null)
     {
-        $fields = array_merge(
-            [ 'id', 'user_agent', 'ip_address', 'created_at', 'expires_at' ],
-            $fields
-        );
-
-        if($currentSession = self::getTokenModelByAccessToken($access_token))
+        if($access_token && $currentSession = self::getTokenModelByAccessToken($access_token))
         {
-            $currentSession               = $currentSession->only($fields);
-            $currentSession['current']    = true;
-            $currentSession['created_at'] = $currentSession['created_at']->toString();
-            $sessions                     = $user
+            $currentSession->current    = true;
+            $currentSession->created_at = $currentSession['created_at']->toString();
+            $sessions                   = $user
                 ->tokens()
                 ->active()
                 ->AllExcept($currentSession['id'])
-                ->select($fields)
                 ->get()
-                ->map(fn($session) => [ ...$session->toArray(), 'current' => false ])
+                ->map(function ($token)
+                {
+                    $token->current = false;
+                    return $token;
+                })
                 ->prepend($currentSession);
         } else
         {
             $sessions = $user
                 ->tokens()
                 ->active()
-                ->select($fields)
                 ->get()
-                ->map(fn($session) => [ ...$session->toArray(), 'current' => false ]);
+                ->map(function ($token)
+                {
+                    $token->current = false;
+                    return $token;
+                });
         }
-        return $sessions->toArray();
+        return $sessions;
     }
 
     public static function getTokenModelByAccessToken(string $accessToken)

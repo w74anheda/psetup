@@ -1,13 +1,15 @@
 <?php
 namespace App\Models;
 
-
+use App\Presenters\PassportCustomToken\Api as PassportCustomTokenPresenter;
+use App\Presenters\PresentAble;
+use App\Presenters\Presenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Passport\Token;
 
 class PassportCustomToken extends Token
 {
-    use HasFactory;
+    use HasFactory, PresentAble;
 
     public function scopeRevoked($query)
     {
@@ -33,6 +35,11 @@ class PassportCustomToken extends Token
     {
         return $query
             ->where('id', '!=', $tokenID);
+    }
+
+    protected function presenterHandler(): Presenter
+    {
+        return new PassportCustomTokenPresenter($this);
     }
 
 }

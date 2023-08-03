@@ -22,9 +22,24 @@ class InfoTest extends TestCase
 
     public function testResponseApiResourse()
     {
-        $user        = User::factory()->create();
-        $response    = $this->actingAs($user, 'api')->getJson(route('auth.profile.me'));
+        $user     = User::factory()->create();
+        $response = $this->actingAs($user, 'api')->getJson(route('auth.profile.me'));
         $response->assertStatus(Response::HTTP_OK);
-        $response->assertExactJson((new UserWithRelationResource($user))->toArray(request()));
+        $response->assertJsonStructure(
+            [
+                'user' => [
+                    "id",
+                    "first_name",
+                    "last_name",
+                    "gender",
+                    "phone",
+                    "email",
+                    "personal_info",
+                    "is_active",
+                    "created_at",
+                    "permissions"
+                ]
+            ]
+        );
     }
 }

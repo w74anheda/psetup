@@ -35,7 +35,7 @@ class AuthServiceTest extends TestCase
         return $dto;
     }
 
-    private function createToken(User $user)
+    protected function createToken(User $user)
     {
         $verification = AuthService::generateVerificationCode($user);
         $token        = AuthService::getAccessAndRefreshTokenByPhone(

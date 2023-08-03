@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PassportCustomTokenCollection;
 use App\Models\PassportCustomToken;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\Request;
@@ -14,20 +15,17 @@ class SessionController extends Controller
     {
         $this->middleware('can:its-own-token,token')->only('delete');
         // add middleware to deleteAll method
+        // test authService sessions
+        // test passportCustomTokenMOdel presenter test
     }
 
     public function index(Request $request)
     {
         $sessions = AuthService::sessions(
-            $request->token->user,
-            $request->token,
-            [ 'id', 'user_agent', 'created_at' ]
+            $request->user(),
+            $request->bearerToken()
         );
-
-        return Response(
-            $sessions,
-            Response::HTTP_OK
-        );
+        return new PassportCustomTokenCollection($sessions);
     }
 
     public function delete(PassportCustomToken $token)

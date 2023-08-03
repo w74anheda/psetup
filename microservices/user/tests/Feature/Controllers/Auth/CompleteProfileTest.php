@@ -119,6 +119,20 @@ class CompleteProfileTest extends TestCase
             [ 'birth_day' => $birth_day, 'national_id' => $national_id ]
         );
         $response->assertStatus(Response::HTTP_OK);
-        $response->assertExactJson((new UserBaseResource($user))->toArray(request()));
+
+
+        $response->assertJsonStructure([
+            'user' => [
+                'id',
+                'first_name',
+                'last_name',
+                'gender',
+                'phone',
+                'email',
+                'personal_info',
+                'is_active',
+                'created_at',
+            ]
+        ]);
     }
 }

@@ -2,19 +2,18 @@
 
 namespace App\Http\Resources;
 
-use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PermissionResourse extends JsonResource
+class StateResource extends JsonResource
 {
-    public static $wrap = 'permission';
+    public static $wrap = 'state';
 
     public function toArray(Request $request): array
     {
         return [
-            'id'   => $this->id,
-            'name' => $this->name,
+            'id'   => $this->resource->id,
+            'name' => $this->resource->name
         ];
     }
 }

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Http\Response;
 use Illuminate\Testing\Assert;
 
 abstract class TestCase extends BaseTestCase
@@ -79,6 +80,17 @@ abstract class TestCase extends BaseTestCase
         $token = $this->createPassportToken($user)['access_token'];
         $user  = $user ?? User::factory()->create();
         return [ $token, $this->withToken($token)->actingAs($user, 'api') ];
+    }
+
+    protected function checkAuthApiMiddleware( array $routes = [])
+    {
+        foreach( $routes as $route => $method )
+        {
+            $response = $this->{"{$method}Json"}($route);
+            $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+            $response->assertJson([ 'message' => 'Unauthenticated.' ]);
+        }
+
     }
 
 }

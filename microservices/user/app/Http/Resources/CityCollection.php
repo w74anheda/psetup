@@ -9,7 +9,7 @@ class CityCollection extends ResourceCollection
 {
     public static $wrap = 'cities';
 
-    public function CityCollection(Request $request): array
+    public function toArray(Request $request): array
     {
         return $this->collection->toArray();
     }

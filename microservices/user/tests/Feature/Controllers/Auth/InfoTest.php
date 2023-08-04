@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Controllers\Auth;
 
-use App\Http\Resources\UserWithRelationResource;
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Tests\TestCase;
@@ -22,7 +22,7 @@ class InfoTest extends TestCase
 
     public function testResponseApiResourse()
     {
-        $user     = User::factory()->create();
+        $user     = User::factory()->has(Permission::factory()->count(10))->create();
         $response = $this->actingAs($user, 'api')->getJson(route('auth.profile.me'));
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure(

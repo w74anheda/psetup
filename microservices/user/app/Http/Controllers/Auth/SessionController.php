@@ -13,10 +13,7 @@ class SessionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:its-own-token,token')->only('delete');
-        // add middleware to deleteAll method
-        // test authService sessions
-        // test passportCustomTokenMOdel presenter test
+        $this->middleware('can:its-own-token,token')->only('revoke');
     }
 
     public function index(Request $request)
@@ -28,20 +25,20 @@ class SessionController extends Controller
         return new PassportCustomTokenCollection($sessions);
     }
 
-    public function delete(PassportCustomToken $token)
+    public function revoke(PassportCustomToken $token)
     {
         AuthService::tokenDestroy($token);
         return Response(
-            [ 'message' => 'successfully deleted' ],
+            [ 'message' => 'successfully revoked.' ],
             Response::HTTP_ACCEPTED
         );
     }
 
-    public function deleteAll(Request $request)
+    public function revokeAll(Request $request)
     {
         AuthService::allTokensDestroy($request->user());
         return Response(
-            [ 'message' => 'successfully deleted' ],
+            [ 'message' => 'successfully revoked.' ],
             Response::HTTP_ACCEPTED
         );
     }

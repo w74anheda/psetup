@@ -1,23 +1,18 @@
 export interface IUser {
-    id: number;
-    first_name?: any;
-    last_name?: any;
-    gender?: any;
+    id: string;
+    first_name: string;
+    last_name: string;
+    gender: string;
     phone: string;
-    is_active: boolean;
-    last_online_at: string;
     email?: any;
-    email_verified_at?: any;
-    activated_at: string;
-    personal_info: PersonalInfo;
+    personal_info: Personalinfo;
+    is_active: boolean;
     created_at: string;
-    updated_at: string;
-    is_new: boolean;
-    status: number;
-}
-
-export interface PersonalInfo {
+    permissions: any[];
+  }
+  
+  export interface Personalinfo {
     is_completed: boolean;
     birth_day?: any;
     national_id?: any;
-}
+  }

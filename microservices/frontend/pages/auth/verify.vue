@@ -112,8 +112,7 @@ const submitVerify = async () => {
       hash: auth.loginResult!.hash,
     });
     if (
-      res.status === 200 &&
-      verifyData.opt.join("") === auth.loginResult?.code
+      res.status === 200
     ) {
       localStorage.setItem(
         "auth",

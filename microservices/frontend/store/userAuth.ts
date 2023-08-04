@@ -26,7 +26,7 @@ export const useAuth = defineStore("auth", () => {
         verifyResult.value = loginData;
         const res = await getCurrentUserData();
         if (res.status === 200) {
-            currentUser.value = res.data;
+            currentUser.value = res.data.user;
         } else {
             verifyResult.value = null;
             localStorage.removeItem("auth");

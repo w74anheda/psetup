@@ -1,8 +1,9 @@
 <template>
     <div class="border p-2 h-56 border-primary shadow rounded-xl relative cursor-pointer"
         v-for="item in addresses" :key="item.id">
-        <div class="font-IRANSans_Medium my-1 truncate">{{ item.full_address }}, پلاک {{
-            item.house_number }}, واحد {{ item.unit_number }}</div>
+        <div class="font-IRANSans_Medium my-1 truncate">{{ item.full_address }},
+            پلاک {{
+                item.house_number }}, واحد {{ item.unit_number }}</div>
         <div class="flex gap-2 items-center my-2 text-dark-gray">
             <Icon name="ic:outline-my-location" size="20" />
             {{ item.city.state.name }}، {{ item.city.name }}

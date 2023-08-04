@@ -3,7 +3,7 @@
         <BodyTheHeader />
         <main class="grid grid-cols-3 gap-5 my-7 relative">
             <div
-                class="md:col-span-1 h-80 col-span-full bg-white sticky top-0 border-secondary border rounded-xl pt-3">
+                class="md:col-span-1 col-span-full bg-white sticky top-0 border-secondary border rounded-xl pt-3">
                 <div class="flex items-center relative justify-between pb-3 px-3">
                     <div class="flex items-center gap-3">
                         <BaseTheAvatar />
@@ -63,7 +63,13 @@ const profileItems = ref([
         icon: "ic:outline-mode-edit-outline",
         link: "personal-info",
     },
-    { id: 3, title: "خروج", icon: "ic:outline-exit-to-app", link: "?logout" },
+    {
+        id: 3,
+        title: "دستگاه ها",
+        icon: "ic:round-devices",
+        link: "sessions",
+    },
+    { id: 4, title: "خروج", icon: "ic:outline-exit-to-app", link: "?logout" },
 ]);
 const selectedItem = computed(() => route.name?.toString().slice(8));
 const user = computed(() => useAuth().currentUser);

@@ -189,8 +189,8 @@ export const getPersianDate = (date: Date, format: string) => {
     var ye = new Date(date).toLocaleDateString("fa-IR").split("/")[0];
     if (format === null || format === undefined)
         return `${week[d]} ${day} ${months[month - 1]} ${year}`;
-    if (format === "y/m/d") return `${year}/${month}/${day}`;
-    if (format === "d/m/y") return `${day}/${month}/${year}`;
+    if (format === "y/m/d") return `${ye}/${month}/${day}`;
+    if (format === "d/m/y") return `${day}/${month}/${ye}`;
     if (format === "M/dd/D") return `${week[d]} ${day} ${months[month - 1]}`; //چهارشنبه 12 مرداد
     if (format === "M/dd") return `${day} ${months[month - 1]}`; //3 شهريور
     if (format === "y/M/dd")

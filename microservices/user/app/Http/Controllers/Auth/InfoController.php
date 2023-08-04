@@ -11,6 +11,7 @@ class InfoController extends Controller
 {
     public function me(Request $request)
     {
+        $request->user()->load([ 'permissions' ]);
         return new UserResource($request->user(), true);
     }
 

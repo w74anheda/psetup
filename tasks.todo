@@ -5,13 +5,11 @@
 
 // auth middleware chain of responsibility
 
-// add is active to  auth request api
 // refresh token renew api add user agent and ip
-// passport create custom grant_type
 // add country to PhoneNumber
-
-
-// migrate controller source to service
+// add api => user edit profile PhoneNumber, first and last name
+// add user password login 
+// add email verification + reset passpord
 
 // ********** send (user ip + user agent) from user interface to user microservice
     // user microservice
@@ -25,14 +23,4 @@
     // set email and activate
     // log every where
     // block ips
-
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-
-// mysql review
-// mongodb review
-// docker review
-// redis review
-// design pattern
 

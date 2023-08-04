@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Location;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Location\AddressStoreRequest;
 use App\Http\Requests\Location\AddressUpdateRequest;
+use App\Http\Resources\AddressCollection;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,10 +21,7 @@ class AddressController extends Controller
     {
         $addresses = $request->user()->addresses()->with([ 'city.state' ])->get();
 
-        return response(
-            $addresses,
-            Response::HTTP_OK
-        );
+        return new AddressCollection($addresses);
 
     }
 

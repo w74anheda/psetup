@@ -3,12 +3,11 @@
 namespace Tests\Feature\Controllers\Location;
 
 use App\Models\Address as ModelsAddress;
-use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
-class Address extends TestCase
+class AddressTest extends TestCase
 {
 
     public function testIndex(): void

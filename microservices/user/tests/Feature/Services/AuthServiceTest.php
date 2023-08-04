@@ -3,6 +3,7 @@
 namespace Tests\Feature\Services;
 
 use App\DTO\UserCompleteRegisterDTO;
+use App\Models\PassportCustomToken;
 use App\Models\User;
 use App\Services\Auth\AuthService;
 use Carbon\Carbon;
@@ -265,35 +266,6 @@ class AuthServiceTest extends TestCase
         $this->assertTrue($newToken['message'] == 'The refresh token is invalid.');
     }
 
-    public function testSessions()
-    {
-        $user  = User::factory()->isNew()->create();
-        $token = $this->createToken($user);
-
-        $count = rand(2, 10);
-        foreach( range(1, $count) as $_ )
-        {
-            $this->createToken($user);
-        }
-
-        $sessions = AuthService::sessions($user, $token['access_token']);
-        $this->assertCount($count + 1, $sessions);
-
-        $this->assertEquals(
-            AuthService::getTokenModelByAccessToken($token['access_token'])->id,
-            $sessions[0]['id']
-        );
-
-        $this->assertTrue($sessions[0]['current']);
-
-        $this->assertArrayHasKey('id', $sessions[0]);
-        $this->assertArrayHasKey('user_agent', $sessions[0]);
-        $this->assertArrayHasKey('ip_address', $sessions[0]);
-        $this->assertArrayHasKey('created_at', $sessions[0]);
-        $this->assertArrayHasKey('expires_at', $sessions[0]);
-        $this->assertArrayHasKey('current', $sessions[0]);
-    }
-
     public function testSessionsWithInvalidAccessToken()
     {
         $user  = User::factory()->isNew()->create();
@@ -330,6 +302,56 @@ class AuthServiceTest extends TestCase
     {
         $tokenModel = AuthService::getTokenModelByAccessToken('invalid access token');
         $this->assertNull($tokenModel);
+    }
+
+
+    public function testSessionsWithoutCurrentAccessToken()
+    {
+        $user  = User::factory()->create();
+        $count = rand(2, 10);
+        foreach( range(1, $count) as $_ )
+            $this->createToken($user);
+
+        $sessions = AuthService::sessions($user);
+        $this->assertCount($count , $sessions);
+        foreach( $sessions as $session )
+        {
+            $this->assertFalse($session->current);
+            $this->assertTrue($session instanceof PassportCustomToken);
+        }
+    }
+
+
+    public function testSessionsWithCurrentAccessToken()
+    {
+        $user  = User::factory()->create();
+        $token = $this->createToken($user);
+
+        $count = rand(2, 10);
+        foreach( range(1, $count) as $_ )
+        {
+            $this->createToken($user);
+        }
+
+        $sessions = AuthService::sessions($user, $token['access_token']);
+
+        $this->assertCount($count + 1, $sessions);
+
+        $this->assertEquals(
+            AuthService::getTokenModelByAccessToken($token['access_token'])->id,
+            $sessions[0]->id
+        );
+
+        foreach( $sessions as $key => $session )
+        {
+            if($key == 0 )
+                $this->assertTrue($session->current);
+            else
+                $this->assertFalse($session->current);
+            $this->assertTrue($session instanceof PassportCustomToken);
+        }
+
+
     }
 
 

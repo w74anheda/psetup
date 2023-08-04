@@ -13,12 +13,12 @@ class PassportCustomToken extends Token
 
     public function scopeRevoked($query)
     {
-        return $query->where('revoked', 0);
+        return $query->where('revoked', 1);
     }
 
     public function scopeNotRevoked($query)
     {
-        return $query->where('revoked', 1);
+        return $query->where('revoked', 0);
     }
 
     public function scopeExpired($query)

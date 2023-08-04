@@ -2,18 +2,21 @@
 
 namespace App\Http\Resources;
 
+use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserBaseResource extends JsonResource
+class UserResource extends JsonResource
 {
     public static $wrap = 'user';
 
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
+
+    public function __construct(public $resource, public bool $loadPermissions = false)
+    {
+        parent::__construct($resource);
+    }
+
+
     public function toArray(Request $request): array
     {
         return [
@@ -26,6 +29,14 @@ class UserBaseResource extends JsonResource
             'personal_info' => $this->personal_info,
             'is_active'     => $this->is_active,
             'created_at'    => $this->created_at,
+            $this->mergeWhen(
+                $this->loadPermissions,
+                [
+                    'permissions' => new PermissionCollection(
+                        UserService::allPermissions($this->resource)
+                    )
+                ]
+            ),
         ];
     }
 }

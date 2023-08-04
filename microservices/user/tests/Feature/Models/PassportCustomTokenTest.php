@@ -3,8 +3,10 @@
 namespace Tests\Feature\Models;
 
 use App\Models\PassportCustomToken;
+use App\Presenters\Presenter;
 use Laravel\Passport\Token;
 use Tests\TestCase;
+use App\Presenters\PassportCustomToken\Api as PassportCustomTokenPresenter;
 
 class PassportCustomTokenTest extends TestCase
 {
@@ -33,13 +35,13 @@ class PassportCustomTokenTest extends TestCase
         $Revokeds = PassportCustomToken::revoked()->get();
         foreach( $Revokeds as $token )
         {
-            $this->assertFalse($token->revoked);
+            $this->assertTrue($token->revoked);
         }
 
         $notRevokeds = PassportCustomToken::NotRevoked()->get();
         foreach( $notRevokeds as $token )
         {
-            $this->assertTrue($token->revoked);
+            $this->assertFalse($token->revoked);
         }
 
         $this->assertEquals(
@@ -92,5 +94,13 @@ class PassportCustomTokenTest extends TestCase
         );
 
     }
+
+    public function testHasPresenter()
+    {
+        $token = PassportCustomToken::factory()->make();
+        $this->assertTrue($token->present() instanceof Presenter);
+        $this->assertTrue($token->present() instanceof PassportCustomTokenPresenter);
+    }
+
 
 }

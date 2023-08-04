@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\DTO\UserCompleteProfileDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\CompleteProfileRequest;
-use App\Http\Resources\UserBaseResource;
-use Illuminate\Http\Response;
+use App\Http\Resources\UserResource;
 
 class CompleteProfileController extends Controller
 {
@@ -18,6 +17,6 @@ class CompleteProfileController extends Controller
             ->setNationalId($request->input('national_id'));
 
         $user->state()->completeProfile($dto);
-        return new UserBaseResource($user);
+        return new UserResource($user);
     }
 }

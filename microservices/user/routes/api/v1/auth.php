@@ -36,8 +36,8 @@ Route::prefix('auth')->name('auth.')->group(function ()
     Route::middleware([ 'auth:api' ])->prefix('sessions')->name('sessions.')->group(function ()
     {
         route::get('', [ SessionController::class, 'index' ])->name('index');
-        route::delete('delete/{token}', [ SessionController::class, 'delete' ])->name('delete');
-        route::delete('delete/all', [ SessionController::class, 'deleteAll' ])->name('delete.all');
+        route::post('revoke/all', [ SessionController::class, 'revokeAll' ])->name('revoke.all');
+        route::post('revoke/{token}', [ SessionController::class, 'revoke' ])->name('revoke');
     });
 
 });

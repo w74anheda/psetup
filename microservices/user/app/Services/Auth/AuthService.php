@@ -25,8 +25,11 @@ class AuthService
     {
         $refreshTokenRepository = resolve(RefreshTokenRepository::class);
         $user->tokens->each(
-            fn($token) => $token->revoke() &&
-            $refreshTokenRepository->revokeRefreshToken($token->id)
+            function ($token) use ($refreshTokenRepository)
+            {
+                $token->revoke();
+                $refreshTokenRepository->revokeRefreshToken($token->id);
+            }
         );
     }
 
@@ -101,12 +104,14 @@ class AuthService
 
     public static function sessions(User $user, string $access_token = null)
     {
+
         if($access_token && $currentSession = self::getTokenModelByAccessToken($access_token))
         {
             $currentSession->current    = true;
             $currentSession->created_at = $currentSession['created_at']->toString();
             $sessions                   = $user
                 ->tokens()
+                ->notRevoked()
                 ->active()
                 ->AllExcept($currentSession['id'])
                 ->get()
@@ -120,6 +125,7 @@ class AuthService
         {
             $sessions = $user
                 ->tokens()
+                ->notRevoked()
                 ->active()
                 ->get()
                 ->map(function ($token)

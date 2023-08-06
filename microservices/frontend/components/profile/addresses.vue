@@ -47,7 +47,7 @@ import { useAuth } from '~~/store/userAuth';
 import { deleteAddress } from '~~/services/address';
 import { useNotify } from '~~/store/notify';
 import { useModal } from '~~/store/base/modal';
-import { IAddress } from '~~/models/address';
+import { Address } from '~~/models/address';
 
 const emit = defineEmits(["editMode"]);
 const dropdown = computed(() => useDropdown().dropdown);
@@ -65,7 +65,7 @@ const deleteUserAddress = async (id: number) => {
         useNotify().notify('آدرس حذف نشد، دوباره امتحان کنید.', 'error')
     }
 }
-const editMode = (item: IAddress) => {
+const editMode = (item: Address) => {
     emit('editMode', { data: item, mode: 'edit' });
     useModal().modalHandler(true);
 }

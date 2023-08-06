@@ -1,19 +1,24 @@
 export interface IAddress {
+    addresses: Address[];
+}
+
+export interface Address {
     id: number;
-    user_id: string;
-    city_id: number;
+    city: City;
     full_address: string;
     house_number: number;
     unit_number: number;
     postalcode: string;
+    point: Point;
+}
+
+export interface Point {
     latitude: string;
     longitude: string;
-    city: City;
 }
 
 export interface City {
     id: number;
-    state_id: number;
     name: string;
     state: State;
 }

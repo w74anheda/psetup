@@ -7,7 +7,7 @@ export interface Notification {
 export const useNotify = defineStore('notify', () => {
     const notifications: Ref<Notification[]> = ref([]);
 
-    const notify = (messageOrError: unknown, type: 'error' | 'warning' | 'success' | 'info', time: number = 2000) => {
+    const notify = (messageOrError: unknown, type: 'error' | 'warning' | 'success' | 'info', time: number = 3000) => {
         let message: string = "";
         if (messageOrError instanceof Error) message = messageOrError.message;
         if (typeof messageOrError === "string") message = messageOrError;

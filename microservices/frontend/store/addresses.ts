@@ -1,8 +1,8 @@
-import { City, IAddress, State } from "~~/models/address";
+import { Address, City, State } from "~~/models/address";
 import { getAddresses, getCities, getStates } from "~~/services/address";
 
 export const useAddress = defineStore('address', () => {
-    const userAddresses: Ref<IAddress[]> = ref([]);
+    const userAddresses: Ref<Address[]> = ref([]);
     const states: Ref<State[]> = ref([]);
     const cities: Ref<City[]> = ref([]);
 
@@ -10,7 +10,7 @@ export const useAddress = defineStore('address', () => {
         const res = await getAddresses();
         if (res.status === 200) {
             //@ts-ignore
-            userAddresses.value = res.data;
+            userAddresses.value = res.data.addresses;
         }
     }
     const getState = async () => {

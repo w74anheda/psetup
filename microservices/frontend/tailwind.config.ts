@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./components/**/*.{js,vue,ts}",
     "./layouts/**/*.vue",
@@ -9,27 +10,13 @@ module.exports = {
     "./app.vue",
   ],
   theme: {
-      fontFamily: {
-        IRANSans_Black: ['IRANSans_Black'],
-        IRANSans_Bold: ['IRANSans_Bold'],
-        IRANSans_Medium: ['IRANSans_Medium'],
-        IRANSans_Light: ['IRANSans_Light'],
-        IRANSans_ULight: ['IRANSans_ULight'],
-        IRANSans_Regular: ['IRANSans_Regular'],
-      },
-    colors: {
-      transparent: "transparent",
-      primary: "#3b82f6",
-      secondary: "#d0d4dc",
-      background: "#f4f5f7",
-      white: "#ffffff",
-      error: "#e35151",
-      success: "#2cda94",
-      warning: "#fcb823",
-      "light-blue": "#ebf2fe",
-      "light-gray": "#eceeef",
-      "dark-gray": "#98a7b4",
-      "darker-gray": "#64748b",
+    fontFamily: {
+      IRANSans_Black: ['IRANSans_Black'],
+      IRANSans_Bold: ['IRANSans_Bold'],
+      IRANSans_Medium: ['IRANSans_Medium'],
+      IRANSans_Light: ['IRANSans_Light'],
+      IRANSans_ULight: ['IRANSans_ULight'],
+      IRANSans_Regular: ['IRANSans_Regular'],
     },
     container: {
       center: true,
@@ -49,6 +36,20 @@ module.exports = {
       },
     },
     extend: {
+      colors: {
+        transparent: "transparent",
+        primary: "#3b82f6",
+        secondary: "#d0d4dc",
+        background: "#f4f5f7",
+        white: "#ffffff",
+        error: "#e35151",
+        success: "#2cda94",
+        warning: "#fcb823",
+        "light-blue": "#ebf2fe",
+        "light-gray": "#eceeef",
+        "dark-gray": "#98a7b4",
+        "darker-gray": "#64748b",
+      },
       fontSize: {
         12: "12px",
         14: "14px",

@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   css: ["@/assets/css/main.css"],
   routeRules: {
     '/profile/**': { ssr: false },
+    '/admin/**': { ssr: false },
     '/auth/**': { ssr: false },
   },
   modules: [

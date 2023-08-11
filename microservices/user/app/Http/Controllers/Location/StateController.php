@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Location;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Location\StateStoreRequest;
 use App\Http\Requests\Location\StateUpdateRequest;
+use App\Http\Resources\StateCollection;
+use App\Http\Resources\StateResource;
 use App\Models\State;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class StateController extends Controller
@@ -20,12 +21,9 @@ class StateController extends Controller
 
     public function index()
     {
-        $states = State::all();
+        $states = State::paginate(20);
 
-        return response(
-            $states,
-            Response::HTTP_OK
-        );
+        return new StateCollection($states);
     }
 
     public function store(StateStoreRequest $request)
@@ -34,20 +32,14 @@ class StateController extends Controller
         $state = State::create(
             $request->only([ 'name' ])
         );
-        return response(
-            $state,
-            Response::HTTP_CREATED
-        );
+        return new StateResource($state);
     }
 
     public function update(State $state, StateUpdateRequest $request)
     {
         $state->update($request->only([ 'name' ]));
 
-        return response(
-            [ 'successfully updated' ],
-            Response::HTTP_ACCEPTED
-        );
+        return new StateResource($state);
     }
 
     public function destroy(State $state)
@@ -55,7 +47,7 @@ class StateController extends Controller
         $state->delete();
 
         return response(
-            [ 'successfully deleted' ],
+            [ 'message' => 'successfully deleted' ],
             Response::HTTP_ACCEPTED
         );
     }
@@ -65,7 +57,7 @@ class StateController extends Controller
         State::query()->delete();
 
         return response(
-            [ 'successfully deleted' ],
+            [ 'message' => 'successfully deleted' ],
             Response::HTTP_ACCEPTED
         );
     }

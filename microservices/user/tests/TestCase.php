@@ -24,6 +24,16 @@ abstract class TestCase extends BaseTestCase
         // $this->artisan('passport:keys --force');
     }
 
+    public function withoutAuthorization()
+    {
+        \Gate::before(function ()
+        {
+            return true;
+        });
+
+        return $this;
+    }
+
     public function assertCompositeKeyModelExists(Model $model)
     {
         $query = $model::query();
@@ -82,7 +92,7 @@ abstract class TestCase extends BaseTestCase
         return [ $token, $this->withToken($token)->actingAs($user, 'api') ];
     }
 
-    protected function checkAuthApiMiddleware( array $routes = [])
+    protected function checkAuthApiMiddleware(array $routes = [])
     {
         foreach( $routes as $route => $method )
         {

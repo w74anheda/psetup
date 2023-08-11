@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Location\AddressStoreRequest;
 use App\Http\Requests\Location\AddressUpdateRequest;
 use App\Http\Resources\AddressCollection;
+use App\Http\Resources\AddressResource;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -27,7 +28,6 @@ class AddressController extends Controller
 
     public function store(AddressStoreRequest $request)
     {
-
         $address = $request->user()->addresses()->create(
             $request->only([
                 'city_id',
@@ -39,11 +39,9 @@ class AddressController extends Controller
                 'longitude',
             ])
         );
+
         $address->load('city.state');
-        return response(
-            $address,
-            Response::HTTP_CREATED
-        );
+        return new AddressResource($address);
     }
 
     public function update(Address $address, AddressUpdateRequest $request)
@@ -58,10 +56,9 @@ class AddressController extends Controller
             'longitude',
         ]));
 
-        return response(
-            [ 'successfully updated' ],
-            Response::HTTP_ACCEPTED
-        );
+        $address->load('city.state');
+        $address->unsetRelation('user');
+        return new AddressResource($address);
     }
 
     public function destroy(Address $address)
@@ -69,7 +66,7 @@ class AddressController extends Controller
         $address->delete();
 
         return response(
-            [ 'successfully deleted' ],
+            [ 'message' => 'successfully deleted' ],
             Response::HTTP_ACCEPTED
         );
     }

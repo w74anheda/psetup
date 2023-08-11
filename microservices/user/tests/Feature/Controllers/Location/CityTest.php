@@ -13,7 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
-class StateTest extends TestCase
+class CityTest extends TestCase
 {
 
     public function testAuthApiMiddleware(): void

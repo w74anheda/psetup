@@ -145,6 +145,7 @@ class AddressTest extends TestCase
         $response->assertJson(
             [ 'message' => 'successfully deleted' ]
         );
+        $this->assertNull(ModelsAddress::find($address->id));
     }
 
     public function testDestroyItsOwn(): void

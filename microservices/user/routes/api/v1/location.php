@@ -18,32 +18,24 @@ Route::prefix('')->middleware('auth:api')->group(function ()
     );
 
 
-    Route::prefix('state')->group(function ()
-    {
-        Route::resource(
-            '',
-            StateController::class,
-            [
-                'only' => [ 'index', 'store', 'update', 'destroy' ]
-            ]
-        );
-        Route::delete('all/delete', [ StateController::class, 'destroyAll' ]);
-    });
+    Route::resource(
+        'state',
+        StateController::class,
+        [
+            'only' => [ 'index', 'store', 'update', 'destroy' ]
+        ]
+    );
+    Route::delete('state/all/delete', [ StateController::class, 'destroyAll' ])->name('state.destroyAll');
 
 
-    Route::prefix('city')->group(function ()
-    {
-        Route::resource(
-            '',
-            CityController::class,
-            [
-                'only' => [ 'index', 'store', 'update', 'destroy' ]
-            ]
-        );
-        Route::delete('all/delete', [ CityController::class, 'destroyAll' ]);
-    });
-
-
+    Route::resource(
+        'city',
+        CityController::class,
+        [
+            'only' => [ 'index', 'store', 'update', 'destroy' ]
+        ]
+    );
+    Route::delete('city/all/delete', [ CityController::class, 'destroyAll' ])->name('city.destroyAll');
 
 
 });

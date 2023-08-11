@@ -2,12 +2,8 @@
 
 namespace Tests\Feature\Controllers\Location;
 
-use App\Http\Resources\AddressResource;
 use App\Http\Resources\StateCollection;
 use App\Http\Resources\StateResource;
-use App\Models\Address as ModelsAddress;
-use App\Models\City;
-use App\Models\Permission;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -39,7 +35,7 @@ class StateTest extends TestCase
             route('state.index')
         );
 
-        $response->assertJson(
+        $response->assertJsonFragment(
             (new StateCollection(State::paginate(20)))->toResponse(request())->getData(true)
         );
     }
@@ -70,7 +66,7 @@ class StateTest extends TestCase
         );
 
         $response->assertStatus(Response::HTTP_CREATED);
-        $response->assertJson(
+        $response->assertJsonFragment(
             (new StateResource($response->json()))->resource
         );
     }
@@ -86,7 +82,7 @@ class StateTest extends TestCase
         );
 
         $response->assertStatus(Response::HTTP_OK);
-        $response->assertJson(
+        $response->assertJsonFragment(
             (new StateResource($response->json()))->resource
         );
     }
@@ -124,6 +120,7 @@ class StateTest extends TestCase
         );
         $this->assertNull(State::find($state->id));
     }
+
     public function testDestroyAll(): void
     {
         $this->withoutAuthorization();

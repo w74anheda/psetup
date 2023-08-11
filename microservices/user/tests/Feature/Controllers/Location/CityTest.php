@@ -2,12 +2,10 @@
 
 namespace Tests\Feature\Controllers\Location;
 
-use App\Http\Resources\AddressResource;
-use App\Http\Resources\StateCollection;
+use App\Http\Resources\CityCollection;
+use App\Http\Resources\CityResource;
 use App\Http\Resources\StateResource;
-use App\Models\Address as ModelsAddress;
 use App\Models\City;
-use App\Models\Permission;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -20,11 +18,11 @@ class CityTest extends TestCase
     {
         $this->checkAuthApiMiddleware(
             [
-                route('state.index')      => 'get',
-                route('state.store', 1)   => 'post',
-                route('state.update', 1)  => 'patch',
-                route('state.destroy', 1) => 'delete',
-                route('state.destroyAll') => 'delete',
+                route('city.index')      => 'get',
+                route('city.store', 1)   => 'post',
+                route('city.update', 1)  => 'patch',
+                route('city.destroy', 1) => 'delete',
+                route('city.destroyAll') => 'delete',
             ]
         );
     }
@@ -33,28 +31,28 @@ class CityTest extends TestCase
     {
         $user = User::factory()->make();
 
-        State::factory()->count(5)->create();
+        City::factory()->count(5)->create();
 
         $response = $this->actingAs($user, 'api')->getJson(
-            route('state.index')
+            route('city.index')
         );
-
-        $response->assertJson(
-            (new StateCollection(State::paginate(20)))->toResponse(request())->getData(true)
+        $response->assertJsonFragment(
+            (new CityCollection(City::paginate(20)))->toResponse(request())->getData(true)
         );
     }
 
-    public function testStoreValidationRequiredItem(): void
+    public function testStoreValidationRequiredName(): void
     {
         $this->withoutMiddleware();
         $response = $this->actingAs(User::factory()->make(), 'api')->postJson(
-            route('state.store'),
+            route('city.store'),
         );
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(
             [
-                'name' => [ 'The name field is required.' ],
+                'name'     => [ 'The name field is required.' ],
+                'state_id' => [ 'The state id field is required.' ],
             ]
         );
     }
@@ -63,46 +61,50 @@ class CityTest extends TestCase
     {
         $this->withoutMiddleware();
         $response = $this->actingAs(User::factory()->make(), 'api')->postJson(
-            route('state.store'),
+            route('city.store'),
             [
-                'name' => fake()->city(),
+                'name'     => fake()->city(),
+                'state_id' => State::factory()->create()->id,
             ]
         );
 
         $response->assertStatus(Response::HTTP_CREATED);
-        $response->assertJson(
-            (new StateResource($response->json()))->resource
+        $response->assertJsonFragment(
+            (new CityResource($response->json()))->resource
         );
     }
 
     public function testUpdate(): void
     {
         $this->withoutAuthorization();
-        $state    = State::factory()->create();
-        $data     = State::factory()->make()->toArray();
+        $city     = City::factory()->create();
+        $data     = City::factory()->make()->toArray();
         $response = $this->actingAs(User::factory()->make(), 'api')->patchJson(
-            route('state.update', $state),
+            route('city.update', $city),
             $data
         );
 
         $response->assertStatus(Response::HTTP_OK);
-        $response->assertJson(
+        $response->assertJsonFragment(
             (new StateResource($response->json()))->resource
         );
+        $city->refresh();
+        $this->assertEquals($data['name'], $response->json('city.name'));
+        $this->assertEquals($data['state_id'], $response->json('city.state.id'));
     }
 
     public function testUpdateValidationRequiredItem(): void
     {
         $this->withoutAuthorization();
-        $state    = State::factory()->create();
+        $city     = City::factory()->create();
         $response = $this->actingAs(User::factory()->make(), 'api')->patchJson(
-            route('state.update', $state),
+            route('city.update', $city),
         );
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(
             [
-                'name' => [ 'The name field is required.' ],
+                'name'     => [ 'The name field is required.' ],
             ]
         );
     }
@@ -111,34 +113,35 @@ class CityTest extends TestCase
     {
         $this->withoutAuthorization();
         $user = User::factory()->create();
-        State::factory()->count(2)->create();
-        $state = State::first();
+        City::factory()->count(2)->create();
+        $city = State::first();
 
         $response = $this->actingAs($user, 'api')->deleteJson(
-            route('state.destroy', $state)
+            route('city.destroy', $city)
         );
 
         $response->assertStatus(Response::HTTP_ACCEPTED);
         $response->assertJson(
             [ 'message' => 'successfully deleted' ]
         );
-        $this->assertNull(State::find($state->id));
+        $this->assertNull(City::find($city->id));
     }
+
     public function testDestroyAll(): void
     {
         $this->withoutAuthorization();
         $user = User::factory()->create();
-        State::factory()->count(5)->create();
+        City::factory()->count(5)->create();
 
         $response = $this->actingAs($user, 'api')->deleteJson(
-            route('state.destroyAll')
+            route('city.destroyAll')
         );
 
         $response->assertStatus(Response::HTTP_ACCEPTED);
         $response->assertJson(
             [ 'message' => 'successfully deleted' ]
         );
-        $this->assertEquals(0, State::count());
+        $this->assertEquals(0, City::count());
     }
 
 

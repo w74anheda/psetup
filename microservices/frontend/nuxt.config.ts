@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     "@vee-validate/nuxt",
     "nuxt-icon",
     "@hypernym/nuxt-anime",
+    "@invictus.codes/nuxt-vuetify"
   ],
   app: {
     pageTransition: { name: "page", mode: "out-in" },
@@ -36,4 +37,16 @@ export default defineNuxtConfig({
       },
     },
   },
+  vuetify: {
+    /* vuetify options */
+    vuetifyOptions: {
+      // @TODO: list all vuetify options
+    },
+
+    moduleOptions: {
+      /* nuxt-vuetify module options */
+      treeshaking: true,
+      useIconCDN: false,
+    }
+  }
 });

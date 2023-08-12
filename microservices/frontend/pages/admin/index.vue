@@ -1,5 +1,5 @@
 <template>
-  <div>Admin Page</div>
+  <div class="mt-10">پیشخوان</div>
 </template>
 
 <script setup lang="ts">

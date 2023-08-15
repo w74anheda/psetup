@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10">پیشخوان</div>
+  <div>پیشخوان</div>
 </template>
 
 <script setup lang="ts">

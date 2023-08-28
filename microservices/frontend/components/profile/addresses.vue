@@ -1,5 +1,5 @@
 <template>
-    <div class="border p-2 h-56 border-primary shadow rounded-xl relative cursor-pointer"
+    <div class="border p-2 h-56 !border-primary shadow rounded-xl relative cursor-pointer"
         v-for="item in addresses" :key="item.id">
         <div class="font-IRANSans_Medium my-1 truncate">{{ item.full_address }},
             پلاک {{

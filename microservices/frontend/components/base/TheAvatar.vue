@@ -1,5 +1,5 @@
 <template>
-    <div class="avatar bg-light-blue shadow-lg">
+    <div class="avatar !bg-light-blue shadow-lg">
         <!-- Avatar image -->
         <img class="avatar__image" src="/images/default-user.png" />
     </div>

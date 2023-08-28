@@ -1,5 +1,5 @@
 <template>
-    <div dir="ltr" class="relative flex justify-between w-full mt-2">
+    <div dir="ltr" class="otp-inputs">
         <input ref="input" @input="maxLengthNumber"
             @keyup="(e) => inputHandler(e, index)" v-for="(n, index) in count"
             type="number" maxlength="1"
@@ -44,6 +44,10 @@ const maxLengthNumber = (e) => {
 </script>
 
 <style scoped>
+.otp-inputs{
+    @apply relative flex justify-between w-full mt-2;
+}
+
 ::-moz-selection {
     /* Code for Firefox */
     @apply bg-transparent;

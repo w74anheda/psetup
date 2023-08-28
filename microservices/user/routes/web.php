@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\Passport\StoreUserAgentIntoAccessTokenController;
+use App\Models\User;
+use App\Notifications\RequestPhoneVerificationCode;
+use App\Services\User\UserService;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 
@@ -16,7 +20,8 @@ use Laravel\Passport\Http\Controllers\AccessTokenController;
 */
 
 
-Route::get('/', function () {
+Route::get('/', function ()
+{
     // dd('users microservices');
     return view('welcome');
 });

@@ -145,7 +145,7 @@ services:
       - ${MIC_FRONTEND_PATH}:${MIC_FRONTEND_WORKING_DIR}
     ports:
       - "${MIC_FRONTEND_PORT}:3000"
-      - "24678:24678"
+      - "24685:24678"
     networks:
       - frontend
       - user_public
